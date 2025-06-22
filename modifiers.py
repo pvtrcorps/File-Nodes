@@ -35,6 +35,9 @@ class FN_OT_mod_add(Operator):
         item = mods.add()
         tree = bpy.data.node_groups.new("File Nodes", 'FileNodesTreeType')
         tree.use_fake_user = True
+        iface = tree.interface
+        iface.new_socket(name="Scene", in_out='INPUT', socket_type='FNSocketScene')
+        iface.new_socket(name="Scene", in_out='OUTPUT', socket_type='FNSocketScene')
         item.node_tree = tree
         item.name = tree.name
         item.stack_index = len(mods) - 1
