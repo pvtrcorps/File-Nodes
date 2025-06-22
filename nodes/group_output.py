@@ -2,7 +2,7 @@
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
-from ..sockets import FNSocketScene, FNSocketWorld
+from ..sockets import FNSocketScene
 
 class FNGroupOutputNode(Node, FNBaseNode):
     bl_idname = "FNGroupOutputNode"
@@ -14,7 +14,6 @@ class FNGroupOutputNode(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
-        self.inputs.new('FNSocketWorld', "World")
 
     def process(self, context, inputs):
         # Terminal node, no action needed
