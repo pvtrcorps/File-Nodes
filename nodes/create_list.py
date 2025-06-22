@@ -105,10 +105,16 @@ class FNCreateList(Node, FNBaseNode):
     def insert_link(self, link):
         if link.to_socket.node == self and link.to_socket.bl_idname == 'NodeSocketVirtual':
             idx = self.item_count + 1
-            new_sock = self.inputs.new(_socket_single[self.data_type], f"{self.data_type.title()} {idx}")
-            self.inputs.move(self.inputs.find(new_sock.name), len(self.inputs)-1)
+            new_sock = self.inputs.new(
+                _socket_single[self.data_type],
+                f"{self.data_type.title()} {idx}"
+            )
+            self.inputs.move(
+                self.inputs.find(new_sock.name),
+                len(self.inputs) - 1
+            )
             self.item_count += 1
-            self.id_data.links.new(link.from_socket, new_sock)
+            link.to_socket = new_sock
             self._ensure_virtual()
             return True
         return False
