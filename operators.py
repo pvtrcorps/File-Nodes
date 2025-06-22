@@ -9,15 +9,20 @@ class FN_OT_evaluate_all(Operator):
     bl_label = "Evaluate File Nodes"
 
     def execute(self, context):
-        trees = [nt for nt in bpy.data.node_groups if isinstance(nt, FileNodesTree) and nt.fn_enabled]
-        trees.sort(key=lambda t: t.fn_stack_index)
-        for tree in trees:
-            evaluate_tree(tree, context)
-        self.report({'INFO'}, f'Evaluated {len(trees)} File Node trees')
+        count = evaluate_tree(context)
+        self.report({'INFO'}, f'Evaluated {count} File Node trees')
         return {'FINISHED'}
 
 ### Evaluator ###
-def evaluate_tree(tree, context):
+def evaluate_tree(context):
+    count = 0
+    for mod in sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index):
+        if mod.enabled and mod.node_tree:
+            _evaluate_tree(mod.node_tree, context)
+            count += 1
+    return count
+
+def _evaluate_tree(tree, context):
     resolved = {}
 
     def eval_socket(sock):

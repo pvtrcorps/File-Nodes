@@ -1,7 +1,7 @@
 
 import bpy
 from bpy.types import Panel
-from .tree import FileNodesTree
+from .modifiers import FILE_NODES_UL_modifiers
 
 class FILE_NODES_PT_global(Panel):
     bl_label = "File Nodes"
@@ -11,14 +11,13 @@ class FILE_NODES_PT_global(Panel):
 
     def draw(self, context):
         layout = self.layout
-        col = layout.column()
-        trees = [nt for nt in bpy.data.node_groups if isinstance(nt, FileNodesTree)]
-        trees.sort(key=lambda t: t.fn_stack_index)
-        for t in trees:
-            row = col.row(align=True)
-            row.prop(t, 'fn_enabled', text='')
-            row.label(text=t.name)
-            row.prop(t, 'fn_stack_index', text='')
+        scene = context.scene
+        layout.template_list("FILE_NODES_UL_modifiers", "", scene, "file_node_modifiers", scene, "file_node_mod_index")
+        row = layout.row(align=True)
+        row.operator('file_nodes.mod_add', text="", icon='ADD')
+        row.operator('file_nodes.mod_remove', text="", icon='REMOVE')
+        row.operator('file_nodes.mod_move', text="", icon='TRIA_UP').direction = 'UP'
+        row.operator('file_nodes.mod_move', text="", icon='TRIA_DOWN').direction = 'DOWN'
         layout.operator('file_nodes.evaluate', icon='FILE_REFRESH')
 
 def register():
