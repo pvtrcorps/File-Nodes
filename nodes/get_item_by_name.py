@@ -1,35 +1,70 @@
-
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
-from ..sockets import FNSocketWorld, FNSocketWorldList
+from ..sockets import (
+    FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
+    FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
+)
 
-class FNGetWorldByName(Node, FNBaseNode):
-    @classmethod
-    def poll(cls, ntree):
-        return ntree.bl_idname == "FileNodesTreeType"
-    bl_idname = "FNGetWorldByName"
-    bl_label = "Get World by Name"
+_socket_single = {
+    'SCENE': 'FNSocketScene',
+    'OBJECT': 'FNSocketObject',
+    'COLLECTION': 'FNSocketCollection',
+    'WORLD': 'FNSocketWorld',
+}
+_socket_list = {
+    'SCENE': 'FNSocketSceneList',
+    'OBJECT': 'FNSocketObjectList',
+    'COLLECTION': 'FNSocketCollectionList',
+    'WORLD': 'FNSocketWorldList',
+}
 
-    world_name: bpy.props.StringProperty(name='Name', default='')
+class FNGetItemByName(Node, FNBaseNode):
+    bl_idname = "FNGetItemByName"
+    bl_label = "Get Item by Name"
+
+    data_type: bpy.props.EnumProperty(
+        name="Type",
+        items=[
+            ('SCENE', 'Scene', ''),
+            ('OBJECT', 'Object', ''),
+            ('COLLECTION', 'Collection', ''),
+            ('WORLD', 'World', ''),
+        ],
+        default='WORLD',
+        update=lambda self, context: self.update_sockets()
+    )
+
+    item_name: bpy.props.StringProperty(name='Name', default='')
+
+    def update_sockets(self):
+        while self.inputs:
+            self.inputs.remove(self.inputs[-1])
+        while self.outputs:
+            self.outputs.remove(self.outputs[-1])
+        list_sock = _socket_list[self.data_type]
+        single = _socket_single[self.data_type]
+        self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        self.outputs.new(single, self.data_type.title())
 
     def init(self, context):
-        self.inputs.new('FNSocketWorldList', "Worlds")
-        self.outputs.new('FNSocketWorld', "World")
+        self.update_sockets()
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "world_name", text="Name")
+        layout.prop(self, "data_type", text="Type")
+        layout.prop(self, "item_name", text="Name")
 
     def process(self, context, inputs):
-        lst = inputs.get("Worlds", [])
+        lst = inputs.get(f"{self.data_type.title()}s", [])
         target = None
-        for w in lst:
-            if w and w.name == self.world_name:
-                target = w
+        for item in lst:
+            if item and item.name == self.item_name:
+                target = item
                 break
-        return {"World": target}
+        return {self.data_type.title(): target}
 
 def register():
-    bpy.utils.register_class(FNGetWorldByName)
+    bpy.utils.register_class(FNGetItemByName)
+
 def unregister():
-    bpy.utils.unregister_class(FNGetWorldByName)
+    bpy.utils.unregister_class(FNGetItemByName)

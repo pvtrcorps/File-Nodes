@@ -2,7 +2,12 @@
 import bpy, os
 from bpy.types import Node
 from .base import FNBaseNode
-from ..sockets import FNSocketWorldList
+from ..sockets import (
+    FNSocketSceneList,
+    FNSocketObjectList,
+    FNSocketCollectionList,
+    FNSocketWorldList,
+)
 
 class FNReadBlendNode(Node, FNBaseNode):
     @classmethod
@@ -14,6 +19,9 @@ class FNReadBlendNode(Node, FNBaseNode):
     filepath: bpy.props.StringProperty(subtype='FILE_PATH')
 
     def init(self, context):
+        self.outputs.new('FNSocketSceneList', "Scenes")
+        self.outputs.new('FNSocketObjectList', "Objects")
+        self.outputs.new('FNSocketCollectionList', "Collections")
         self.outputs.new('FNSocketWorldList', "Worlds")
 
     def draw_buttons(self, context, layout):
@@ -22,14 +30,28 @@ class FNReadBlendNode(Node, FNBaseNode):
     def process(self, context, inputs):
         if not self.filepath or not os.path.isfile(bpy.path.abspath(self.filepath)):
             self.report({'WARNING'}, "Invalid filepath")
-            return {"Worlds": []}
-        worlds_out = []
+            return {"Scenes": [], "Objects": [], "Collections": [], "Worlds": []}
+        scenes_out, objects_out, collections_out, worlds_out = [], [], [], []
         abs_path = bpy.path.abspath(self.filepath)
         with bpy.data.libraries.load(abs_path, link=True) as (data_from, data_to):
+            data_to.scenes = data_from.scenes
+            data_to.objects = data_from.objects
+            data_to.collections = data_from.collections
             data_to.worlds = data_from.worlds
+        for s in data_to.scenes:
+            scenes_out.append(bpy.data.scenes.get(s))
+        for o in data_to.objects:
+            objects_out.append(bpy.data.objects.get(o))
+        for c in data_to.collections:
+            collections_out.append(bpy.data.collections.get(c))
         for w in data_to.worlds:
             worlds_out.append(bpy.data.worlds.get(w))
-        return {"Worlds": worlds_out}
+        return {
+            "Scenes": scenes_out,
+            "Objects": objects_out,
+            "Collections": collections_out,
+            "Worlds": worlds_out,
+        }
 
 def register():
     bpy.utils.register_class(FNReadBlendNode)
