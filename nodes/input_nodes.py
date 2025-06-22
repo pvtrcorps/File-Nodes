@@ -5,7 +5,7 @@ from ..operators import auto_evaluate_if_enabled
 from .base import FNBaseNode
 from ..sockets import (
     FNSocketBool, FNSocketFloat, FNSocketInt, FNSocketString,
-    FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
+    FNSocketWorld, FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
 )
 
@@ -72,6 +72,22 @@ class FNStringInputNode(Node, FNBaseNode):
 
     def process(self, context, inputs):
         return {"String": self.value}
+
+
+class FNWorldInputNode(Node, FNBaseNode):
+    bl_idname = "FNWorldInputNode"
+    bl_label = "World Input"
+
+    value: bpy.props.PointerProperty(type=bpy.types.World, update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketWorld', "World")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="World")
+
+    def process(self, context, inputs):
+        return {"World": self.value}
 
 
 class FNCameraInputNode(Node, FNBaseNode):
@@ -204,7 +220,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
 
 _classes = (
     FNBoolInputNode, FNFloatInputNode, FNIntInputNode, FNStringInputNode,
-    FNCameraInputNode, FNImageInputNode, FNLightInputNode, FNMaterialInputNode,
+    FNWorldInputNode, FNCameraInputNode, FNImageInputNode, FNLightInputNode, FNMaterialInputNode,
     FNMeshInputNode, FNNodeTreeInputNode, FNTextInputNode, FNWorkSpaceInputNode,
 )
 
