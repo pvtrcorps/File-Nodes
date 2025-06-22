@@ -33,7 +33,11 @@ def auto_evaluate_if_enabled(self=None, context=None):
 def evaluate_tree(context):
     global _active_mod_item
     count = 0
-    for mod in sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index):
+    mods = sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index)
+    for mod in mods:
+        mod.reset_to_originals()
+
+    for mod in mods:
         if mod.enabled and mod.node_tree:
             mod.sync_inputs()
             _active_mod_item = mod
