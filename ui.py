@@ -22,7 +22,6 @@ class FILE_NODES_PT_global(Panel):
 
         if 0 <= scene.file_node_mod_index < len(scene.file_node_modifiers):
             mod = scene.file_node_modifiers[scene.file_node_mod_index]
-            mod.sync_inputs()
             box = layout.box()
             for inp in mod.inputs:
                 prop = inp.prop_name()
