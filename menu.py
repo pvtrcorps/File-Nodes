@@ -4,13 +4,10 @@ from nodeitems_utils import NodeCategory, NodeItem, register_node_categories, un
 
 categories = [
     NodeCategory('FILE_NODES_CATEGORY', 'File Nodes', items=[
-        NodeItem('FNReadBlendNode'),
-        NodeItem('FNCreateWorldList'),
-        NodeItem('FNGetWorldByName'),
         NodeItem('FNGroupInputNode'),
         NodeItem('FNReadBlendNode'),
-        NodeItem('FNCreateWorldList'),
-        NodeItem('FNGetWorldByName'),
+        NodeItem('FNCreateList'),
+        NodeItem('FNGetItemByName'),
         NodeItem('FNSetWorldNode'),
         NodeItem('FNGroupOutputNode'),
     ]),
