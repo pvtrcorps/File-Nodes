@@ -56,6 +56,34 @@ class FileNodeModItem(PropertyGroup):
         self.sync_inputs()
         auto_evaluate_if_enabled(context)
 
+    # --- Non destructive storage helpers ---
+    def _ensure_storage(self):
+        if not hasattr(self, "_original_values"):
+            self._original_values = {}
+        return self._original_values
+
+    def store_original(self, data, attr):
+        storage = self._ensure_storage()
+        key = (data.as_pointer(), attr)
+        if key not in storage:
+            storage[key] = (data, getattr(data, attr))
+
+    def reset_to_originals(self):
+        storage = getattr(self, "_original_values", None)
+        if not storage:
+            return
+        for (ptr, attr), (data, value) in storage.items():
+            try:
+                setattr(data, attr, value)
+            except Exception:
+                pass
+
+    def restore_and_clear(self):
+        self.reset_to_originals()
+        storage = getattr(self, "_original_values", None)
+        if storage:
+            storage.clear()
+
     node_tree: bpy.props.PointerProperty(
         type=FileNodesTree,
         update=_update_node_tree,
@@ -144,6 +172,7 @@ class FN_OT_mod_remove(Operator):
         mods = context.scene.file_node_modifiers
         idx = context.scene.file_node_mod_index
         if 0 <= idx < len(mods):
+            mods[idx].restore_and_clear()
             mods.remove(idx)
             context.scene.file_node_mod_index = max(0, idx-1)
             for i, m in enumerate(mods):
