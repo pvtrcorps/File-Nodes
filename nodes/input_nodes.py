@@ -5,7 +5,8 @@ from ..operators import auto_evaluate_if_enabled
 from .base import FNBaseNode
 from ..sockets import (
     FNSocketBool, FNSocketFloat, FNSocketInt, FNSocketString,
-    FNSocketWorld, FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
+    FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
+    FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
 )
 
@@ -72,6 +73,54 @@ class FNStringInputNode(Node, FNBaseNode):
 
     def process(self, context, inputs):
         return {"String": self.value}
+
+
+class FNSceneInputNode(Node, FNBaseNode):
+    bl_idname = "FNSceneInputNode"
+    bl_label = "Scene Input"
+
+    value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketScene', "Scene")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="Scene")
+
+    def process(self, context, inputs):
+        return {"Scene": self.value}
+
+
+class FNObjectInputNode(Node, FNBaseNode):
+    bl_idname = "FNObjectInputNode"
+    bl_label = "Object Input"
+
+    value: bpy.props.PointerProperty(type=bpy.types.Object, update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketObject', "Object")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="Object")
+
+    def process(self, context, inputs):
+        return {"Object": self.value}
+
+
+class FNCollectionInputNode(Node, FNBaseNode):
+    bl_idname = "FNCollectionInputNode"
+    bl_label = "Collection Input"
+
+    value: bpy.props.PointerProperty(type=bpy.types.Collection, update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketCollection', "Collection")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="Collection")
+
+    def process(self, context, inputs):
+        return {"Collection": self.value}
 
 
 class FNWorldInputNode(Node, FNBaseNode):
@@ -220,6 +269,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
 
 _classes = (
     FNBoolInputNode, FNFloatInputNode, FNIntInputNode, FNStringInputNode,
+    FNSceneInputNode, FNObjectInputNode, FNCollectionInputNode,
     FNWorldInputNode, FNCameraInputNode, FNImageInputNode, FNLightInputNode, FNMaterialInputNode,
     FNMeshInputNode, FNNodeTreeInputNode, FNTextInputNode, FNWorkSpaceInputNode,
 )
