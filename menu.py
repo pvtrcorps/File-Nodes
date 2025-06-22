@@ -9,6 +9,7 @@ categories = [
         NodeItem('FNFloatInputNode'),
         NodeItem('FNIntInputNode'),
         NodeItem('FNStringInputNode'),
+        NodeItem('FNWorldInputNode'),
         NodeItem('FNCameraInputNode'),
         NodeItem('FNImageInputNode'),
         NodeItem('FNLightInputNode'),
