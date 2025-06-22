@@ -35,6 +35,7 @@ def evaluate_tree(context):
     count = 0
     for mod in sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index):
         if mod.enabled and mod.node_tree:
+            mod.sync_inputs()
             _active_mod_item = mod
             _evaluate_tree(mod.node_tree, context)
             _active_mod_item = None
