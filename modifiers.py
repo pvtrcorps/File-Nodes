@@ -121,6 +121,15 @@ class FN_OT_mod_add(Operator):
         iface = tree.interface
         iface.new_socket(name="Scene", in_out='INPUT', socket_type='FNSocketScene')
         iface.new_socket(name="Scene", in_out='OUTPUT', socket_type='FNSocketScene')
+        # Add default Group Input/Output nodes for new trees
+        in_node = tree.nodes.new('FNGroupInputNode')
+        out_node = tree.nodes.new('FNGroupOutputNode')
+        in_node.location = (-200, 0)
+        out_node.location = (200, 0)
+        in_sock = in_node.outputs.get('Scene')
+        out_sock = out_node.inputs.get('Scene')
+        if in_sock and out_sock:
+            tree.links.new(in_sock, out_sock)
         item.node_tree = tree
         item.name = tree.name
         item.stack_index = len(mods) - 1
