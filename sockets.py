@@ -5,6 +5,39 @@ from bpy.types import NodeSocket
 ### Helpers ###
 def _color(r,g,b): return (r,g,b,1.0)
 
+# Basic value sockets
+class FNSocketBool(NodeSocket):
+    bl_idname = "FNSocketBool"
+    bl_label = "Boolean"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='CHECKBOX_HLT')
+    def draw_color(self, context, node): return _color(0.8, 0.8, 0.2)
+    value: bpy.props.BoolProperty()
+
+class FNSocketFloat(NodeSocket):
+    bl_idname = "FNSocketFloat"
+    bl_label = "Float"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='PROP_FLOAT')
+    def draw_color(self, context, node): return _color(0.6, 0.8, 0.9)
+    value: bpy.props.FloatProperty()
+
+class FNSocketInt(NodeSocket):
+    bl_idname = "FNSocketInt"
+    bl_label = "Integer"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='SORTSIZE')
+    def draw_color(self, context, node): return _color(0.9, 0.7, 0.5)
+    value: bpy.props.IntProperty()
+
+class FNSocketString(NodeSocket):
+    bl_idname = "FNSocketString"
+    bl_label = "String"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='FONT_DATA')
+    def draw_color(self, context, node): return _color(0.7, 0.7, 0.7)
+    value: bpy.props.StringProperty()
+
 # Single datablock sockets
 class FNSocketScene(NodeSocket):
     bl_idname = "FNSocketScene"
@@ -200,6 +233,7 @@ class FNSocketWorkSpaceList(NodeSocket):
     def draw_color(self, context, node): return _color(0.5,0.7,0.9)
 
 _all_sockets = (
+    FNSocketBool, FNSocketFloat, FNSocketInt, FNSocketString,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
