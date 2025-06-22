@@ -5,6 +5,11 @@ from bpy.types import Operator
 from collections import deque
 from . import ADDON_NAME
 
+_active_mod_item = None
+
+def get_active_mod_item():
+    return _active_mod_item
+
 class FN_OT_evaluate_all(Operator):
     bl_idname = "file_nodes.evaluate"
     bl_label = "Evaluate File Nodes"
@@ -26,10 +31,13 @@ def auto_evaluate_if_enabled(self=None, context=None):
 
 ### Evaluator ###
 def evaluate_tree(context):
+    global _active_mod_item
     count = 0
     for mod in sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index):
         if mod.enabled and mod.node_tree:
+            _active_mod_item = mod
             _evaluate_tree(mod.node_tree, context)
+            _active_mod_item = None
             count += 1
     return count
 

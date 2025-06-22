@@ -3,10 +3,62 @@ from bpy.types import PropertyGroup, UIList, Operator
 from .tree import FileNodesTree
 from .operators import auto_evaluate_if_enabled
 
+class FileNodeModInput(PropertyGroup):
+    """Store one exposed input value for a modifier."""
+
+    name: bpy.props.StringProperty()
+    socket_type: bpy.props.StringProperty()
+
+    # Primitive values
+    bool_value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
+    int_value: bpy.props.IntProperty(update=auto_evaluate_if_enabled)
+    float_value: bpy.props.FloatProperty(update=auto_evaluate_if_enabled)
+    string_value: bpy.props.StringProperty(update=auto_evaluate_if_enabled)
+
+    # ID datablock values
+    scene_value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
+    object_value: bpy.props.PointerProperty(type=bpy.types.Object, update=auto_evaluate_if_enabled)
+    collection_value: bpy.props.PointerProperty(type=bpy.types.Collection, update=auto_evaluate_if_enabled)
+    world_value: bpy.props.PointerProperty(type=bpy.types.World, update=auto_evaluate_if_enabled)
+    camera_value: bpy.props.PointerProperty(type=bpy.types.Camera, update=auto_evaluate_if_enabled)
+    image_value: bpy.props.PointerProperty(type=bpy.types.Image, update=auto_evaluate_if_enabled)
+    light_value: bpy.props.PointerProperty(type=bpy.types.Light, update=auto_evaluate_if_enabled)
+    material_value: bpy.props.PointerProperty(type=bpy.types.Material, update=auto_evaluate_if_enabled)
+    mesh_value: bpy.props.PointerProperty(type=bpy.types.Mesh, update=auto_evaluate_if_enabled)
+    nodetree_value: bpy.props.PointerProperty(type=bpy.types.NodeTree, update=auto_evaluate_if_enabled)
+    text_value: bpy.props.PointerProperty(type=bpy.types.Text, update=auto_evaluate_if_enabled)
+    workspace_value: bpy.props.PointerProperty(type=bpy.types.WorkSpace, update=auto_evaluate_if_enabled)
+
+    _prop_map = {
+        'FNSocketBool': 'bool_value',
+        'FNSocketInt': 'int_value',
+        'FNSocketFloat': 'float_value',
+        'FNSocketString': 'string_value',
+        'FNSocketScene': 'scene_value',
+        'FNSocketObject': 'object_value',
+        'FNSocketCollection': 'collection_value',
+        'FNSocketWorld': 'world_value',
+        'FNSocketCamera': 'camera_value',
+        'FNSocketImage': 'image_value',
+        'FNSocketLight': 'light_value',
+        'FNSocketMaterial': 'material_value',
+        'FNSocketMesh': 'mesh_value',
+        'FNSocketNodeTree': 'nodetree_value',
+        'FNSocketText': 'text_value',
+        'FNSocketWorkSpace': 'workspace_value',
+    }
+
+    def prop_name(self):
+        return self._prop_map.get(self.socket_type, None)
+
 class FileNodeModItem(PropertyGroup):
+    def _update_node_tree(self, context):
+        self.sync_inputs()
+        auto_evaluate_if_enabled(context)
+
     node_tree: bpy.props.PointerProperty(
         type=FileNodesTree,
-        update=auto_evaluate_if_enabled,
+        update=_update_node_tree,
     )
     enabled: bpy.props.BoolProperty(
         name="Enabled",
@@ -15,6 +67,37 @@ class FileNodeModItem(PropertyGroup):
     )
     name: bpy.props.StringProperty(name="Name", default="")
     stack_index: bpy.props.IntProperty(name="Stack Index", default=0, min=0)
+    inputs: bpy.props.CollectionProperty(type=FileNodeModInput)
+
+    def sync_inputs(self):
+        """Sync the inputs collection with the node group's interface."""
+        tree = self.node_tree
+        if not tree:
+            self.inputs.clear()
+            return
+        iface = getattr(tree, "interface", None)
+        if not iface:
+            self.inputs.clear()
+            return
+        iface_items = [i for i in iface.items_tree if getattr(i, "in_out", None) == 'INPUT']
+        names = [i.name for i in iface_items]
+        # remove missing
+        for inp in list(self.inputs):
+            if inp.name not in names:
+                self.inputs.remove(self.inputs.find(inp.name))
+        for item in iface_items:
+            inp = self.inputs.get(item.name)
+            if inp is None:
+                inp = self.inputs.add()
+                inp.name = item.name
+            inp.socket_type = item.socket_type
+
+    def get_input_value(self, name):
+        inp = self.inputs.get(name)
+        if not inp:
+            return None
+        prop = inp.prop_name()
+        return getattr(inp, prop) if prop else None
 
 class FILE_NODES_UL_modifiers(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
@@ -77,7 +160,14 @@ class FN_OT_mod_move(Operator):
             m.stack_index = i
         return {'FINISHED'}
 
-classes = (FileNodeModItem, FILE_NODES_UL_modifiers, FN_OT_mod_add, FN_OT_mod_remove, FN_OT_mod_move)
+classes = (
+    FileNodeModInput,
+    FileNodeModItem,
+    FILE_NODES_UL_modifiers,
+    FN_OT_mod_add,
+    FN_OT_mod_remove,
+    FN_OT_mod_move,
+)
 
 def register():
     for cls in classes:
