@@ -1,10 +1,18 @@
 import bpy
 from bpy.types import PropertyGroup, UIList, Operator
 from .tree import FileNodesTree
+from .operators import auto_evaluate_if_enabled
 
 class FileNodeModItem(PropertyGroup):
-    node_tree: bpy.props.PointerProperty(type=FileNodesTree)
-    enabled: bpy.props.BoolProperty(name="Enabled", default=True)
+    node_tree: bpy.props.PointerProperty(
+        type=FileNodesTree,
+        update=auto_evaluate_if_enabled,
+    )
+    enabled: bpy.props.BoolProperty(
+        name="Enabled",
+        default=True,
+        update=auto_evaluate_if_enabled,
+    )
     name: bpy.props.StringProperty(name="Name", default="")
     stack_index: bpy.props.IntProperty(name="Stack Index", default=0, min=0)
 

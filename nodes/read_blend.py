@@ -1,6 +1,7 @@
 
 import bpy, os
 from bpy.types import Node
+from ..operators import auto_evaluate_if_enabled
 from .base import FNBaseNode
 from ..sockets import (
     FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
@@ -15,7 +16,7 @@ class FNReadBlendNode(Node, FNBaseNode):
     bl_idname = "FNReadBlendNode"
     bl_label = "Read Blend File"
 
-    filepath: bpy.props.StringProperty(subtype='FILE_PATH')
+    filepath: bpy.props.StringProperty(subtype='FILE_PATH', update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketSceneList', "Scenes")

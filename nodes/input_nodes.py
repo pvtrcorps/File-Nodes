@@ -1,5 +1,6 @@
 import bpy
 from bpy.types import Node
+from ..operators import auto_evaluate_if_enabled
 
 from .base import FNBaseNode
 from ..sockets import (
@@ -13,7 +14,7 @@ class FNBoolInputNode(Node, FNBaseNode):
     bl_idname = "FNBoolInputNode"
     bl_label = "Boolean Input"
 
-    value: bpy.props.BoolProperty(name="Value")
+    value: bpy.props.BoolProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketBool', "Boolean")
@@ -29,7 +30,7 @@ class FNFloatInputNode(Node, FNBaseNode):
     bl_idname = "FNFloatInputNode"
     bl_label = "Float Input"
 
-    value: bpy.props.FloatProperty(name="Value")
+    value: bpy.props.FloatProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketFloat', "Float")
@@ -45,7 +46,7 @@ class FNIntInputNode(Node, FNBaseNode):
     bl_idname = "FNIntInputNode"
     bl_label = "Integer Input"
 
-    value: bpy.props.IntProperty(name="Value")
+    value: bpy.props.IntProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketInt', "Integer")
@@ -61,7 +62,7 @@ class FNStringInputNode(Node, FNBaseNode):
     bl_idname = "FNStringInputNode"
     bl_label = "String Input"
 
-    value: bpy.props.StringProperty(name="Value")
+    value: bpy.props.StringProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketString', "String")
@@ -77,7 +78,7 @@ class FNCameraInputNode(Node, FNBaseNode):
     bl_idname = "FNCameraInputNode"
     bl_label = "Camera Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Camera)
+    value: bpy.props.PointerProperty(type=bpy.types.Camera, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketCamera', "Camera")
@@ -93,7 +94,7 @@ class FNImageInputNode(Node, FNBaseNode):
     bl_idname = "FNImageInputNode"
     bl_label = "Image Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Image)
+    value: bpy.props.PointerProperty(type=bpy.types.Image, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketImage', "Image")
@@ -109,7 +110,7 @@ class FNLightInputNode(Node, FNBaseNode):
     bl_idname = "FNLightInputNode"
     bl_label = "Light Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Light)
+    value: bpy.props.PointerProperty(type=bpy.types.Light, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketLight', "Light")
@@ -125,7 +126,7 @@ class FNMaterialInputNode(Node, FNBaseNode):
     bl_idname = "FNMaterialInputNode"
     bl_label = "Material Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Material)
+    value: bpy.props.PointerProperty(type=bpy.types.Material, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketMaterial', "Material")
@@ -141,7 +142,7 @@ class FNMeshInputNode(Node, FNBaseNode):
     bl_idname = "FNMeshInputNode"
     bl_label = "Mesh Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Mesh)
+    value: bpy.props.PointerProperty(type=bpy.types.Mesh, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketMesh', "Mesh")
@@ -157,7 +158,7 @@ class FNNodeTreeInputNode(Node, FNBaseNode):
     bl_idname = "FNNodeTreeInputNode"
     bl_label = "Node Tree Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.NodeTree)
+    value: bpy.props.PointerProperty(type=bpy.types.NodeTree, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketNodeTree', "Node Tree")
@@ -173,7 +174,7 @@ class FNTextInputNode(Node, FNBaseNode):
     bl_idname = "FNTextInputNode"
     bl_label = "Text Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Text)
+    value: bpy.props.PointerProperty(type=bpy.types.Text, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketText', "Text")
@@ -189,7 +190,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
     bl_idname = "FNWorkSpaceInputNode"
     bl_label = "WorkSpace Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.WorkSpace)
+    value: bpy.props.PointerProperty(type=bpy.types.WorkSpace, update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketWorkSpace', "WorkSpace")

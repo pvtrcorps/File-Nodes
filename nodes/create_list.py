@@ -1,5 +1,6 @@
 import bpy
 from bpy.types import Node
+from ..operators import auto_evaluate_if_enabled
 from .base import FNBaseNode
 from ..sockets import (
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
@@ -60,8 +61,12 @@ class FNCreateList(Node, FNBaseNode):
             ('WORKSPACE', 'WorkSpace', ''),
         ],
         default='WORLD',
-        update=lambda self, context: self.update_sockets()
+        update=lambda self, context: self.update_type(context)
     )
+
+    def update_type(self, context):
+        self.update_sockets()
+        auto_evaluate_if_enabled(context)
 
     def update_sockets(self):
         while self.inputs:
