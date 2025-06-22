@@ -40,11 +40,9 @@ _socket_list = {
     'WORKSPACE': 'FNSocketWorkSpaceList',
 }
 
-class FNCreateList(Node, FNBaseNode):
-    bl_idname = "FNCreateList"
-    bl_label = "Create List"
-
-    item_count: bpy.props.IntProperty(default=1)
+class FNGetItemByIndex(Node, FNBaseNode):
+    bl_idname = "FNGetItemByIndex"
+    bl_label = "Get Item by Index"
 
     data_type: bpy.props.EnumProperty(
         name="Type",
@@ -66,6 +64,8 @@ class FNCreateList(Node, FNBaseNode):
         update=lambda self, context: self.update_type(context)
     )
 
+    index: bpy.props.IntProperty(name='Index', default=0, update=auto_evaluate_if_enabled)
+
     def update_type(self, context):
         self.update_sockets()
         auto_evaluate_if_enabled(context)
@@ -75,59 +75,28 @@ class FNCreateList(Node, FNBaseNode):
             self.inputs.remove(self.inputs[-1])
         while self.outputs:
             self.outputs.remove(self.outputs[-1])
+        list_sock = _socket_list[self.data_type]
         single = _socket_single[self.data_type]
-        lst = _socket_list[self.data_type]
-        self.item_count = 1
-        self.inputs.new(single, f"{self.data_type.title()} 1")
-        self.inputs.new('NodeSocketVirtual', "")
-        self.outputs.new(lst, f"{self.data_type.title()}s")
+        self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        self.outputs.new(single, self.data_type.title())
 
     def init(self, context):
         self.update_sockets()
 
-    def update(self):
-        self._ensure_virtual()
-
     def draw_buttons(self, context, layout):
         layout.prop(self, "data_type", text="Type")
+        layout.prop(self, "index", text="Index")
 
     def process(self, context, inputs):
-        output_name = f"{self.data_type.title()}s"
-        lst = []
-        for sock in self.inputs:
-            if sock.is_linked:
-                lst.append(inputs.get(sock.name))
-            else:
-                if getattr(sock, 'value', None):
-                    lst.append(sock.value)
-        return {output_name: lst}
-
-    def insert_link(self, link):
-        if link.to_socket.node == self and link.to_socket.bl_idname == 'NodeSocketVirtual':
-            idx = self.item_count + 1
-            new_sock = self.inputs.new(_socket_single[self.data_type], f"{self.data_type.title()} {idx}")
-            self.inputs.move(self.inputs.find(new_sock.name), len(self.inputs)-1)
-            self.item_count += 1
-            self.id_data.links.new(link.from_socket, new_sock)
-            self._ensure_virtual()
-            return True
-        return False
-
-    def _ensure_virtual(self):
-        if not self.inputs:
-            return
-        if self.inputs[-1].bl_idname != 'NodeSocketVirtual':
-            self.inputs.new('NodeSocketVirtual', "")
-        last = self.inputs[-1]
-        if last.is_linked or getattr(last, 'value', None):
-            idx = self.item_count + 1
-            last.name = f"{self.data_type.title()} {idx}"
-            self.inputs.new('NodeSocketVirtual', "")
-            self.item_count += 1
-        # ensure virtual socket stays last
+        lst = inputs.get(f"{self.data_type.title()}s", [])
+        item = None
+        idx = self.index
+        if isinstance(lst, (list, tuple)) and 0 <= idx < len(lst):
+            item = lst[idx]
+        return {self.data_type.title(): item}
 
 def register():
-    bpy.utils.register_class(FNCreateList)
+    bpy.utils.register_class(FNGetItemByIndex)
 
 def unregister():
-    bpy.utils.unregister_class(FNCreateList)
+    bpy.utils.unregister_class(FNGetItemByIndex)

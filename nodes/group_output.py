@@ -20,9 +20,11 @@ class FNGroupOutputNode(Node, FNBaseNode):
 
     def init(self, context):
         self._sync_with_interface()
+        self._ensure_virtual()
 
     def update(self):
         self._sync_with_interface()
+        self._ensure_virtual()
 
     def _sync_with_interface(self):
         tree = self.id_data
@@ -41,10 +43,34 @@ class FNGroupOutputNode(Node, FNBaseNode):
                 self.inputs.remove(sock)
                 sock = self.inputs.new(item.socket_type, item.name)
             sock.name = item.name
+        self._ensure_virtual()
 
     def process(self, context, inputs):
         # Terminal node, no action needed
         return {}
+
+    def insert_link(self, link):
+        if link.to_node == self and link.to_socket.bl_idname == 'NodeSocketVirtual':
+            tree = self.id_data
+            iface = tree.interface
+            name_base = "Output"
+            existing = {i.name for i in iface.items_tree if getattr(i, 'in_out', None) == 'OUTPUT'}
+            name = name_base
+            idx = 1
+            while name in existing:
+                idx += 1
+                name = f"{name_base} {idx}"
+            new_item = iface.new_socket(name=name, in_out='OUTPUT', socket_type=link.from_socket.bl_idname)
+            new_sock = self.inputs.new(new_item.socket_type, new_item.name)
+            self.inputs.move(self.inputs.find(new_sock.name), len(self.inputs)-1)
+            self.id_data.links.new(link.from_socket, new_sock)
+            self._ensure_virtual()
+            return True
+        return False
+
+    def _ensure_virtual(self):
+        if not self.inputs or self.inputs[-1].bl_idname != 'NodeSocketVirtual':
+            self.inputs.new('NodeSocketVirtual', "")
 
 def register():
     bpy.utils.register_class(FNGroupOutputNode)
