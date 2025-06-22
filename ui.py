@@ -1,7 +1,7 @@
 
 import bpy
 from bpy.types import Panel
-from .modifiers import FILE_NODES_UL_modifiers
+from .modifiers import FILE_NODES_UL_modifiers, FileNodeModItem
 from . import ADDON_NAME
 
 class FILE_NODES_PT_global(Panel):
@@ -19,6 +19,16 @@ class FILE_NODES_PT_global(Panel):
         row.operator('file_nodes.mod_remove', text="", icon='REMOVE')
         row.operator('file_nodes.mod_move', text="", icon='TRIA_UP').direction = 'UP'
         row.operator('file_nodes.mod_move', text="", icon='TRIA_DOWN').direction = 'DOWN'
+
+        if 0 <= scene.file_node_mod_index < len(scene.file_node_modifiers):
+            mod = scene.file_node_modifiers[scene.file_node_mod_index]
+            mod.sync_inputs()
+            box = layout.box()
+            for inp in mod.inputs:
+                prop = inp.prop_name()
+                if prop:
+                    box.prop(inp, prop, text=inp.name)
+
         layout.operator('file_nodes.evaluate', icon='FILE_REFRESH')
         prefs = context.preferences.addons[ADDON_NAME].preferences
         layout.prop(prefs, "auto_evaluate")
