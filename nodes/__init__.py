@@ -1,8 +1,8 @@
 
 import bpy, importlib
-from . import read_blend, create_list, get_item_by_name, set_world, group_input, group_output
+from . import read_blend, create_list, get_item_by_name, set_world, group_input, group_output, input_nodes
 
-_modules = [read_blend, create_list, get_item_by_name, set_world, group_input, group_output]
+_modules = [read_blend, create_list, get_item_by_name, set_world, group_input, group_output, input_nodes]
 
 def register():
     for m in _modules:
