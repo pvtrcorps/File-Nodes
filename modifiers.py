@@ -60,6 +60,10 @@ class FileNodeModItem(PropertyGroup):
     def _ensure_storage(self):
         if not hasattr(self, "_original_values"):
             self._original_values = {}
+        if "linked_objects" not in self._original_values:
+            self._original_values["linked_objects"] = []
+        if "linked_collections" not in self._original_values:
+            self._original_values["linked_collections"] = []
         return self._original_values
 
     def store_original(self, data, attr):
@@ -72,17 +76,38 @@ class FileNodeModItem(PropertyGroup):
         storage = getattr(self, "_original_values", None)
         if not storage:
             return
-        for (ptr, attr), (data, value) in storage.items():
+        # Remove dynamically linked objects/collections
+        for coll, obj in storage.get("linked_objects", []):
             try:
-                setattr(data, attr, value)
+                if coll.objects.get(obj.name):
+                    coll.objects.unlink(obj)
             except Exception:
                 pass
+        for coll, child in storage.get("linked_collections", []):
+            try:
+                if coll.children.get(child.name):
+                    coll.children.unlink(child)
+            except Exception:
+                pass
+        for k, v in list(storage.items()):
+            if isinstance(k, tuple):
+                (ptr, attr) = k
+                data, value = v
+                try:
+                    setattr(data, attr, value)
+                except Exception:
+                    pass
 
     def restore_and_clear(self):
         self.reset_to_originals()
         storage = getattr(self, "_original_values", None)
         if storage:
-            storage.clear()
+            storage.get("linked_objects", []).clear()
+            storage.get("linked_collections", []).clear()
+            # remove key entries that hold property values
+            for k in list(storage.keys()):
+                if isinstance(k, tuple):
+                    storage.pop(k)
 
     node_tree: bpy.props.PointerProperty(
         type=FileNodesTree,
