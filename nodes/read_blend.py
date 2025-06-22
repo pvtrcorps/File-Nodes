@@ -1,5 +1,4 @@
-
-import bpy, os
+import bpy, os, warnings
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
 from .base import FNBaseNode
@@ -36,31 +35,45 @@ class FNReadBlendNode(Node, FNBaseNode):
         layout.prop(self, "filepath", text="")
 
     def process(self, context, inputs):
-        if not self.filepath or not os.path.isfile(bpy.path.abspath(self.filepath)):
-            self.report({'WARNING'}, "Invalid filepath")
-            return {
-                "Scenes": [], "Objects": [], "Collections": [], "Worlds": [],
-                "Cameras": [], "Images": [], "Lights": [], "Materials": [],
-                "Meshes": [], "NodeTrees": [], "Texts": [], "WorkSpaces": [],
-            }
+        def _warn(msg):
+            ntree = getattr(self, "node_tree", None)
+            if ntree and hasattr(ntree, "report"):
+                ntree.report({'WARNING'}, msg)
+            else:
+                print(msg)
+                warnings.warn(msg)
+
+        empty = {
+            "Scenes": [], "Objects": [], "Collections": [], "Worlds": [],
+            "Cameras": [], "Images": [], "Lights": [], "Materials": [],
+            "Meshes": [], "NodeTrees": [], "Texts": [], "WorkSpaces": [],
+        }
+
+        abs_path = bpy.path.abspath(self.filepath)
+        if not self.filepath or not os.path.isfile(abs_path):
+            _warn("Invalid filepath")
+            return empty
         scenes_out, objects_out, collections_out, worlds_out = [], [], [], []
         cameras_out, images_out, lights_out = [], [], []
         materials_out, meshes_out, nodetrees_out = [], [], []
         texts_out, workspaces_out = [], []
-        abs_path = bpy.path.abspath(self.filepath)
-        with bpy.data.libraries.load(abs_path, link=True) as (data_from, data_to):
-            data_to.scenes = data_from.scenes
-            data_to.objects = data_from.objects
-            data_to.collections = data_from.collections
-            data_to.worlds = data_from.worlds
-            data_to.cameras = data_from.cameras
-            data_to.images = data_from.images
-            data_to.lights = data_from.lights
-            data_to.materials = data_from.materials
-            data_to.meshes = data_from.meshes
-            data_to.node_groups = data_from.node_groups
-            data_to.texts = data_from.texts
-            data_to.workspaces = data_from.workspaces
+        try:
+            with bpy.data.libraries.load(abs_path, link=True) as (data_from, data_to):
+                data_to.scenes = data_from.scenes
+                data_to.objects = data_from.objects
+                data_to.collections = data_from.collections
+                data_to.worlds = data_from.worlds
+                data_to.cameras = data_from.cameras
+                data_to.images = data_from.images
+                data_to.lights = data_from.lights
+                data_to.materials = data_from.materials
+                data_to.meshes = data_from.meshes
+                data_to.node_groups = data_from.node_groups
+                data_to.texts = data_from.texts
+                data_to.workspaces = data_from.workspaces
+        except Exception as e:
+            _warn(f"Failed to load library: {e}")
+            return empty
         for s in data_to.scenes:
             scenes_out.append(s if isinstance(s, bpy.types.Scene) else bpy.data.scenes.get(s))
         for o in data_to.objects:
