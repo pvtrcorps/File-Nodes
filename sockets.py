@@ -30,6 +30,70 @@ class FNSocketCollection(NodeSocket):
     def draw_color(self, context, node): return _color(0.4,0.8,0.6)
     value: bpy.props.PointerProperty(type=bpy.types.Collection)
 
+class FNSocketCamera(NodeSocket):
+    bl_idname = "FNSocketCamera"
+    bl_label = "Camera"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='CAMERA_DATA')
+    def draw_color(self, context, node): return _color(0.8,0.6,0.4)
+    value: bpy.props.PointerProperty(type=bpy.types.Camera)
+
+class FNSocketImage(NodeSocket):
+    bl_idname = "FNSocketImage"
+    bl_label = "Image"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='IMAGE_DATA')
+    def draw_color(self, context, node): return _color(0.8,0.8,0.8)
+    value: bpy.props.PointerProperty(type=bpy.types.Image)
+
+class FNSocketLight(NodeSocket):
+    bl_idname = "FNSocketLight"
+    bl_label = "Light"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='LIGHT_DATA')
+    def draw_color(self, context, node): return _color(1.0,0.9,0.3)
+    value: bpy.props.PointerProperty(type=bpy.types.Light)
+
+class FNSocketMaterial(NodeSocket):
+    bl_idname = "FNSocketMaterial"
+    bl_label = "Material"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='MATERIAL_DATA')
+    def draw_color(self, context, node): return _color(0.9,0.6,0.8)
+    value: bpy.props.PointerProperty(type=bpy.types.Material)
+
+class FNSocketMesh(NodeSocket):
+    bl_idname = "FNSocketMesh"
+    bl_label = "Mesh"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='MESH_DATA')
+    def draw_color(self, context, node): return _color(0.6,0.6,1.0)
+    value: bpy.props.PointerProperty(type=bpy.types.Mesh)
+
+class FNSocketNodeTree(NodeSocket):
+    bl_idname = "FNSocketNodeTree"
+    bl_label = "Node Tree"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='NODETREE')
+    def draw_color(self, context, node): return _color(0.7,0.9,0.7)
+    value: bpy.props.PointerProperty(type=bpy.types.NodeTree)
+
+class FNSocketText(NodeSocket):
+    bl_idname = "FNSocketText"
+    bl_label = "Text"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='TEXT')
+    def draw_color(self, context, node): return _color(0.9,0.9,0.6)
+    value: bpy.props.PointerProperty(type=bpy.types.Text)
+
+class FNSocketWorkSpace(NodeSocket):
+    bl_idname = "FNSocketWorkSpace"
+    bl_label = "WorkSpace"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='WORKSPACE')
+    def draw_color(self, context, node): return _color(0.5,0.7,0.9)
+    value: bpy.props.PointerProperty(type=bpy.types.WorkSpace)
+
 class FNSocketWorld(NodeSocket):
     bl_idname = "FNSocketWorld"
     bl_label = "World"
@@ -71,9 +135,77 @@ class FNSocketWorldList(NodeSocket):
         layout.label(text=text or self.name, icon='WORLD')
     def draw_color(self, context, node): return _color(0.8,0.8,0.3)
 
+class FNSocketCameraList(NodeSocket):
+    bl_idname = "FNSocketCameraList"
+    bl_label = "Camera List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='CAMERA_DATA')
+    def draw_color(self, context, node): return _color(0.8,0.6,0.4)
+
+class FNSocketImageList(NodeSocket):
+    bl_idname = "FNSocketImageList"
+    bl_label = "Image List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='IMAGE_DATA')
+    def draw_color(self, context, node): return _color(0.8,0.8,0.8)
+
+class FNSocketLightList(NodeSocket):
+    bl_idname = "FNSocketLightList"
+    bl_label = "Light List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='LIGHT_DATA')
+    def draw_color(self, context, node): return _color(1.0,0.9,0.3)
+
+class FNSocketMaterialList(NodeSocket):
+    bl_idname = "FNSocketMaterialList"
+    bl_label = "Material List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='MATERIAL_DATA')
+    def draw_color(self, context, node): return _color(0.9,0.6,0.8)
+
+class FNSocketMeshList(NodeSocket):
+    bl_idname = "FNSocketMeshList"
+    bl_label = "Mesh List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='MESH_DATA')
+    def draw_color(self, context, node): return _color(0.6,0.6,1.0)
+
+class FNSocketNodeTreeList(NodeSocket):
+    bl_idname = "FNSocketNodeTreeList"
+    bl_label = "Node Tree List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='NODETREE')
+    def draw_color(self, context, node): return _color(0.7,0.9,0.7)
+
+class FNSocketTextList(NodeSocket):
+    bl_idname = "FNSocketTextList"
+    bl_label = "Text List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='TEXT')
+    def draw_color(self, context, node): return _color(0.9,0.9,0.6)
+
+class FNSocketWorkSpaceList(NodeSocket):
+    bl_idname = "FNSocketWorkSpaceList"
+    bl_label = "WorkSpace List"
+    display_shape: str = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='WORKSPACE')
+    def draw_color(self, context, node): return _color(0.5,0.7,0.9)
+
 _all_sockets = (
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
+    FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
+    FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
     FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
+    FNSocketCameraList, FNSocketImageList, FNSocketLightList, FNSocketMaterialList,
+    FNSocketMeshList, FNSocketNodeTreeList, FNSocketTextList, FNSocketWorkSpaceList,
 )
 
 def register():

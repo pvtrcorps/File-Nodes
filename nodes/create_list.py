@@ -3,7 +3,11 @@ from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import (
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
+    FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
+    FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
     FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
+    FNSocketCameraList, FNSocketImageList, FNSocketLightList, FNSocketMaterialList,
+    FNSocketMeshList, FNSocketNodeTreeList, FNSocketTextList, FNSocketWorkSpaceList,
 )
 
 _socket_single = {
@@ -11,12 +15,28 @@ _socket_single = {
     'OBJECT': 'FNSocketObject',
     'COLLECTION': 'FNSocketCollection',
     'WORLD': 'FNSocketWorld',
+    'CAMERA': 'FNSocketCamera',
+    'IMAGE': 'FNSocketImage',
+    'LIGHT': 'FNSocketLight',
+    'MATERIAL': 'FNSocketMaterial',
+    'MESH': 'FNSocketMesh',
+    'NODETREE': 'FNSocketNodeTree',
+    'TEXT': 'FNSocketText',
+    'WORKSPACE': 'FNSocketWorkSpace',
 }
 _socket_list = {
     'SCENE': 'FNSocketSceneList',
     'OBJECT': 'FNSocketObjectList',
     'COLLECTION': 'FNSocketCollectionList',
     'WORLD': 'FNSocketWorldList',
+    'CAMERA': 'FNSocketCameraList',
+    'IMAGE': 'FNSocketImageList',
+    'LIGHT': 'FNSocketLightList',
+    'MATERIAL': 'FNSocketMaterialList',
+    'MESH': 'FNSocketMeshList',
+    'NODETREE': 'FNSocketNodeTreeList',
+    'TEXT': 'FNSocketTextList',
+    'WORKSPACE': 'FNSocketWorkSpaceList',
 }
 
 class FNCreateList(Node, FNBaseNode):
@@ -30,6 +50,14 @@ class FNCreateList(Node, FNBaseNode):
             ('OBJECT', 'Object', ''),
             ('COLLECTION', 'Collection', ''),
             ('WORLD', 'World', ''),
+            ('CAMERA', 'Camera', ''),
+            ('IMAGE', 'Image', ''),
+            ('LIGHT', 'Light', ''),
+            ('MATERIAL', 'Material', ''),
+            ('MESH', 'Mesh', ''),
+            ('NODETREE', 'Node Tree', ''),
+            ('TEXT', 'Text', ''),
+            ('WORKSPACE', 'WorkSpace', ''),
         ],
         default='WORLD',
         update=lambda self, context: self.update_sockets()
