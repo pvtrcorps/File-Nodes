@@ -10,9 +10,9 @@ bl_info = {
 }
 
 import importlib
-from . import tree, sockets, nodes, operators, ui, menu, menu
+from . import tree, sockets, nodes, operators, ui, menu, modifiers
 
-modules = [tree, sockets, nodes, operators, ui, menu]
+modules = [tree, sockets, nodes, operators, ui, menu, modifiers]
 
 def register():
     for m in modules:
