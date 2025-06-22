@@ -2,6 +2,7 @@
 import bpy
 from bpy.types import Panel
 from .modifiers import FILE_NODES_UL_modifiers
+from . import ADDON_NAME
 
 class FILE_NODES_PT_global(Panel):
     bl_label = "File Nodes"
@@ -19,6 +20,8 @@ class FILE_NODES_PT_global(Panel):
         row.operator('file_nodes.mod_move', text="", icon='TRIA_UP').direction = 'UP'
         row.operator('file_nodes.mod_move', text="", icon='TRIA_DOWN').direction = 'DOWN'
         layout.operator('file_nodes.evaluate', icon='FILE_REFRESH')
+        prefs = context.preferences.addons[ADDON_NAME].preferences
+        layout.prop(prefs, "auto_evaluate")
 
 def register():
     bpy.utils.register_class(FILE_NODES_PT_global)

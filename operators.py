@@ -3,6 +3,7 @@ import bpy
 from .tree import FileNodesTree
 from bpy.types import Operator
 from collections import deque
+from . import ADDON_NAME
 
 class FN_OT_evaluate_all(Operator):
     bl_idname = "file_nodes.evaluate"
@@ -12,6 +13,14 @@ class FN_OT_evaluate_all(Operator):
         count = evaluate_tree(context)
         self.report({'INFO'}, f'Evaluated {count} File Node trees')
         return {'FINISHED'}
+
+
+def auto_evaluate_if_enabled(context=None):
+    """Evaluate all file node trees if the preference is enabled."""
+    context = context or bpy.context
+    prefs = context.preferences.addons.get(ADDON_NAME)
+    if prefs and prefs.preferences.auto_evaluate:
+        evaluate_tree(context)
 
 ### Evaluator ###
 def evaluate_tree(context):
