@@ -39,13 +39,13 @@ class FNReadBlendNode(Node, FNBaseNode):
             data_to.collections = data_from.collections
             data_to.worlds = data_from.worlds
         for s in data_to.scenes:
-            scenes_out.append(bpy.data.scenes.get(s))
+            scenes_out.append(s if isinstance(s, bpy.types.Scene) else bpy.data.scenes.get(s))
         for o in data_to.objects:
-            objects_out.append(bpy.data.objects.get(o))
+            objects_out.append(o if isinstance(o, bpy.types.Object) else bpy.data.objects.get(o))
         for c in data_to.collections:
-            collections_out.append(bpy.data.collections.get(c))
+            collections_out.append(c if isinstance(c, bpy.types.Collection) else bpy.data.collections.get(c))
         for w in data_to.worlds:
-            worlds_out.append(bpy.data.worlds.get(w))
+            worlds_out.append(w if isinstance(w, bpy.types.World) else bpy.data.worlds.get(w))
         return {
             "Scenes": scenes_out,
             "Objects": objects_out,
