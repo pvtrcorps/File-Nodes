@@ -15,8 +15,10 @@ class FN_OT_evaluate_all(Operator):
         return {'FINISHED'}
 
 
-def auto_evaluate_if_enabled(context=None):
+def auto_evaluate_if_enabled(self=None, context=None):
     """Evaluate all file node trees if the preference is enabled."""
+    if context is None and isinstance(self, bpy.types.Context):
+        context = self
     context = context or bpy.context
     prefs = context.preferences.addons.get(ADDON_NAME)
     if prefs and prefs.preferences.auto_evaluate:
