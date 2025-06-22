@@ -14,13 +14,14 @@ class FNSetWorld(Node, FNBaseNode):
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
         self.inputs.new('FNSocketWorld', "World")
+        self.outputs.new('FNSocketScene', "Scene")
 
     def process(self, context, inputs):
         scene = inputs.get("Scene")
         world = inputs.get("World")
         if scene and world:
             scene.world = world
-        return {}
+        return {"Scene": scene}
 
 def register():
     bpy.utils.register_class(FNSetWorld)
