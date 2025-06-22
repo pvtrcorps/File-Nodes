@@ -111,7 +111,7 @@ class FNCreateList(Node, FNBaseNode):
             )
             self.inputs.move(
                 self.inputs.find(new_sock.name),
-                len(self.inputs) - 1
+                len(self.inputs) - 2
             )
             self.item_count += 1
             link.to_socket = new_sock
