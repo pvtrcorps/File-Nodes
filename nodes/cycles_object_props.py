@@ -2,18 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketObject
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketObject, FNSocketBool
+from ..operators import get_active_mod_item
 
 
 class FNCyclesObjectProps(Node, FNBaseNode):
     bl_idname = "FNCyclesObjectProps"
     bl_label = "Cycles Object Properties"
 
-    is_holdout: bpy.props.BoolProperty(
-        name="Holdout",
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -21,19 +17,19 @@ class FNCyclesObjectProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketObject', "Object")
+        sock = self.inputs.new('FNSocketBool', "Holdout")
+        sock.value = False
         self.outputs.new('FNSocketObject', "Object")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "is_holdout", text="Holdout")
 
     def process(self, context, inputs):
         obj = inputs.get("Object")
         if obj:
+            holdout = inputs.get("Holdout")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(obj, "is_holdout")
             try:
-                obj.is_holdout = self.is_holdout
+                obj.is_holdout = holdout
             except Exception:
                 pass
         return {"Object": obj}

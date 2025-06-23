@@ -2,18 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketObject
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketObject, FNSocketBool
+from ..operators import get_active_mod_item
 
 
 class FNEeveeObjectProps(Node, FNBaseNode):
     bl_idname = "FNEeveeObjectProps"
     bl_label = "Eevee Object Properties"
 
-    visible_shadow: bpy.props.BoolProperty(
-        name="Visible Shadow",
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -21,19 +17,19 @@ class FNEeveeObjectProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketObject', "Object")
+        sock = self.inputs.new('FNSocketBool', "Visible Shadow")
+        sock.value = False
         self.outputs.new('FNSocketObject', "Object")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "visible_shadow", text="Visible Shadow")
 
     def process(self, context, inputs):
         obj = inputs.get("Object")
         if obj:
+            shadow = inputs.get("Visible Shadow")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(obj, "visible_shadow")
             try:
-                obj.visible_shadow = self.visible_shadow
+                obj.visible_shadow = shadow
             except Exception:
                 pass
         return {"Object": obj}

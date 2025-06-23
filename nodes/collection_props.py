@@ -2,18 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketCollection
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketCollection, FNSocketBool
+from ..operators import get_active_mod_item
 
 
 class FNCollectionProps(Node, FNBaseNode):
     bl_idname = "FNCollectionProps"
     bl_label = "Collection Properties"
 
-    hide_viewport: bpy.props.BoolProperty(
-        name="Hide Viewport",
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -21,19 +17,19 @@ class FNCollectionProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketCollection', "Collection")
+        sock = self.inputs.new('FNSocketBool', "Hide Viewport")
+        sock.value = False
         self.outputs.new('FNSocketCollection', "Collection")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "hide_viewport", text="Hide Viewport")
 
     def process(self, context, inputs):
         coll = inputs.get("Collection")
         if coll:
+            hide_vp = inputs.get("Hide Viewport")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(coll, "hide_viewport")
             try:
-                coll.hide_viewport = self.hide_viewport
+                coll.hide_viewport = hide_vp
             except Exception:
                 pass
         return {"Collection": coll}

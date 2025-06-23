@@ -2,20 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketScene
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketScene, FNSocketInt
+from ..operators import get_active_mod_item
 
 
 class FNCyclesSceneProps(Node, FNBaseNode):
     bl_idname = "FNCyclesSceneProps"
     bl_label = "Cycles Scene Properties"
 
-    samples: bpy.props.IntProperty(
-        name="Samples",
-        default=64,
-        min=1,
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -23,19 +17,19 @@ class FNCyclesSceneProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
+        sock = self.inputs.new('FNSocketInt', "Samples")
+        sock.value = 64
         self.outputs.new('FNSocketScene', "Scene")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "samples", text="Samples")
 
     def process(self, context, inputs):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "cycles"):
+            samples = inputs.get("Samples")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(scene.cycles, "samples")
             try:
-                scene.cycles.samples = self.samples
+                scene.cycles.samples = samples
             except Exception:
                 pass
         return {"Scene": scene}

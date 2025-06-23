@@ -2,19 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketMaterial
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketMaterial, FNSocketBool
+from ..operators import get_active_mod_item
 
 
 class FNMaterialProps(Node, FNBaseNode):
     bl_idname = "FNMaterialProps"
     bl_label = "Material Properties"
 
-    use_nodes: bpy.props.BoolProperty(
-        name="Use Nodes",
-        default=True,
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -22,19 +17,19 @@ class FNMaterialProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketMaterial', "Material")
+        sock = self.inputs.new('FNSocketBool', "Use Nodes")
+        sock.value = True
         self.outputs.new('FNSocketMaterial', "Material")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "use_nodes", text="Use Nodes")
 
     def process(self, context, inputs):
         mat = inputs.get("Material")
         if mat:
+            use_nodes = inputs.get("Use Nodes")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(mat, "use_nodes")
             try:
-                mat.use_nodes = self.use_nodes
+                mat.use_nodes = use_nodes
             except Exception:
                 pass
         return {"Material": mat}
