@@ -30,14 +30,22 @@ class FNLinkToScene(Node, FNBaseNode):
             for obj in objects:
                 if not obj:
                     continue
-                if not root.objects.get(obj.name):
+                try:
+                    name = obj.name
+                except ReferenceError:
+                    continue  # Object was removed
+                if not root.objects.get(name):
                     root.objects.link(obj)
                     if mod:
                         mod.remember_object_link(root, obj)
             for coll in collections:
                 if not coll:
                     continue
-                if not root.children.get(coll.name):
+                try:
+                    name = coll.name
+                except ReferenceError:
+                    continue  # Collection was removed
+                if not root.children.get(name):
                     root.children.link(coll)
                     if mod:
                         mod.remember_collection_link(root, coll)
