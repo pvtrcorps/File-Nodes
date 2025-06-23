@@ -15,9 +15,9 @@ ADDON_NAME = __name__
 
 import bpy
 import importlib
-from . import tree, sockets, nodes, operators, modifiers, ui, menu
+from . import tree, sockets, nodes, operators, ui, menu, modifiers
 
-modules = [tree, sockets, nodes, operators, modifiers, ui, menu]
+modules = [tree, sockets, nodes, operators, ui, menu, modifiers]
 
 
 class FileNodesPreferences(bpy.types.AddonPreferences):
