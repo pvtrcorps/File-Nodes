@@ -5,13 +5,21 @@ import bpy, importlib
 from . import (
     read_blend, create_list, get_item_by_name, get_item_by_index,
     link_to_scene, link_to_collection, set_world, group_input, group_output,
-    input_nodes
+    input_nodes,
+    set_render_engine, cycles_scene_props, eevee_scene_props,
+    workbench_scene_props, output_props, scene_props, object_props,
+    cycles_object_props, eevee_object_props, collection_props,
+    world_props, camera_props, light_props, mesh_props, material_props,
 )
 
 _modules = [
     read_blend, create_list, get_item_by_name, get_item_by_index,
     link_to_scene, link_to_collection, set_world, group_input, group_output,
-    input_nodes
+    input_nodes,
+    set_render_engine, cycles_scene_props, eevee_scene_props,
+    workbench_scene_props, output_props, scene_props, object_props,
+    cycles_object_props, eevee_object_props, collection_props,
+    world_props, camera_props, light_props, mesh_props, material_props,
 ]
 
 def register():
