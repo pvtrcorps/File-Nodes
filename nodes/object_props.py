@@ -2,22 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketObject
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketObject, FNSocketBool
+from ..operators import get_active_mod_item
 
 
 class FNObjectProps(Node, FNBaseNode):
     bl_idname = "FNObjectProps"
     bl_label = "Object Properties"
 
-    hide_viewport: bpy.props.BoolProperty(
-        name="Hide Viewport",
-        update=auto_evaluate_if_enabled,
-    )
-    hide_render: bpy.props.BoolProperty(
-        name="Hide Render",
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -25,22 +17,24 @@ class FNObjectProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketObject', "Object")
+        sock = self.inputs.new('FNSocketBool', "Hide Viewport")
+        sock.value = False
+        sock = self.inputs.new('FNSocketBool', "Hide Render")
+        sock.value = False
         self.outputs.new('FNSocketObject', "Object")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "hide_viewport", text="Hide Viewport")
-        layout.prop(self, "hide_render", text="Hide Render")
 
     def process(self, context, inputs):
         obj = inputs.get("Object")
         if obj:
+            hide_vp = inputs.get("Hide Viewport")
+            hide_re = inputs.get("Hide Render")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(obj, "hide_viewport")
                 mod.store_original(obj, "hide_render")
             try:
-                obj.hide_viewport = self.hide_viewport
-                obj.hide_render = self.hide_render
+                obj.hide_viewport = hide_vp
+                obj.hide_render = hide_re
             except Exception:
                 pass
         return {"Object": obj}

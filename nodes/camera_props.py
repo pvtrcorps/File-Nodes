@@ -2,20 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketCamera
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketCamera, FNSocketFloat
+from ..operators import get_active_mod_item
 
 
 class FNCameraProps(Node, FNBaseNode):
     bl_idname = "FNCameraProps"
     bl_label = "Camera Properties"
 
-    lens: bpy.props.FloatProperty(
-        name="Focal Length",
-        default=50.0,
-        min=1.0,
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -23,19 +17,19 @@ class FNCameraProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketCamera', "Camera")
+        sock = self.inputs.new('FNSocketFloat', "Focal Length")
+        sock.value = 50.0
         self.outputs.new('FNSocketCamera', "Camera")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "lens", text="Focal Length")
 
     def process(self, context, inputs):
         cam = inputs.get("Camera")
         if cam:
+            lens = inputs.get("Focal Length")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(cam, "lens")
             try:
-                cam.lens = self.lens
+                cam.lens = lens
             except Exception:
                 pass
         return {"Camera": cam}

@@ -2,26 +2,14 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketScene
-from ..operators import get_active_mod_item, auto_evaluate_if_enabled
+from ..sockets import FNSocketScene, FNSocketInt
+from ..operators import get_active_mod_item
 
 
 class FNOutputProps(Node, FNBaseNode):
     bl_idname = "FNOutputProps"
     bl_label = "Output Properties"
 
-    resolution_x: bpy.props.IntProperty(
-        name="Resolution X",
-        default=1920,
-        min=1,
-        update=auto_evaluate_if_enabled,
-    )
-    resolution_y: bpy.props.IntProperty(
-        name="Resolution Y",
-        default=1080,
-        min=1,
-        update=auto_evaluate_if_enabled,
-    )
 
     @classmethod
     def poll(cls, ntree):
@@ -29,22 +17,24 @@ class FNOutputProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
+        sock = self.inputs.new('FNSocketInt', "Resolution X")
+        sock.value = 1920
+        sock = self.inputs.new('FNSocketInt', "Resolution Y")
+        sock.value = 1080
         self.outputs.new('FNSocketScene', "Scene")
-
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "resolution_x", text="Res X")
-        layout.prop(self, "resolution_y", text="Res Y")
 
     def process(self, context, inputs):
         scene = inputs.get("Scene")
         if scene:
+            res_x = inputs.get("Resolution X")
+            res_y = inputs.get("Resolution Y")
             mod = get_active_mod_item()
             if mod:
                 mod.store_original(scene.render, "resolution_x")
                 mod.store_original(scene.render, "resolution_y")
             try:
-                scene.render.resolution_x = self.resolution_x
-                scene.render.resolution_y = self.resolution_y
+                scene.render.resolution_x = res_x
+                scene.render.resolution_y = res_y
             except Exception:
                 pass
         return {"Scene": scene}
