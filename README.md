@@ -5,7 +5,7 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 ## Objetivos del MVP
 - Crear un nuevo `NodeTree` personalizado.
 - Implementar nodos básicos para leer y manipular datablocks.
-- Integrar una pila de *modificadores de archivo* a nivel global (`bpy.data`).
+- Integrar una pila de *modificadores de archivo* a nivel de `Scene`.
 
 ## Nodos principales
 - **Group Input**: expone datablocks del archivo actual.
@@ -19,7 +19,7 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 1. **NodeTree personalizado**: contenedor del grafo.
 2. **Nodos**: clases que heredan de `bpy.types.Node`.
 3. **Sockets**: tipos propios para listas de objetos, escenas, etc.
-4. **File Modifiers**: colección en `bpy.data` accesible desde cualquier escena.
+4. **File Modifiers**: colección en `Scene` que permite apilar varios grafos.
 
 ## Modelo de ejecución
 Los nodos se evalúan directamente sobre la escena activa. Antes de cada ejecución los modificadores restauran los valores originales que han guardado para mantener la no destructividad. Esto asegura que los mismos inputs producen siempre los mismos resultados.
