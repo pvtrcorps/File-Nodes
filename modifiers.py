@@ -60,32 +60,14 @@ class FileNodeModItem(PropertyGroup):
     eval_scene = None
 
     def clear_eval_data(self):
-        """Remove the temporary evaluation scene if it exists."""
+        """Remove duplicated datablocks created for evaluation."""
         if getattr(self, "eval_scene", None):
-            try:
-                bpy.data.scenes.remove(self.eval_scene)
-            except Exception:
-                pass
             self.eval_scene = None
 
     def prepare_eval_scene(self, scene):
         """Duplicate the given scene for evaluation."""
         self.clear_eval_data()
-        eval_scene = bpy.data.scenes.new(name=f"{scene.name}_FN_Eval")
-        # Copy basic settings that may affect node output
-        try:
-            eval_scene.unit_settings.system = scene.unit_settings.system
-            eval_scene.unit_settings.system_rotation = scene.unit_settings.system_rotation
-            eval_scene.unit_settings.scale_length = scene.unit_settings.scale_length
-            eval_scene.unit_settings.use_separate = scene.unit_settings.use_separate
-        except Exception:
-            pass
-        try:
-            eval_scene.render.engine = scene.render.engine
-        except Exception:
-            pass
-        eval_scene.world = scene.world
-        self.eval_scene = eval_scene
+        self.eval_scene = scene
 
     # --- Non destructive storage helpers ---
     def _ensure_storage(self):
@@ -117,16 +99,14 @@ class FileNodeModItem(PropertyGroup):
         # Remove dynamically linked objects/collections
         for coll, obj in storage.get("linked_objects", []):
             try:
-                c = bpy.data.collections.get(coll.name)
-                if c and c.objects.get(obj.name):
-                    c.objects.unlink(obj)
+                if coll.objects.get(obj.name):
+                    coll.objects.unlink(obj)
             except Exception:
                 pass
         for coll, child in storage.get("linked_collections", []):
             try:
-                c = bpy.data.collections.get(coll.name)
-                if c and c.children.get(child.name):
-                    c.children.unlink(child)
+                if coll.children.get(child.name):
+                    coll.children.unlink(child)
             except Exception:
                 pass
         for k, v in list(storage.items()):

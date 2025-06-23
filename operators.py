@@ -3,7 +3,6 @@ import bpy
 from .tree import FileNodesTree
 from bpy.types import Operator
 from collections import deque
-from types import SimpleNamespace
 from . import ADDON_NAME
 
 _active_mod_item = None
@@ -42,9 +41,8 @@ def evaluate_tree(context):
         if mod.enabled and mod.node_tree:
             mod.sync_inputs()
             mod.prepare_eval_scene(context.scene)
-            eval_ctx = SimpleNamespace(scene=mod.eval_scene)
             _active_mod_item = mod
-            _evaluate_tree(mod.node_tree, eval_ctx)
+            _evaluate_tree(mod.node_tree, context)
             _active_mod_item = None
             count += 1
     return count
