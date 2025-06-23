@@ -80,7 +80,8 @@ class FNCreateList(Node, FNBaseNode):
         self.item_count = 1
         self.inputs.new(single, f"{self.data_type.title()} 1")
         self.inputs.new('NodeSocketVirtual', "")
-        self.outputs.new(lst, f"{self.data_type.title()}s")
+        sock = self.outputs.new(lst, f"{self.data_type.title()}s")
+        sock.display_shape = 'SQUARE'
 
     def init(self, context):
         self.update_sockets()

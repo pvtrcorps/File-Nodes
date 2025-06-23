@@ -77,7 +77,8 @@ class FNGetItemByIndex(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         list_sock = _socket_list[self.data_type]
         single = _socket_single[self.data_type]
-        self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        sock = self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        sock.display_shape = 'SQUARE'
         self.outputs.new(single, self.data_type.title())
 
     def init(self, context):
