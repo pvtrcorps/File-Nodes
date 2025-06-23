@@ -13,10 +13,7 @@ class FILE_NODES_PT_global(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        project = getattr(bpy.data, "file_node_modifiers", None)
-        if not project or not hasattr(project, "modifiers"):
-            layout.label(text="File Nodes data not initialized")
-            return
+        project = bpy.data.file_node_modifiers
         layout.template_list("FILE_NODES_UL_modifiers", "", project, "modifiers", scene, "file_node_mod_index")
         row = layout.row(align=True)
         row.operator('file_nodes.mod_add', text="", icon='ADD')

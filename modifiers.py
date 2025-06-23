@@ -285,8 +285,6 @@ def register():
         bpy.utils.register_class(cls)
     bpy.types.BlendData.file_node_modifiers = bpy.props.PointerProperty(type=FileNodesProject)
     bpy.types.Scene.file_node_mod_index = bpy.props.IntProperty(default=0)
-    # Access once to ensure the property group instance is created
-    getattr(bpy.data, "file_node_modifiers")
 
 def unregister():
     del bpy.types.BlendData.file_node_modifiers
