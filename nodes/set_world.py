@@ -21,6 +21,9 @@ class FNSetWorld(Node, FNBaseNode):
         scene = inputs.get("Scene")
         world = inputs.get("World")
         if scene and world:
+            mod = get_active_mod_item()
+            if mod:
+                mod.store_original(scene, "world")
             scene.world = world
         return {"Scene": scene}
 
