@@ -27,14 +27,22 @@ class FNLinkToCollection(Node, FNBaseNode):
             for obj in objects:
                 if not obj:
                     continue
-                if not collection.objects.get(obj.name):
+                try:
+                    name = obj.name
+                except ReferenceError:
+                    continue  # Object was removed
+                if not collection.objects.get(name):
                     collection.objects.link(obj)
                     if mod:
                         mod.remember_object_link(collection, obj)
             for child in collections:
                 if not child:
                     continue
-                if not collection.children.get(child.name):
+                try:
+                    name = child.name
+                except ReferenceError:
+                    continue  # Collection was removed
+                if not collection.children.get(name):
                     collection.children.link(child)
                     if mod:
                         mod.remember_collection_link(collection, child)
