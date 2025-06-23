@@ -5,12 +5,20 @@ from bpy.types import NodeSocket
 ### Helpers ###
 def _color(r,g,b): return (r,g,b,1.0)
 
+# Draw helper for value sockets. When the socket is not linked and is an input,
+# expose its 'value' property so users can pick a value directly from the node.
+def _draw_value_socket(sock, layout, text, icon='NONE'):
+    if sock.is_output or sock.is_linked:
+        layout.label(text=text or sock.name, icon=icon)
+    else:
+        layout.prop(sock, 'value', text=text or sock.name, icon=icon)
+
 # Basic value sockets
 class FNSocketBool(NodeSocket):
     bl_idname = "FNSocketBool"
     bl_label = "Boolean"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='CHECKBOX_HLT')
+        _draw_value_socket(self, layout, text, 'CHECKBOX_HLT')
     def draw_color(self, context, node): return _color(0.8, 0.8, 0.2)
     value: bpy.props.BoolProperty()
 
@@ -18,7 +26,7 @@ class FNSocketFloat(NodeSocket):
     bl_idname = "FNSocketFloat"
     bl_label = "Float"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='PROP_FLOAT')
+        _draw_value_socket(self, layout, text, 'PROP_FLOAT')
     def draw_color(self, context, node): return _color(0.6, 0.8, 0.9)
     value: bpy.props.FloatProperty()
 
@@ -26,7 +34,7 @@ class FNSocketInt(NodeSocket):
     bl_idname = "FNSocketInt"
     bl_label = "Integer"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='SORTSIZE')
+        _draw_value_socket(self, layout, text, 'SORTSIZE')
     def draw_color(self, context, node): return _color(0.9, 0.7, 0.5)
     value: bpy.props.IntProperty()
 
@@ -34,7 +42,7 @@ class FNSocketString(NodeSocket):
     bl_idname = "FNSocketString"
     bl_label = "String"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='FONT_DATA')
+        _draw_value_socket(self, layout, text, 'FONT_DATA')
     def draw_color(self, context, node): return _color(0.7, 0.7, 0.7)
     value: bpy.props.StringProperty()
 
@@ -43,7 +51,7 @@ class FNSocketScene(NodeSocket):
     bl_idname = "FNSocketScene"
     bl_label = "Scene"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='SCENE_DATA')
+        _draw_value_socket(self, layout, text, 'SCENE_DATA')
     def draw_color(self, context, node): return _color(0.6,0.9,1.0)
     value: bpy.props.PointerProperty(type=bpy.types.Scene)
 
@@ -51,7 +59,7 @@ class FNSocketObject(NodeSocket):
     bl_idname = "FNSocketObject"
     bl_label = "Object"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='OBJECT_DATA')
+        _draw_value_socket(self, layout, text, 'OBJECT_DATA')
     # Use Blender's default orange object socket color
     def draw_color(self, context, node): return _color(0.93, 0.62, 0.36)
     value: bpy.props.PointerProperty(type=bpy.types.Object)
@@ -60,7 +68,7 @@ class FNSocketCollection(NodeSocket):
     bl_idname = "FNSocketCollection"
     bl_label = "Collection"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='OUTLINER_COLLECTION')
+        _draw_value_socket(self, layout, text, 'OUTLINER_COLLECTION')
     # Blender's default collection socket color is white
     def draw_color(self, context, node): return _color(0.96, 0.96, 0.96)
     value: bpy.props.PointerProperty(type=bpy.types.Collection)
@@ -69,7 +77,7 @@ class FNSocketCamera(NodeSocket):
     bl_idname = "FNSocketCamera"
     bl_label = "Camera"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='CAMERA_DATA')
+        _draw_value_socket(self, layout, text, 'CAMERA_DATA')
     def draw_color(self, context, node): return _color(0.8,0.6,0.4)
     value: bpy.props.PointerProperty(type=bpy.types.Camera)
 
@@ -77,7 +85,7 @@ class FNSocketImage(NodeSocket):
     bl_idname = "FNSocketImage"
     bl_label = "Image"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='IMAGE_DATA')
+        _draw_value_socket(self, layout, text, 'IMAGE_DATA')
     def draw_color(self, context, node): return _color(0.8,0.8,0.8)
     value: bpy.props.PointerProperty(type=bpy.types.Image)
 
@@ -85,7 +93,7 @@ class FNSocketLight(NodeSocket):
     bl_idname = "FNSocketLight"
     bl_label = "Light"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='LIGHT_DATA')
+        _draw_value_socket(self, layout, text, 'LIGHT_DATA')
     def draw_color(self, context, node): return _color(1.0,0.9,0.3)
     value: bpy.props.PointerProperty(type=bpy.types.Light)
 
@@ -93,7 +101,7 @@ class FNSocketMaterial(NodeSocket):
     bl_idname = "FNSocketMaterial"
     bl_label = "Material"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='MATERIAL_DATA')
+        _draw_value_socket(self, layout, text, 'MATERIAL_DATA')
     def draw_color(self, context, node): return _color(0.9,0.6,0.8)
     value: bpy.props.PointerProperty(type=bpy.types.Material)
 
@@ -101,7 +109,7 @@ class FNSocketMesh(NodeSocket):
     bl_idname = "FNSocketMesh"
     bl_label = "Mesh"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='MESH_DATA')
+        _draw_value_socket(self, layout, text, 'MESH_DATA')
     # Match geometry socket color used in Geometry Nodes (green)
     def draw_color(self, context, node): return _color(0.0, 0.84, 0.64)
     value: bpy.props.PointerProperty(type=bpy.types.Mesh)
@@ -110,7 +118,7 @@ class FNSocketNodeTree(NodeSocket):
     bl_idname = "FNSocketNodeTree"
     bl_label = "Node Tree"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='NODETREE')
+        _draw_value_socket(self, layout, text, 'NODETREE')
     def draw_color(self, context, node): return _color(0.7,0.9,0.7)
     value: bpy.props.PointerProperty(type=bpy.types.NodeTree)
 
@@ -118,7 +126,7 @@ class FNSocketText(NodeSocket):
     bl_idname = "FNSocketText"
     bl_label = "Text"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='TEXT')
+        _draw_value_socket(self, layout, text, 'TEXT')
     def draw_color(self, context, node): return _color(0.9,0.9,0.6)
     value: bpy.props.PointerProperty(type=bpy.types.Text)
 
@@ -126,7 +134,7 @@ class FNSocketWorkSpace(NodeSocket):
     bl_idname = "FNSocketWorkSpace"
     bl_label = "WorkSpace"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='WORKSPACE')
+        _draw_value_socket(self, layout, text, 'WORKSPACE')
     def draw_color(self, context, node): return _color(0.5,0.7,0.9)
     value: bpy.props.PointerProperty(type=bpy.types.WorkSpace)
 
@@ -134,7 +142,7 @@ class FNSocketWorld(NodeSocket):
     bl_idname = "FNSocketWorld"
     bl_label = "World"
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='WORLD')
+        _draw_value_socket(self, layout, text, 'WORLD')
     def draw_color(self, context, node): return _color(0.8,0.8,0.3)
     value: bpy.props.PointerProperty(type=bpy.types.World)
 
