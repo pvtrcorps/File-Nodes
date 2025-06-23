@@ -194,9 +194,21 @@ class FileNodeModItem(PropertyGroup):
         return getattr(inp, prop) if prop else None
 
 class FileNodesProject(PropertyGroup):
-    """Global storage for File Nodes data."""
+    """Storage for File Nodes data."""
 
     modifiers: bpy.props.CollectionProperty(type=FileNodeModItem)
+
+PROJECT_NODETREE_NAME = "FileNodesProjectData"
+
+def get_project_tree():
+    tree = bpy.data.node_groups.get(PROJECT_NODETREE_NAME)
+    if tree is None:
+        tree = bpy.data.node_groups.new(PROJECT_NODETREE_NAME, 'FileNodesTreeType')
+        tree.use_fake_user = True
+    return tree
+
+def get_project():
+    return get_project_tree().file_nodes_project
 
 
 class FILE_NODES_UL_modifiers(UIList):
@@ -214,7 +226,7 @@ class FN_OT_mod_add(Operator):
     bl_label = "Add File Node Modifier"
 
     def execute(self, context):
-        mods = bpy.data.file_node_modifiers.modifiers
+        mods = get_project().modifiers
         item = mods.add()
         tree = bpy.data.node_groups.new("File Nodes", 'FileNodesTreeType')
         tree.use_fake_user = True
@@ -241,7 +253,7 @@ class FN_OT_mod_remove(Operator):
     bl_label = "Remove File Node Modifier"
 
     def execute(self, context):
-        mods = bpy.data.file_node_modifiers.modifiers
+        mods = get_project().modifiers
         idx = context.scene.file_node_mod_index
         if 0 <= idx < len(mods):
             mods[idx].restore_and_clear()
@@ -258,7 +270,7 @@ class FN_OT_mod_move(Operator):
     direction: bpy.props.EnumProperty(items=[('UP','Up',''),('DOWN','Down','')])
 
     def execute(self, context):
-        mods = bpy.data.file_node_modifiers.modifiers
+        mods = get_project().modifiers
         idx = context.scene.file_node_mod_index
         if self.direction == 'UP' and idx > 0:
             mods.move(idx, idx-1)
@@ -283,13 +295,13 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.BlendData.file_node_modifiers = bpy.props.PointerProperty(type=FileNodesProject)
+    bpy.types.NodeTree.file_nodes_project = bpy.props.PointerProperty(type=FileNodesProject)
     bpy.types.Scene.file_node_mod_index = bpy.props.IntProperty(default=0)
-    # Access once to ensure the property group instance is created
-    getattr(bpy.data, "file_node_modifiers")
+    # Ensure the project tree exists and property instance is created
+    get_project()
 
 def unregister():
-    del bpy.types.BlendData.file_node_modifiers
+    del bpy.types.NodeTree.file_nodes_project
     del bpy.types.Scene.file_node_mod_index
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)

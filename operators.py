@@ -1,6 +1,7 @@
 
 import bpy
 from .tree import FileNodesTree
+from .modifiers import get_project
 from bpy.types import Operator
 from collections import deque
 from types import SimpleNamespace
@@ -34,7 +35,7 @@ def auto_evaluate_if_enabled(self=None, context=None):
 def evaluate_tree(context):
     global _active_mod_item
     count = 0
-    mods = sorted(bpy.data.file_node_modifiers.modifiers, key=lambda m: m.stack_index)
+    mods = sorted(get_project().modifiers, key=lambda m: m.stack_index)
     for mod in mods:
         mod.reset_to_originals()
 
