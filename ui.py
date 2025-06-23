@@ -1,7 +1,7 @@
 
 import bpy
 from bpy.types import Panel
-from .modifiers import FILE_NODES_UL_modifiers, FileNodeModItem, get_project
+from .modifiers import FILE_NODES_UL_modifiers, FileNodeModItem
 from . import ADDON_NAME
 
 class FILE_NODES_PT_global(Panel):
@@ -13,7 +13,7 @@ class FILE_NODES_PT_global(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        project = get_project()
+        project = getattr(bpy.data, "file_node_modifiers", None)
         if not project or not hasattr(project, "modifiers"):
             layout.label(text="File Nodes data not initialized")
             return
