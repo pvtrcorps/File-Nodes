@@ -16,8 +16,10 @@ class FNLinkToScene(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
-        self.inputs.new('FNSocketObjectList', "Objects")
-        self.inputs.new('FNSocketCollectionList', "Collections")
+        sock = self.inputs.new('FNSocketObjectList', "Objects")
+        sock.display_shape = 'SQUARE'
+        sock = self.inputs.new('FNSocketCollectionList', "Collections")
+        sock.display_shape = 'SQUARE'
         self.outputs.new('FNSocketScene', "Scene")
 
     def process(self, context, inputs):

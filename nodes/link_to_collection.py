@@ -14,8 +14,10 @@ class FNLinkToCollection(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketCollection', "Collection")
-        self.inputs.new('FNSocketObjectList', "Objects")
-        self.inputs.new('FNSocketCollectionList', "Collections")
+        sock = self.inputs.new('FNSocketObjectList', "Objects")
+        sock.display_shape = 'SQUARE'
+        sock = self.inputs.new('FNSocketCollectionList', "Collections")
+        sock.display_shape = 'SQUARE'
         self.outputs.new('FNSocketCollection', "Collection")
 
     def process(self, context, inputs):

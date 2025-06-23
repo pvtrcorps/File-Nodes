@@ -27,18 +27,30 @@ class FNReadBlendNode(Node, FNBaseNode):
         auto_evaluate_if_enabled(self, context)
 
     def init(self, context):
-        self.outputs.new('FNSocketSceneList', "Scenes")
-        self.outputs.new('FNSocketObjectList', "Objects")
-        self.outputs.new('FNSocketCollectionList', "Collections")
-        self.outputs.new('FNSocketWorldList', "Worlds")
-        self.outputs.new('FNSocketCameraList', "Cameras")
-        self.outputs.new('FNSocketImageList', "Images")
-        self.outputs.new('FNSocketLightList', "Lights")
-        self.outputs.new('FNSocketMaterialList', "Materials")
-        self.outputs.new('FNSocketMeshList', "Meshes")
-        self.outputs.new('FNSocketNodeTreeList', "NodeTrees")
-        self.outputs.new('FNSocketTextList', "Texts")
-        self.outputs.new('FNSocketWorkSpaceList', "WorkSpaces")
+        sock = self.outputs.new('FNSocketSceneList', "Scenes")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketObjectList', "Objects")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketCollectionList', "Collections")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketWorldList', "Worlds")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketCameraList', "Cameras")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketImageList', "Images")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketLightList', "Lights")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketMaterialList', "Materials")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketMeshList', "Meshes")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketNodeTreeList', "NodeTrees")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketTextList', "Texts")
+        sock.display_shape = 'SQUARE'
+        sock = self.outputs.new('FNSocketWorkSpaceList', "WorkSpaces")
+        sock.display_shape = 'SQUARE'
 
     def free(self):
         self._invalidate_cache()
