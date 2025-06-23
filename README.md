@@ -22,12 +22,13 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 4. **File Modifiers**: colección en `Scene` que permite apilar varios grafos.
 
 ## Modelo de ejecución
-Los nodos se evalúan de forma determinista sin almacenar estado entre ejecuciones. Antes de calcular cada grafo se restauran los valores originales de la escena. Esto asegura que los mismos inputs producen siempre los mismos resultados.
+Los nodos se evalúan directamente sobre la escena activa. Antes de cada ejecución los modificadores restauran los valores originales que han guardado para mantener la no destructividad. Esto asegura que los mismos inputs producen siempre los mismos resultados.
 
 ## Gestión de datablocks
 - Los datos externos se vinculan mediante *library linking* para mantener la no destructividad.
 - Se recomienda marcar los `NodeTree` con *Fake User* para no perderlos al cerrar el archivo.
 - Al desactivar un modificador se restauran los valores previos de la escena.
+- Durante la evaluación la escena se modifica en vivo pero se conservan copias internas para volver al estado previo en la siguiente ejecución.
 
 ## Requisitos
 - Blender 4.4 o superior.

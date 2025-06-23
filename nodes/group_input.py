@@ -51,10 +51,7 @@ class FNGroupInputNode(Node, FNBaseNode):
         mod = get_active_mod_item()
         for item in _interface_inputs(self.id_data):
             if item.name == "Scene":
-                if mod and getattr(mod, "eval_scene", None):
-                    outputs[item.name] = mod.eval_scene
-                else:
-                    outputs[item.name] = context.scene
+                outputs[item.name] = context.scene
             elif mod:
                 outputs[item.name] = mod.get_input_value(item.name)
             else:

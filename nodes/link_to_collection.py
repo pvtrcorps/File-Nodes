@@ -27,21 +27,17 @@ class FNLinkToCollection(Node, FNBaseNode):
             for obj in objects:
                 if not obj:
                     continue
-                target = obj
-                if mod:
-                    target = obj.copy()
-                    mod.eval_objects.append(target)
-                if not collection.objects.get(target.name):
-                    collection.objects.link(target)
+                if not collection.objects.get(obj.name):
+                    collection.objects.link(obj)
+                    if mod:
+                        mod.remember_object_link(collection, obj)
             for child in collections:
                 if not child:
                     continue
-                target = child
-                if mod:
-                    target = child.copy()
-                    mod.eval_collections.append(target)
-                if not collection.children.get(target.name):
-                    collection.children.link(target)
+                if not collection.children.get(child.name):
+                    collection.children.link(child)
+                    if mod:
+                        mod.remember_collection_link(collection, child)
         return {"Collection": collection}
 
 def register():
