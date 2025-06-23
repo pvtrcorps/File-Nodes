@@ -58,33 +58,16 @@ class FileNodeModItem(PropertyGroup):
 
     # -- Evaluation copies --
     eval_scene = None
-    eval_objects = None
-    eval_collections = None
 
     def clear_eval_data(self):
         """Remove duplicated datablocks created for evaluation."""
         if getattr(self, "eval_scene", None):
-            try:
-                bpy.data.scenes.remove(self.eval_scene)
-            except Exception:
-                pass
             self.eval_scene = None
-        for attr, datablock in [("eval_objects", bpy.data.objects),
-                                ("eval_collections", bpy.data.collections)]:
-            items = getattr(self, attr, None) or []
-            for it in items:
-                try:
-                    datablock.remove(it, do_unlink=True)
-                except Exception:
-                    pass
-            setattr(self, attr, [])
 
     def prepare_eval_scene(self, scene):
         """Duplicate the given scene for evaluation."""
         self.clear_eval_data()
-        self.eval_scene = scene.copy()
-        self.eval_objects = []
-        self.eval_collections = []
+        self.eval_scene = scene
 
     # --- Non destructive storage helpers ---
     def _ensure_storage(self):
@@ -101,6 +84,12 @@ class FileNodeModItem(PropertyGroup):
         key = (data.as_pointer(), attr)
         if key not in storage:
             storage[key] = (data, getattr(data, attr))
+
+    def remember_object_link(self, collection, obj):
+        self._ensure_storage()["linked_objects"].append((collection, obj))
+
+    def remember_collection_link(self, collection, child):
+        self._ensure_storage()["linked_collections"].append((collection, child))
 
     def reset_to_originals(self):
         self.clear_eval_data()
