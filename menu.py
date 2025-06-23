@@ -38,6 +38,23 @@ categories = [
         NodeItem('FNLinkToCollection'),
         NodeItem('FNSetWorldNode'),
     ]),
+    NodeCategory('FILE_NODES_PROPERTIES', 'Properties', items=[
+        NodeItem('FNSetRenderEngine'),
+        NodeItem('FNCyclesSceneProps'),
+        NodeItem('FNEeveeSceneProps'),
+        NodeItem('FNWorkbenchSceneProps'),
+        NodeItem('FNOutputProps'),
+        NodeItem('FNSceneProps'),
+        NodeItem('FNObjectProps'),
+        NodeItem('FNCyclesObjectProps'),
+        NodeItem('FNEeveeObjectProps'),
+        NodeItem('FNCollectionProps'),
+        NodeItem('FNWorldProps'),
+        NodeItem('FNCameraProps'),
+        NodeItem('FNLightProps'),
+        NodeItem('FNMeshProps'),
+        NodeItem('FNMaterialProps'),
+    ]),
 ]
 
 def register():
