@@ -114,7 +114,7 @@ class FNCreateList(Node, FNBaseNode):
                 len(self.inputs) - 2
             )
             self.item_count += 1
-            link.to_socket = new_sock
+            self.id_data.links.new(link.from_socket, new_sock)
             self._ensure_virtual()
             return True
         return False
