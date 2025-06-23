@@ -3,8 +3,11 @@ import bpy
 from nodeitems_utils import NodeCategory, NodeItem, register_node_categories, unregister_node_categories
 
 categories = [
-    NodeCategory('FILE_NODES_CATEGORY', 'File Nodes', items=[
+    NodeCategory('FILE_NODES_GROUP', 'Group', items=[
         NodeItem('FNGroupInputNode'),
+        NodeItem('FNGroupOutputNode'),
+    ]),
+    NodeCategory('FILE_NODES_INPUT', 'Input', items=[
         NodeItem('FNBoolInputNode'),
         NodeItem('FNFloatInputNode'),
         NodeItem('FNIntInputNode'),
@@ -21,14 +24,19 @@ categories = [
         NodeItem('FNNodeTreeInputNode'),
         NodeItem('FNTextInputNode'),
         NodeItem('FNWorkSpaceInputNode'),
+    ]),
+    NodeCategory('FILE_NODES_FILE', 'File', items=[
         NodeItem('FNReadBlendNode'),
+    ]),
+    NodeCategory('FILE_NODES_LIST', 'Lists', items=[
         NodeItem('FNCreateList'),
         NodeItem('FNGetItemByName'),
         NodeItem('FNGetItemByIndex'),
+    ]),
+    NodeCategory('FILE_NODES_SCENE', 'Scene', items=[
         NodeItem('FNLinkToScene'),
         NodeItem('FNLinkToCollection'),
         NodeItem('FNSetWorldNode'),
-        NodeItem('FNGroupOutputNode'),
     ]),
 ]
 
