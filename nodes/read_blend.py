@@ -8,6 +8,8 @@ from ..sockets import (
     FNSocketMeshList, FNSocketNodeTreeList, FNSocketTextList, FNSocketWorkSpaceList,
 )
 
+_blend_cache = {}
+
 class FNReadBlendNode(Node, FNBaseNode):
     @classmethod
     def poll(cls, ntree):
@@ -15,7 +17,14 @@ class FNReadBlendNode(Node, FNBaseNode):
     bl_idname = "FNReadBlendNode"
     bl_label = "Read Blend File"
 
-    filepath: bpy.props.StringProperty(subtype='FILE_PATH', update=auto_evaluate_if_enabled)
+    filepath: bpy.props.StringProperty(
+        subtype='FILE_PATH',
+        update=lambda self, context: self._filepath_update(context),
+    )
+
+    def _filepath_update(self, context):
+        self._invalidate_cache()
+        auto_evaluate_if_enabled(self, context)
 
     def init(self, context):
         self.outputs.new('FNSocketSceneList', "Scenes")
@@ -30,6 +39,15 @@ class FNReadBlendNode(Node, FNBaseNode):
         self.outputs.new('FNSocketNodeTreeList', "NodeTrees")
         self.outputs.new('FNSocketTextList', "Texts")
         self.outputs.new('FNSocketWorkSpaceList', "WorkSpaces")
+
+    def free(self):
+        self._invalidate_cache()
+
+    def _invalidate_cache(self, path=None):
+        path = path or getattr(self, "_cached_filepath", None)
+        if path:
+            _blend_cache.pop(path, None)
+            self._cached_filepath = None
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "filepath", text="")
@@ -52,7 +70,14 @@ class FNReadBlendNode(Node, FNBaseNode):
         abs_path = bpy.path.abspath(self.filepath)
         if not self.filepath or not os.path.isfile(abs_path):
             _warn("Invalid filepath")
+            self._cached_filepath = None
             return empty
+
+        cached = _blend_cache.get(abs_path)
+        if cached is not None:
+            self._cached_filepath = abs_path
+            return cached
+
         scenes_out, objects_out, collections_out, worlds_out = [], [], [], []
         cameras_out, images_out, lights_out = [], [], []
         materials_out, meshes_out, nodetrees_out = [], [], []
@@ -73,6 +98,7 @@ class FNReadBlendNode(Node, FNBaseNode):
                 data_to.workspaces = data_from.workspaces
         except Exception as e:
             _warn(f"Failed to load library: {e}")
+            self._cached_filepath = None
             return empty
         for s in data_to.scenes:
             scenes_out.append(s if isinstance(s, bpy.types.Scene) else bpy.data.scenes.get(s))
@@ -98,7 +124,7 @@ class FNReadBlendNode(Node, FNBaseNode):
             texts_out.append(txt if isinstance(txt, bpy.types.Text) else bpy.data.texts.get(txt))
         for ws in data_to.workspaces:
             workspaces_out.append(ws if isinstance(ws, bpy.types.WorkSpace) else bpy.data.workspaces.get(ws))
-        return {
+        result = {
             "Scenes": scenes_out,
             "Objects": objects_out,
             "Collections": collections_out,
@@ -112,6 +138,9 @@ class FNReadBlendNode(Node, FNBaseNode):
             "Texts": texts_out,
             "WorkSpaces": workspaces_out,
         }
+        _blend_cache[abs_path] = result
+        self._cached_filepath = abs_path
+        return result
 
 def register():
     bpy.utils.register_class(FNReadBlendNode)
