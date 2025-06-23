@@ -32,18 +32,26 @@ def auto_evaluate_if_enabled(self=None, context=None):
 ### Evaluator ###
 def evaluate_tree(context):
     global _active_mod_item
+    base_scene = context.window.scene
     count = 0
     mods = sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index)
     scene_in = context.scene
     for mod in mods:
+        try:
+            context.window.scene = base_scene
+        except Exception:
+            pass
         mod.reset_to_originals()
         if not mod.enabled:
             mod.clear_eval_data()
 
+    prev_mod = None
     for mod in mods:
         if mod.enabled and mod.node_tree:
             mod.sync_inputs()
             mod.prepare_eval_scene(scene_in)
+            if prev_mod:
+                prev_mod.clear_eval_data()
             _active_mod_item = mod
             original_scene = context.window.scene
             try:
@@ -57,9 +65,10 @@ def evaluate_tree(context):
                 pass
             _active_mod_item = None
             scene_in = mod.eval_scene
+            prev_mod = mod
             count += 1
     try:
-        context.window.scene = scene_in
+        context.window.scene = base_scene
     except Exception:
         pass
     return count
