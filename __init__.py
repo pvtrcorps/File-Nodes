@@ -4,7 +4,7 @@ bl_info = {
     "author": "ChatGPT (MVP generator)",
     "version": (0, 1, 0),
     "blender": (4, 4, 0),
-    "location": "Node Editor > File Nodes",
+    "location": "Node Editor > Sidebar > File Nodes",
     "description": "Prototype node-based file/scene management",
     "category": "Object",
 }

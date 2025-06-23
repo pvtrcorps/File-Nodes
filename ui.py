@@ -6,9 +6,9 @@ from . import ADDON_NAME
 
 class FILE_NODES_PT_global(Panel):
     bl_label = "File Nodes"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "scene"
+    bl_space_type = 'NODE_EDITOR'
+    bl_region_type = 'UI'
+    bl_category = 'File Nodes'
 
     def draw(self, context):
         layout = self.layout
