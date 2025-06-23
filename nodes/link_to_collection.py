@@ -25,17 +25,23 @@ class FNLinkToCollection(Node, FNBaseNode):
         if collection:
             mod = get_active_mod_item()
             for obj in objects:
-                if obj and not collection.objects.get(obj.name):
-                    collection.objects.link(obj)
-                    if mod:
-                        storage = mod._ensure_storage()
-                        storage['linked_objects'].append((collection, obj))
+                if not obj:
+                    continue
+                target = obj
+                if mod:
+                    target = obj.copy()
+                    mod.eval_objects.append(target)
+                if not collection.objects.get(target.name):
+                    collection.objects.link(target)
             for child in collections:
-                if child and not collection.children.get(child.name):
-                    collection.children.link(child)
-                    if mod:
-                        storage = mod._ensure_storage()
-                        storage['linked_collections'].append((collection, child))
+                if not child:
+                    continue
+                target = child
+                if mod:
+                    target = child.copy()
+                    mod.eval_collections.append(target)
+                if not collection.children.get(target.name):
+                    collection.children.link(target)
         return {"Collection": collection}
 
 def register():

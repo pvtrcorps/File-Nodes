@@ -28,17 +28,23 @@ class FNLinkToScene(Node, FNBaseNode):
             root = scene.collection
             mod = get_active_mod_item()
             for obj in objects:
-                if obj and not root.objects.get(obj.name):
-                    root.objects.link(obj)
-                    if mod:
-                        storage = mod._ensure_storage()
-                        storage['linked_objects'].append((root, obj))
+                if not obj:
+                    continue
+                target = obj
+                if mod:
+                    target = obj.copy()
+                    mod.eval_objects.append(target)
+                if not root.objects.get(target.name):
+                    root.objects.link(target)
             for coll in collections:
-                if coll and not root.children.get(coll.name):
-                    root.children.link(coll)
-                    if mod:
-                        storage = mod._ensure_storage()
-                        storage['linked_collections'].append((root, coll))
+                if not coll:
+                    continue
+                target = coll
+                if mod:
+                    target = coll.copy()
+                    mod.eval_collections.append(target)
+                if not root.children.get(target.name):
+                    root.children.link(target)
         return {"Scene": scene}
 
 def register():

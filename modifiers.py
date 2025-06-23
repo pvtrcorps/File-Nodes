@@ -56,6 +56,36 @@ class FileNodeModItem(PropertyGroup):
         self.sync_inputs()
         auto_evaluate_if_enabled(context)
 
+    # -- Evaluation copies --
+    eval_scene = None
+    eval_objects = None
+    eval_collections = None
+
+    def clear_eval_data(self):
+        """Remove duplicated datablocks created for evaluation."""
+        if getattr(self, "eval_scene", None):
+            try:
+                bpy.data.scenes.remove(self.eval_scene)
+            except Exception:
+                pass
+            self.eval_scene = None
+        for attr, datablock in [("eval_objects", bpy.data.objects),
+                                ("eval_collections", bpy.data.collections)]:
+            items = getattr(self, attr, None) or []
+            for it in items:
+                try:
+                    datablock.remove(it, do_unlink=True)
+                except Exception:
+                    pass
+            setattr(self, attr, [])
+
+    def prepare_eval_scene(self, scene):
+        """Duplicate the given scene for evaluation."""
+        self.clear_eval_data()
+        self.eval_scene = scene.copy()
+        self.eval_objects = []
+        self.eval_collections = []
+
     # --- Non destructive storage helpers ---
     def _ensure_storage(self):
         if not hasattr(self, "_original_values"):
@@ -73,6 +103,7 @@ class FileNodeModItem(PropertyGroup):
             storage[key] = (data, getattr(data, attr))
 
     def reset_to_originals(self):
+        self.clear_eval_data()
         storage = getattr(self, "_original_values", None)
         if not storage:
             return
@@ -108,6 +139,7 @@ class FileNodeModItem(PropertyGroup):
             for k in list(storage.keys()):
                 if isinstance(k, tuple):
                     storage.pop(k)
+        self.clear_eval_data()
 
     node_tree: bpy.props.PointerProperty(
         type=FileNodesTree,
