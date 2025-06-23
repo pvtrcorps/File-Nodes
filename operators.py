@@ -33,7 +33,7 @@ def auto_evaluate_if_enabled(self=None, context=None):
 def evaluate_tree(context):
     global _active_mod_item
     count = 0
-    mods = sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index)
+    mods = sorted(bpy.data.file_node_modifiers.modifiers, key=lambda m: m.stack_index)
     for mod in mods:
         mod.reset_to_originals()
 
