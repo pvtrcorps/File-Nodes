@@ -1,11 +1,11 @@
 import bpy, os, warnings
 from bpy.types import Node
-from ..operators import auto_evaluate_if_enabled
 from .base import FNBaseNode
 from ..sockets import (
     FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
     FNSocketCameraList, FNSocketImageList, FNSocketLightList, FNSocketMaterialList,
     FNSocketMeshList, FNSocketNodeTreeList, FNSocketTextList, FNSocketWorkSpaceList,
+    FNSocketString,
 )
 
 _blend_cache = {}
@@ -17,16 +17,9 @@ class FNReadBlendNode(Node, FNBaseNode):
     bl_idname = "FNReadBlendNode"
     bl_label = "Read Blend File"
 
-    filepath: bpy.props.StringProperty(
-        subtype='FILE_PATH',
-        update=lambda self, context: self._filepath_update(context),
-    )
-
-    def _filepath_update(self, context):
-        self._invalidate_cache()
-        auto_evaluate_if_enabled(self, context)
-
     def init(self, context):
+        sock = self.inputs.new('FNSocketString', "File Path")
+        sock.display_shape = 'SQUARE'
         sock = self.outputs.new('FNSocketSceneList', "Scenes")
         sock.display_shape = 'SQUARE'
         sock = self.outputs.new('FNSocketObjectList', "Objects")
@@ -61,9 +54,6 @@ class FNReadBlendNode(Node, FNBaseNode):
             _blend_cache.pop(path, None)
             self._cached_filepath = None
 
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "filepath", text="")
-
     def process(self, context, inputs):
         def _warn(msg):
             ntree = getattr(self, "node_tree", None)
@@ -79,8 +69,11 @@ class FNReadBlendNode(Node, FNBaseNode):
             "Meshes": [], "NodeTrees": [], "Texts": [], "WorkSpaces": [],
         }
 
-        abs_path = bpy.path.abspath(self.filepath)
-        if not self.filepath or not os.path.isfile(abs_path):
+        filepath = inputs.get("File Path", "") or ""
+        abs_path = bpy.path.abspath(filepath)
+        if filepath != getattr(self, "_cached_filepath", None):
+            self._invalidate_cache()
+        if not filepath or not os.path.isfile(abs_path):
             _warn("Invalid filepath")
             self._cached_filepath = None
             return empty
