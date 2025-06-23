@@ -13,15 +13,16 @@ class FILE_NODES_PT_global(Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        layout.template_list("FILE_NODES_UL_modifiers", "", scene, "file_node_modifiers", scene, "file_node_mod_index")
+        project = bpy.data.file_node_modifiers
+        layout.template_list("FILE_NODES_UL_modifiers", "", project, "modifiers", scene, "file_node_mod_index")
         row = layout.row(align=True)
         row.operator('file_nodes.mod_add', text="", icon='ADD')
         row.operator('file_nodes.mod_remove', text="", icon='REMOVE')
         row.operator('file_nodes.mod_move', text="", icon='TRIA_UP').direction = 'UP'
         row.operator('file_nodes.mod_move', text="", icon='TRIA_DOWN').direction = 'DOWN'
 
-        if 0 <= scene.file_node_mod_index < len(scene.file_node_modifiers):
-            mod = scene.file_node_modifiers[scene.file_node_mod_index]
+        if 0 <= scene.file_node_mod_index < len(project.modifiers):
+            mod = project.modifiers[scene.file_node_mod_index]
             box = layout.box()
             for inp in mod.inputs:
                 prop = inp.prop_name()
