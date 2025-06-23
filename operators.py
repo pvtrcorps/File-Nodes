@@ -76,10 +76,29 @@ def evaluate_tree(context):
 def _evaluate_tree(tree, context):
     resolved = {}
 
+    _list_to_single = {
+        'FNSocketSceneList': 'FNSocketScene',
+        'FNSocketObjectList': 'FNSocketObject',
+        'FNSocketCollectionList': 'FNSocketCollection',
+        'FNSocketWorldList': 'FNSocketWorld',
+        'FNSocketCameraList': 'FNSocketCamera',
+        'FNSocketImageList': 'FNSocketImage',
+        'FNSocketLightList': 'FNSocketLight',
+        'FNSocketMaterialList': 'FNSocketMaterial',
+        'FNSocketMeshList': 'FNSocketMesh',
+        'FNSocketNodeTreeList': 'FNSocketNodeTree',
+        'FNSocketTextList': 'FNSocketText',
+        'FNSocketWorkSpaceList': 'FNSocketWorkSpace',
+    }
+
     def eval_socket(sock):
         if sock.is_linked and sock.links:
             from_sock = sock.links[0].from_socket
-            return eval_node(from_sock.node)[from_sock.name]
+            value = eval_node(from_sock.node)[from_sock.name]
+            single = _list_to_single.get(sock.bl_idname)
+            if single and from_sock.bl_idname == single:
+                return [value] if value is not None else []
+            return value
         # Unlinked: return stored value if exists
         if hasattr(sock, 'value'):
             return sock.value
