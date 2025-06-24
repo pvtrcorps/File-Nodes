@@ -10,11 +10,17 @@ class FNJoinStrings(Node, FNBaseNode):
     bl_idname = "FNJoinStrings"
     bl_label = "Join Strings"
 
-    item_count: bpy.props.IntProperty(default=1)
+    # Start with two string inputs by default so users can immediately
+    # join at least two items without manually adding sockets.
+    item_count: bpy.props.IntProperty(default=2)
     separator: bpy.props.StringProperty(name="Separator", default="", update=auto_evaluate_if_enabled)
 
     def init(self, context):
+        # Provide two inputs by default to avoid crashes when the node
+        # is evaluated with an empty socket list. Users can add more
+        # sockets via the virtual socket as usual.
         self.inputs.new('FNSocketString', "String 1")
+        self.inputs.new('FNSocketString', "String 2")
         self.inputs.new('NodeSocketVirtual', "")
         self.outputs.new('FNSocketString', "String")
 
