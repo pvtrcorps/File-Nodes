@@ -13,6 +13,7 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 - **Read Blend File**: importa escenas, colecciones, objetos y mundos desde archivos externos.
 - **Import Alembic**: carga objetos desde archivos `.abc`.
 - **Create List**, **Get Item by Name** y **Get Item by Index**: operan sobre listas de datablocks.
+- **Join Strings** y **Split String**: operaciones básicas con cadenas.
 - **Link to Scene** y **Link to Collection**: añaden objetos o colecciones a otras estructuras.
 - **Set World to Scene**: ejemplo de nodo de acción que modifica una `Scene`.
 

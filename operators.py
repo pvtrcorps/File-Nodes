@@ -61,6 +61,7 @@ def _evaluate_tree(tree, context):
         'FNSocketMaterialList': 'FNSocketMaterial',
         'FNSocketMeshList': 'FNSocketMesh',
         'FNSocketNodeTreeList': 'FNSocketNodeTree',
+        'FNSocketStringList': 'FNSocketString',
         'FNSocketTextList': 'FNSocketText',
         'FNSocketWorkSpaceList': 'FNSocketWorkSpace',
     }
