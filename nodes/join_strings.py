@@ -42,7 +42,9 @@ class FNJoinStrings(Node, FNBaseNode):
         return {"String": joined}
 
     def insert_link(self, link):
-        if link.to_socket.node == self and link.to_socket.bl_idname == 'NodeSocketVirtual':
+        # Accessing link.to_socket.node can crash during link creation.
+        # Instead, compare with the last input socket directly.
+        if self.inputs and link.to_socket == self.inputs[-1] and link.to_socket.bl_idname == 'NodeSocketVirtual':
             idx = self.item_count + 1
             new_sock = self.inputs.new('FNSocketString', f"String {idx}")
             self.inputs.move(self.inputs.find(new_sock.name), len(self.inputs) - 2)
