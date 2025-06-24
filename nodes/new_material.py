@@ -1,27 +1,24 @@
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
-from ..sockets import FNSocketMaterial
-from ..operators import auto_evaluate_if_enabled
+from ..sockets import FNSocketMaterial, FNSocketString
 
 class FNNewMaterial(Node, FNBaseNode):
     bl_idname = "FNNewMaterial"
     bl_label = "New Material"
-
-    name: bpy.props.StringProperty(name="Name", default="Material", update=auto_evaluate_if_enabled)
 
     @classmethod
     def poll(cls, ntree):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
+        sock = self.inputs.new('FNSocketString', "Name")
+        sock.value = "Material"
         self.outputs.new('FNSocketMaterial', "Material")
 
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "name", text="Name")
-
     def process(self, context, inputs):
-        mat = bpy.data.materials.new(self.name)
+        name = inputs.get("Name") or "Material"
+        mat = bpy.data.materials.new(name)
         return {"Material": mat}
 
 

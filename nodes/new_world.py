@@ -1,27 +1,24 @@
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
-from ..sockets import FNSocketWorld
-from ..operators import auto_evaluate_if_enabled
+from ..sockets import FNSocketWorld, FNSocketString
 
 class FNNewWorld(Node, FNBaseNode):
     bl_idname = "FNNewWorld"
     bl_label = "New World"
-
-    name: bpy.props.StringProperty(name="Name", default="World", update=auto_evaluate_if_enabled)
 
     @classmethod
     def poll(cls, ntree):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
+        sock = self.inputs.new('FNSocketString', "Name")
+        sock.value = "World"
         self.outputs.new('FNSocketWorld', "World")
 
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "name", text="Name")
-
     def process(self, context, inputs):
-        world = bpy.data.worlds.new(self.name)
+        name = inputs.get("Name") or "World"
+        world = bpy.data.worlds.new(name)
         return {"World": world}
 
 

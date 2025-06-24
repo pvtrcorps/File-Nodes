@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import (
-    FNSocketObject, FNSocketMesh, FNSocketLight, FNSocketCamera
+    FNSocketObject, FNSocketMesh, FNSocketLight, FNSocketCamera, FNSocketString
 )
 from ..operators import auto_evaluate_if_enabled
 
@@ -16,8 +16,6 @@ _object_data_socket = {
 class FNNewObject(Node, FNBaseNode):
     bl_idname = "FNNewObject"
     bl_label = "New Object"
-
-    name: bpy.props.StringProperty(name="Name", default="Object", update=auto_evaluate_if_enabled)
     obj_type: bpy.props.EnumProperty(
         name="Type",
         items=[
@@ -33,6 +31,8 @@ class FNNewObject(Node, FNBaseNode):
     def update_sockets(self, context):
         while self.inputs:
             self.inputs.remove(self.inputs[-1])
+        name_sock = self.inputs.new('FNSocketString', "Name")
+        name_sock.value = "Object"
         if _object_data_socket[self.obj_type]:
             self.inputs.new(_object_data_socket[self.obj_type], "Data")
         while self.outputs:
@@ -48,18 +48,18 @@ class FNNewObject(Node, FNBaseNode):
         self.update_sockets(context)
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "name", text="Name")
         layout.prop(self, "obj_type", text="Type")
 
     def process(self, context, inputs):
         data = None
         if self.obj_type == 'MESH':
-            data = inputs.get("Data") or bpy.data.meshes.new(f"{self.name}Mesh")
+            data = inputs.get("Data") or bpy.data.meshes.new(f"{inputs.get('Name') or 'Object'}Mesh")
         elif self.obj_type == 'LIGHT':
-            data = inputs.get("Data") or bpy.data.lights.new(f"{self.name}Light", type='POINT')
+            data = inputs.get("Data") or bpy.data.lights.new(f"{inputs.get('Name') or 'Object'}Light", type='POINT')
         elif self.obj_type == 'CAMERA':
-            data = inputs.get("Data") or bpy.data.cameras.new(f"{self.name}Camera")
-        obj = bpy.data.objects.new(self.name, data)
+            data = inputs.get("Data") or bpy.data.cameras.new(f"{inputs.get('Name') or 'Object'}Camera")
+        name = inputs.get("Name") or "Object"
+        obj = bpy.data.objects.new(name, data)
         return {"Object": obj}
 
 
