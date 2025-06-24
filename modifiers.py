@@ -193,17 +193,9 @@ class FN_OT_mod_add(Operator):
         tree = bpy.data.node_groups.new("File Nodes", 'FileNodesTreeType')
         tree.use_fake_user = True
         iface = tree.interface
-        iface.new_socket(name="Scene", in_out='INPUT', socket_type='FNSocketScene')
-        iface.new_socket(name="Scene", in_out='OUTPUT', socket_type='FNSocketScene')
-        # Add default Group Input/Output nodes for new trees
+        # Add an empty Group Input node so users can create sockets later
         in_node = tree.nodes.new('FNGroupInputNode')
-        out_node = tree.nodes.new('FNGroupOutputNode')
         in_node.location = (-200, 0)
-        out_node.location = (200, 0)
-        in_sock = in_node.outputs.get('Scene')
-        out_sock = out_node.inputs.get('Scene')
-        if in_sock and out_sock:
-            tree.links.new(in_sock, out_sock)
         item.node_tree = tree
         item.name = tree.name
         item.stack_index = len(mods) - 1
