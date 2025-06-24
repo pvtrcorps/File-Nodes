@@ -66,7 +66,8 @@ class FNGroupOutputNode(Node, FNBaseNode):
             # Reuse the dragged link instead of creating a new one to
             # avoid potential crashes when Blender removes the temporary
             # link at the end of the operation.
-            link.to_socket = new_sock
+            tree.links.new(link.from_socket, new_sock)
+            tree.links.remove(link)
             self._ensure_virtual()
             return True
         return False
