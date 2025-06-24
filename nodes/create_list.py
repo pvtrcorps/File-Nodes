@@ -111,7 +111,10 @@ class FNCreateList(Node, FNBaseNode):
         return {output_name: lst}
 
     def insert_link(self, link):
-        if link.to_socket.node == self and link.to_socket.bl_idname == 'NodeSocketVirtual':
+        # Blender may crash if we access link.to_socket.node during link creation
+        # because the topology cache is not yet built. Compare sockets directly
+        # instead of accessing the owner node.
+        if self.inputs and link.to_socket == self.inputs[-1] and link.to_socket.bl_idname == 'NodeSocketVirtual':
             idx = self.item_count + 1
             new_sock = self.inputs.new(
                 _socket_single[self.data_type],
