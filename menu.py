@@ -28,6 +28,13 @@ categories = [
     NodeCategory('FILE_NODES_FILE', 'File', items=[
         NodeItem('FNReadBlendNode'),
     ]),
+    NodeCategory('FILE_NODES_NEW', 'New', items=[
+        NodeItem('FNNewScene'),
+        NodeItem('FNNewObject'),
+        NodeItem('FNNewCollection'),
+        NodeItem('FNNewWorld'),
+        NodeItem('FNNewMaterial'),
+    ]),
     NodeCategory('FILE_NODES_LIST', 'Lists', items=[
         NodeItem('FNCreateList'),
         NodeItem('FNGetItemByName'),
