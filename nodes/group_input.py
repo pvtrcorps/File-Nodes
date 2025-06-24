@@ -74,10 +74,9 @@ class FNGroupInputNode(Node, FNBaseNode):
             # avoid potential crashes when Blender removes the temporary
             # link at the end of the operation.
             tree.links.new(new_sock, link.to_socket)
-            tree.links.remove(link)
             self._ensure_virtual()
-            return True
-        return False
+            return None
+        return None
 
     def _ensure_virtual(self):
         if not self.outputs or self.outputs[-1].bl_idname != 'NodeSocketVirtual':
