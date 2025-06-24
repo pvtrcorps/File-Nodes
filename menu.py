@@ -27,6 +27,7 @@ categories = [
     ]),
     NodeCategory('FILE_NODES_FILE', 'File', items=[
         NodeItem('FNReadBlendNode'),
+        NodeItem('FNImportAlembicNode'),
     ]),
     NodeCategory('FILE_NODES_LIST', 'Lists', items=[
         NodeItem('FNCreateList'),

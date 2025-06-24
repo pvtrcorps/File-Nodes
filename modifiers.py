@@ -77,6 +77,8 @@ class FileNodeModItem(PropertyGroup):
             self._original_values["linked_objects"] = []
         if "linked_collections" not in self._original_values:
             self._original_values["linked_collections"] = []
+        if "imported_objects" not in self._original_values:
+            self._original_values["imported_objects"] = []
         return self._original_values
 
     def store_original(self, data, attr):
@@ -109,6 +111,11 @@ class FileNodeModItem(PropertyGroup):
                     coll.children.unlink(child)
             except Exception:
                 pass
+        for obj in storage.get("imported_objects", []):
+            try:
+                bpy.data.objects.remove(obj, do_unlink=True)
+            except Exception:
+                pass
         for k, v in list(storage.items()):
             if isinstance(k, tuple):
                 (ptr, attr) = k
@@ -124,6 +131,7 @@ class FileNodeModItem(PropertyGroup):
         if storage:
             storage.get("linked_objects", []).clear()
             storage.get("linked_collections", []).clear()
+            storage.get("imported_objects", []).clear()
             # remove key entries that hold property values
             for k in list(storage.keys()):
                 if isinstance(k, tuple):
