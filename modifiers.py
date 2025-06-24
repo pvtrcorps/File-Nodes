@@ -58,6 +58,7 @@ class FileNodeModItem(PropertyGroup):
 
     # -- Evaluation copies --
     eval_scene = None
+    scenes_to_keep = None
 
     def clear_eval_data(self):
         """Remove duplicated datablocks created for evaluation."""
@@ -68,6 +69,7 @@ class FileNodeModItem(PropertyGroup):
         """Duplicate the given scene for evaluation."""
         self.clear_eval_data()
         self.eval_scene = scene
+        self.scenes_to_keep = []
 
     # --- Non destructive storage helpers ---
     def _ensure_storage(self):
@@ -77,6 +79,8 @@ class FileNodeModItem(PropertyGroup):
             self._original_values["linked_objects"] = []
         if "linked_collections" not in self._original_values:
             self._original_values["linked_collections"] = []
+        if "new_scenes" not in self._original_values:
+            self._original_values["new_scenes"] = []
         return self._original_values
 
     def store_original(self, data, attr):
@@ -91,11 +95,21 @@ class FileNodeModItem(PropertyGroup):
     def remember_collection_link(self, collection, child):
         self._ensure_storage()["linked_collections"].append((collection, child))
 
+    def remember_created_scene(self, scene):
+        self._ensure_storage()["new_scenes"].append(scene)
+
     def reset_to_originals(self):
         self.clear_eval_data()
         storage = getattr(self, "_original_values", None)
         if not storage:
             return
+        keep_ids = {s.as_pointer() for s in getattr(self, "scenes_to_keep", []) if s}
+        for s in list(storage.get("new_scenes", [])):
+            try:
+                if s and s.as_pointer() not in keep_ids:
+                    bpy.data.scenes.remove(s)
+            except Exception:
+                pass
         # Remove dynamically linked objects/collections
         for coll, obj in storage.get("linked_objects", []):
             try:
@@ -113,6 +127,8 @@ class FileNodeModItem(PropertyGroup):
             if isinstance(k, tuple):
                 (ptr, attr) = k
                 data, value = v
+                if isinstance(data, bpy.types.Scene) and data.as_pointer() in keep_ids:
+                    continue
                 try:
                     setattr(data, attr, value)
                 except Exception:
@@ -124,11 +140,13 @@ class FileNodeModItem(PropertyGroup):
         if storage:
             storage.get("linked_objects", []).clear()
             storage.get("linked_collections", []).clear()
+            storage.get("new_scenes", []).clear()
             # remove key entries that hold property values
             for k in list(storage.keys()):
                 if isinstance(k, tuple):
                     storage.pop(k)
         self.clear_eval_data()
+        self.scenes_to_keep = []
 
     node_tree: bpy.props.PointerProperty(
         type=FileNodesTree,
