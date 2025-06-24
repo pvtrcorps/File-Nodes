@@ -15,7 +15,8 @@ class FNRenderScenesNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        self.inputs.new('FNSocketSceneList', "Scenes")
+        sock = self.inputs.new('FNSocketSceneList', "Scenes")
+        sock.display_shape = 'SQUARE'
 
     def draw_buttons(self, context, layout):
         layout.operator('file_nodes.render_scenes', text="Render Scenes")
@@ -34,7 +35,8 @@ class FNOutputScenesNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        self.inputs.new('FNSocketSceneList', "Scenes")
+        sock = self.inputs.new('FNSocketSceneList', "Scenes")
+        sock.display_shape = 'SQUARE'
 
     def process(self, context, inputs):
         scenes = inputs.get("Scenes") or []
