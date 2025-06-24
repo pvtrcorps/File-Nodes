@@ -34,6 +34,7 @@ categories = [
         NodeItem('FNNewCollection'),
         NodeItem('FNNewWorld'),
         NodeItem('FNNewMaterial'),
+        NodeItem('FNCollectionInstance'),
     ]),
     NodeCategory('FILE_NODES_LIST', 'Lists', items=[
         NodeItem('FNCreateList'),

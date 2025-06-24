@@ -12,6 +12,7 @@ from . import (
     cycles_object_props, eevee_object_props, collection_props,
     world_props, camera_props, light_props, mesh_props, material_props,
     new_scene, new_object, new_collection, new_world, new_material,
+    collection_instance,
 )
 
 _modules = [
@@ -24,6 +25,7 @@ _modules = [
     cycles_object_props, eevee_object_props, collection_props,
     world_props, camera_props, light_props, mesh_props, material_props,
     new_scene, new_object, new_collection, new_world, new_material,
+    collection_instance,
 ]
 
 def register():
