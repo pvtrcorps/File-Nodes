@@ -23,6 +23,7 @@ categories = [
         NodeItem('FNLinkToScene'),
         NodeItem('FNSetWorldNode'),
         NodeItem('FNSetRenderEngine'),
+        NodeItem('FNSetSceneName'),
         NodeItem('FNCyclesSceneProps'),
         NodeItem('FNEeveeSceneProps'),
         NodeItem('FNWorkbenchSceneProps'),
@@ -37,12 +38,14 @@ categories = [
         NodeItem('FNObjectProps'),
         NodeItem('FNCyclesObjectProps'),
         NodeItem('FNEeveeObjectProps'),
+        NodeItem('FNSetObjectName'),
     ]),
     NodeCategory('FILE_NODES_COLLECTION', 'Collection', items=[
         NodeItem('FNCollectionInputNode'),
         NodeItem('FNNewCollection'),
         NodeItem('FNLinkToCollection'),
         NodeItem('FNCollectionProps'),
+        NodeItem('FNSetCollectionName'),
     ]),
     NodeCategory('FILE_NODES_WORLD', 'World', items=[
         NodeItem('FNWorldInputNode'),
