@@ -3,7 +3,7 @@ from nodeitems_utils import NodeCategory, NodeItem, register_node_categories, un
 
 categories = [
     NodeCategory('FILE_NODES_GROUP', 'Group', items=[
-        NodeItem('FNGroupInputNode'),
+        NodeItem('FNGroupInputNode', label='Interface Input'),
         NodeItem('FNGroupOutputNode'),
     ]),
     NodeCategory('FILE_NODES_FILE', 'File', items=[
