@@ -10,6 +10,7 @@ from . import (
     workbench_scene_props, output_props, scene_props, object_props,
     cycles_object_props, eevee_object_props, collection_props,
     world_props, camera_props, light_props, mesh_props, material_props,
+    new_scene, new_object, new_collection, new_world, new_material,
 )
 
 _modules = [
@@ -20,6 +21,7 @@ _modules = [
     workbench_scene_props, output_props, scene_props, object_props,
     cycles_object_props, eevee_object_props, collection_props,
     world_props, camera_props, light_props, mesh_props, material_props,
+    new_scene, new_object, new_collection, new_world, new_material,
 ]
 
 def register():
