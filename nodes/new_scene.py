@@ -2,6 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketString
+from ..operators import get_active_mod_item
 
 class FNNewScene(Node, FNBaseNode):
     bl_idname = "FNNewScene"
@@ -19,6 +20,9 @@ class FNNewScene(Node, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Scene"
         scene = bpy.data.scenes.new(name)
+        mod = get_active_mod_item()
+        if mod:
+            mod.remember_created_scene(scene)
         return {"Scene": scene}
 
 
