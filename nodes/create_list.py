@@ -44,7 +44,10 @@ class FNCreateList(Node, FNBaseNode):
     bl_idname = "FNCreateList"
     bl_label = "Create List"
 
-    item_count: bpy.props.IntProperty(default=1)
+    # Provide two sockets by default plus a virtual socket so that
+    # newly added nodes can be used immediately without crashing when
+    # no real sockets exist.
+    item_count: bpy.props.IntProperty(default=2)
 
     data_type: bpy.props.EnumProperty(
         name="Type",
@@ -77,8 +80,12 @@ class FNCreateList(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         single = _socket_single[self.data_type]
         lst = _socket_list[self.data_type]
-        self.item_count = 1
+        # Two initial sockets are created to prevent crashes that
+        # occurred when only a single real socket existed. The
+        # virtual socket remains available for adding more.
+        self.item_count = 2
         self.inputs.new(single, f"{self.data_type.title()} 1")
+        self.inputs.new(single, f"{self.data_type.title()} 2")
         self.inputs.new('NodeSocketVirtual', "")
         sock = self.outputs.new(lst, f"{self.data_type.title()}s")
         sock.display_shape = 'SQUARE'
