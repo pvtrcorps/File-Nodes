@@ -54,10 +54,9 @@ class FNJoinStrings(Node, FNBaseNode):
             # link at the end of the operation.
             tree = self.id_data
             tree.links.new(link.from_socket, new_sock)
-            tree.links.remove(link)
             self._ensure_virtual()
-            return True
-        return False
+            return None
+        return None
 
     def _ensure_virtual(self):
         real_inputs = [s for s in self.inputs if s.bl_idname != 'NodeSocketVirtual']

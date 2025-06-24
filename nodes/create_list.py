@@ -130,10 +130,9 @@ class FNCreateList(Node, FNBaseNode):
             # is removed by Blender during the operation.
             tree = self.id_data
             tree.links.new(link.from_socket, new_sock)
-            tree.links.remove(link)
             self._ensure_virtual()
-            return True
-        return False
+            return None
+        return None
 
     def _ensure_virtual(self):
         if not self.inputs:
