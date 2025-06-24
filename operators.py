@@ -20,6 +20,71 @@ class FN_OT_evaluate_all(Operator):
         return {'FINISHED'}
 
 
+class FN_OT_render_scenes(Operator):
+    bl_idname = "file_nodes.render_scenes"
+    bl_label = "Render Scenes"
+
+    def execute(self, context):
+        node = context.active_node
+        if not isinstance(node, bpy.types.Node) or node.bl_idname != 'FNRenderScenesNode':
+            return {'CANCELLED'}
+
+        evaluate_tree(context)
+
+        tree = node.id_data
+        resolved = {}
+
+        _list_to_single = {
+            'FNSocketSceneList': 'FNSocketScene',
+            'FNSocketObjectList': 'FNSocketObject',
+            'FNSocketCollectionList': 'FNSocketCollection',
+            'FNSocketWorldList': 'FNSocketWorld',
+            'FNSocketCameraList': 'FNSocketCamera',
+            'FNSocketImageList': 'FNSocketImage',
+            'FNSocketLightList': 'FNSocketLight',
+            'FNSocketMaterialList': 'FNSocketMaterial',
+            'FNSocketMeshList': 'FNSocketMesh',
+            'FNSocketNodeTreeList': 'FNSocketNodeTree',
+            'FNSocketStringList': 'FNSocketString',
+            'FNSocketTextList': 'FNSocketText',
+            'FNSocketWorkSpaceList': 'FNSocketWorkSpace',
+        }
+
+        def eval_socket(sock):
+            if sock.is_linked and sock.links:
+                from_sock = sock.links[0].from_socket
+                value = eval_node(from_sock.node)[from_sock.name]
+                single = _list_to_single.get(sock.bl_idname)
+                if single and from_sock.bl_idname == single:
+                    return [value] if value is not None else []
+                return value
+            if hasattr(sock, 'value'):
+                return sock.value
+            return None
+
+        def eval_node(n):
+            if n in resolved:
+                return resolved[n]
+            inputs = {s.name: eval_socket(s) for s in n.inputs}
+            outputs = {}
+            if hasattr(n, 'process'):
+                outputs = n.process(context, inputs) or {}
+            for s in n.outputs:
+                outputs.setdefault(s.name, None)
+            resolved[n] = outputs
+            return outputs
+
+        scenes = eval_socket(node.inputs.get('Scenes')) or []
+        for sc in scenes:
+            if not sc:
+                continue
+            try:
+                bpy.ops.render.render('INVOKE_DEFAULT', scene=sc.name)
+            except Exception:
+                pass
+        return {'FINISHED'}
+
+
 def auto_evaluate_if_enabled(self=None, context=None):
     """Evaluate all file node trees if the preference is enabled."""
     if context is None and isinstance(self, bpy.types.Context):
@@ -100,6 +165,8 @@ def _evaluate_tree(tree, context):
 ### Registration ###
 def register():
     bpy.utils.register_class(FN_OT_evaluate_all)
+    bpy.utils.register_class(FN_OT_render_scenes)
 
 def unregister():
+    bpy.utils.unregister_class(FN_OT_render_scenes)
     bpy.utils.unregister_class(FN_OT_evaluate_all)

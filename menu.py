@@ -28,6 +28,8 @@ categories = [
         NodeItem('FNWorkbenchSceneProps'),
         NodeItem('FNOutputProps'),
         NodeItem('FNSceneProps'),
+        NodeItem('FNRenderScenesNode'),
+        NodeItem('FNOutputScenesNode'),
     ]),
     NodeCategory('FILE_NODES_OBJECT', 'Object', items=[
         NodeItem('FNObjectInputNode'),
