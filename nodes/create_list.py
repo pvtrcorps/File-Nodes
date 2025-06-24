@@ -136,15 +136,21 @@ class FNCreateList(Node, FNBaseNode):
     def _ensure_virtual(self):
         if not self.inputs:
             return
+
+        real_inputs = [s for s in self.inputs if s.bl_idname != 'NodeSocketVirtual']
+        type_name = self.data_type.title()
+        while len(real_inputs) > 2 and not (real_inputs[-1].is_linked or getattr(real_inputs[-1], 'value', None)):
+            self.inputs.remove(real_inputs[-1])
+            real_inputs.pop()
+            self.item_count -= 1
+
         if self.inputs[-1].bl_idname != 'NodeSocketVirtual':
             self.inputs.new('NodeSocketVirtual', "")
-        last = self.inputs[-1]
-        if last.is_linked or getattr(last, 'value', None):
-            idx = self.item_count + 1
-            last.name = f"{self.data_type.title()} {idx}"
-            self.inputs.new('NodeSocketVirtual', "")
-            self.item_count += 1
-        # ensure virtual socket stays last
+
+        for idx, sock in enumerate(real_inputs, 1):
+            sock.name = f"{type_name} {idx}"
+
+        self.item_count = len(real_inputs)
 
 def register():
     bpy.utils.register_class(FNCreateList)

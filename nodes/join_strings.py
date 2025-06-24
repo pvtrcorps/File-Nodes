@@ -58,14 +58,19 @@ class FNJoinStrings(Node, FNBaseNode):
         return False
 
     def _ensure_virtual(self):
+        real_inputs = [s for s in self.inputs if s.bl_idname != 'NodeSocketVirtual']
+        while len(real_inputs) > 2 and not (real_inputs[-1].is_linked or getattr(real_inputs[-1], 'value', None)):
+            self.inputs.remove(real_inputs[-1])
+            real_inputs.pop()
+            self.item_count -= 1
+
         if not self.inputs or self.inputs[-1].bl_idname != 'NodeSocketVirtual':
             self.inputs.new('NodeSocketVirtual', "")
-        last = self.inputs[-1]
-        if last.is_linked or getattr(last, 'value', None):
-            idx = self.item_count + 1
-            last.name = f"String {idx}"
-            self.inputs.new('NodeSocketVirtual', "")
-            self.item_count += 1
+
+        for idx, sock in enumerate(real_inputs, 1):
+            sock.name = f"String {idx}"
+
+        self.item_count = len(real_inputs)
 
 
 def register():
