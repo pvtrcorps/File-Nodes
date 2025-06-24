@@ -1,4 +1,3 @@
-
 import bpy
 from nodeitems_utils import NodeCategory, NodeItem, register_node_categories, unregister_node_categories
 
@@ -7,60 +6,81 @@ categories = [
         NodeItem('FNGroupInputNode'),
         NodeItem('FNGroupOutputNode'),
     ]),
-    NodeCategory('FILE_NODES_INPUT', 'Input', items=[
-        NodeItem('FNBoolInputNode'),
-        NodeItem('FNFloatInputNode'),
-        NodeItem('FNIntInputNode'),
-        NodeItem('FNStringInputNode'),
-        NodeItem('FNSceneInputNode'),
-        NodeItem('FNObjectInputNode'),
-        NodeItem('FNCollectionInputNode'),
-        NodeItem('FNWorldInputNode'),
-        NodeItem('FNCameraInputNode'),
-        NodeItem('FNImageInputNode'),
-        NodeItem('FNLightInputNode'),
-        NodeItem('FNMaterialInputNode'),
-        NodeItem('FNMeshInputNode'),
-        NodeItem('FNNodeTreeInputNode'),
-        NodeItem('FNTextInputNode'),
-        NodeItem('FNWorkSpaceInputNode'),
-    ]),
     NodeCategory('FILE_NODES_FILE', 'File', items=[
         NodeItem('FNReadBlendNode'),
-    ]),
-    NodeCategory('FILE_NODES_NEW', 'New', items=[
-        NodeItem('FNNewScene'),
-        NodeItem('FNNewObject'),
-        NodeItem('FNNewCollection'),
-        NodeItem('FNNewWorld'),
-        NodeItem('FNNewMaterial'),
+        NodeItem('FNImportAlembicNode'),
     ]),
     NodeCategory('FILE_NODES_LIST', 'Lists', items=[
         NodeItem('FNCreateList'),
         NodeItem('FNGetItemByName'),
         NodeItem('FNGetItemByIndex'),
+        NodeItem('FNJoinStrings'),
+        NodeItem('FNSplitString'),
     ]),
     NodeCategory('FILE_NODES_SCENE', 'Scene', items=[
+        NodeItem('FNSceneInputNode'),
+        NodeItem('FNNewScene'),
         NodeItem('FNLinkToScene'),
-        NodeItem('FNLinkToCollection'),
         NodeItem('FNSetWorldNode'),
-    ]),
-    NodeCategory('FILE_NODES_PROPERTIES', 'Properties', items=[
         NodeItem('FNSetRenderEngine'),
         NodeItem('FNCyclesSceneProps'),
         NodeItem('FNEeveeSceneProps'),
         NodeItem('FNWorkbenchSceneProps'),
         NodeItem('FNOutputProps'),
         NodeItem('FNSceneProps'),
+    ]),
+    NodeCategory('FILE_NODES_OBJECT', 'Object', items=[
+        NodeItem('FNObjectInputNode'),
+        NodeItem('FNNewObject'),
         NodeItem('FNObjectProps'),
         NodeItem('FNCyclesObjectProps'),
         NodeItem('FNEeveeObjectProps'),
+    ]),
+    NodeCategory('FILE_NODES_COLLECTION', 'Collection', items=[
+        NodeItem('FNCollectionInputNode'),
+        NodeItem('FNNewCollection'),
+        NodeItem('FNLinkToCollection'),
         NodeItem('FNCollectionProps'),
+    ]),
+    NodeCategory('FILE_NODES_WORLD', 'World', items=[
+        NodeItem('FNWorldInputNode'),
+        NodeItem('FNNewWorld'),
         NodeItem('FNWorldProps'),
-        NodeItem('FNCameraProps'),
-        NodeItem('FNLightProps'),
-        NodeItem('FNMeshProps'),
+    ]),
+    NodeCategory('FILE_NODES_MATERIAL', 'Material', items=[
+        NodeItem('FNMaterialInputNode'),
+        NodeItem('FNNewMaterial'),
         NodeItem('FNMaterialProps'),
+    ]),
+    NodeCategory('FILE_NODES_CAMERA', 'Camera', items=[
+        NodeItem('FNCameraInputNode'),
+        NodeItem('FNCameraProps'),
+    ]),
+    NodeCategory('FILE_NODES_LIGHT', 'Light', items=[
+        NodeItem('FNLightInputNode'),
+        NodeItem('FNLightProps'),
+    ]),
+    NodeCategory('FILE_NODES_MESH', 'Mesh', items=[
+        NodeItem('FNMeshInputNode'),
+        NodeItem('FNMeshProps'),
+    ]),
+    NodeCategory('FILE_NODES_IMAGE', 'Image', items=[
+        NodeItem('FNImageInputNode'),
+    ]),
+    NodeCategory('FILE_NODES_NODETREE', 'Node Tree', items=[
+        NodeItem('FNNodeTreeInputNode'),
+    ]),
+    NodeCategory('FILE_NODES_TEXT', 'Text', items=[
+        NodeItem('FNTextInputNode'),
+    ]),
+    NodeCategory('FILE_NODES_WORKSPACE', 'WorkSpace', items=[
+        NodeItem('FNWorkSpaceInputNode'),
+    ]),
+    NodeCategory('FILE_NODES_VALUES', 'Values', items=[
+        NodeItem('FNBoolInputNode'),
+        NodeItem('FNFloatInputNode'),
+        NodeItem('FNIntInputNode'),
+        NodeItem('FNStringInputNode'),
     ]),
 ]
 
