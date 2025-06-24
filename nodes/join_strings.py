@@ -47,7 +47,10 @@ class FNJoinStrings(Node, FNBaseNode):
             new_sock = self.inputs.new('FNSocketString', f"String {idx}")
             self.inputs.move(self.inputs.find(new_sock.name), len(self.inputs) - 2)
             self.item_count += 1
-            self.id_data.links.new(link.from_socket, new_sock)
+            # Reuse the dragged link instead of creating a new one to
+            # avoid potential crashes when Blender removes the temporary
+            # link at the end of the operation.
+            link.to_socket = new_sock
             self._ensure_virtual()
             return True
         return False
