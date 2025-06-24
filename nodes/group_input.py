@@ -13,7 +13,7 @@ def _interface_inputs(tree):
 
 class FNGroupInputNode(Node, FNBaseNode):
     bl_idname = "FNGroupInputNode"
-    bl_label = "Group Input"
+    bl_label = "Interface Input"
 
     @classmethod
     def poll(cls, ntree):

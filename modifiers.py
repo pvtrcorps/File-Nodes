@@ -211,7 +211,7 @@ class FN_OT_mod_add(Operator):
         tree = bpy.data.node_groups.new("File Nodes", 'FileNodesTreeType')
         tree.use_fake_user = True
         iface = tree.interface
-        # Add an empty Group Input node so users can create sockets later
+        # Add an empty Interface Input node so users can create sockets later
         in_node = tree.nodes.new('FNGroupInputNode')
         in_node.location = (-200, 0)
         item.node_tree = tree
