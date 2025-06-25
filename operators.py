@@ -1,6 +1,5 @@
 
 import bpy
-from .tree import FileNodesTree
 from bpy.types import Operator
 from . import ADDON_NAME
 
