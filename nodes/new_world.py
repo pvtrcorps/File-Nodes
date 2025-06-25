@@ -2,6 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketWorld, FNSocketString
+from ..operators import get_active_mod_item
 
 class FNNewWorld(Node, FNBaseNode):
     bl_idname = "FNNewWorld"
@@ -19,6 +20,9 @@ class FNNewWorld(Node, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "World"
         world = bpy.data.worlds.new(name)
+        mod = get_active_mod_item()
+        if mod:
+            mod.remember_created_id(world)
         return {"World": world}
 
 

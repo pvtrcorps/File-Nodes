@@ -4,7 +4,7 @@ from .base import FNBaseNode
 from ..sockets import (
     FNSocketObject, FNSocketMesh, FNSocketLight, FNSocketCamera, FNSocketString
 )
-from ..operators import auto_evaluate_if_enabled
+from ..operators import auto_evaluate_if_enabled, get_active_mod_item
 
 _object_data_socket = {
     'EMPTY': None,
@@ -52,14 +52,29 @@ class FNNewObject(Node, FNBaseNode):
 
     def process(self, context, inputs):
         data = None
+        created_data = None
         if self.obj_type == 'MESH':
-            data = inputs.get("Data") or bpy.data.meshes.new(f"{inputs.get('Name') or 'Object'}Mesh")
+            data = inputs.get("Data")
+            if not data:
+                data = bpy.data.meshes.new(f"{inputs.get('Name') or 'Object'}Mesh")
+                created_data = data
         elif self.obj_type == 'LIGHT':
-            data = inputs.get("Data") or bpy.data.lights.new(f"{inputs.get('Name') or 'Object'}Light", type='POINT')
+            data = inputs.get("Data")
+            if not data:
+                data = bpy.data.lights.new(f"{inputs.get('Name') or 'Object'}Light", type='POINT')
+                created_data = data
         elif self.obj_type == 'CAMERA':
-            data = inputs.get("Data") or bpy.data.cameras.new(f"{inputs.get('Name') or 'Object'}Camera")
+            data = inputs.get("Data")
+            if not data:
+                data = bpy.data.cameras.new(f"{inputs.get('Name') or 'Object'}Camera")
+                created_data = data
         name = inputs.get("Name") or "Object"
         obj = bpy.data.objects.new(name, data)
+        mod = get_active_mod_item()
+        if mod:
+            mod.remember_created_id(obj)
+            if created_data:
+                mod.remember_created_id(created_data)
         return {"Object": obj}
 
 
