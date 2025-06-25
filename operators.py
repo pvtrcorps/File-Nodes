@@ -164,15 +164,21 @@ def _evaluate_tree(tree, context):
         resolved[node] = outputs
         return outputs
 
-    for node in tree.nodes:
-        if node.bl_idname in output_types:
-            eval_node(node)
+    visited = set()
+
+    def traverse(node):
+        if node in visited:
+            return
+        visited.add(node)
+        eval_node(node)
+        for sock in node.inputs:
+            if sock.is_linked and sock.links:
+                from_node = sock.links[0].from_node
+                traverse(from_node)
 
     for node in tree.nodes:
         if node.bl_idname in output_types:
-            continue
-        if not node.outputs or not any(s.is_linked for s in node.outputs):
-            eval_node(node)
+            traverse(node)
 
 ### Registration ###
 def register():
