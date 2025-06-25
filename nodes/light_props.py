@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketLight, FNSocketFloat
-from ..operators import get_active_mod_item
+
 
 
 class FNLightProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNLightProps(Node, FNBaseNode):
         light = inputs.get("Light")
         if light:
             energy = inputs.get("Energy")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(light, "energy")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(light, "energy")
             try:
                 light.energy = energy
             except Exception:

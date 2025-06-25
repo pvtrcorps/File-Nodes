@@ -20,8 +20,8 @@ except Exception:  # pragma: no cover - allow running tests without bpy
 
 if bpy and __package__:
     import importlib
-    from . import tree, sockets, nodes, operators, ui, menu, modifiers
-    modules = [tree, sockets, nodes, operators, ui, menu, modifiers]
+    from . import tree, sockets, nodes, operators, ui, menu
+    modules = [tree, sockets, nodes, operators, ui, menu]
 else:  # Running outside Blender or without a package context
     modules = []
 

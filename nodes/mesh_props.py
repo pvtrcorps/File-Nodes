@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketMesh, FNSocketBool
-from ..operators import get_active_mod_item
+
 
 
 class FNMeshProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNMeshProps(Node, FNBaseNode):
         mesh = inputs.get("Mesh")
         if mesh:
             auto = inputs.get("Auto Smooth")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(mesh, "use_auto_smooth")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(mesh, "use_auto_smooth")
             try:
                 mesh.use_auto_smooth = auto
             except Exception:

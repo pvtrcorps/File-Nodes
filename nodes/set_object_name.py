@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketString
-from ..operators import get_active_mod_item
+
 
 
 class FNSetObjectName(Node, FNBaseNode):
@@ -23,9 +23,9 @@ class FNSetObjectName(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             name = inputs.get("Name") or ""
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(obj, "name")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(obj, "name")
             try:
                 obj.name = name
             except Exception:

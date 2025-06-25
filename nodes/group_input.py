@@ -2,7 +2,7 @@
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
-from ..operators import get_active_mod_item
+
 
 
 def _interface_inputs(tree):
@@ -48,12 +48,14 @@ class FNGroupInputNode(Node, FNBaseNode):
 
     def process(self, context, inputs):
         outputs = {}
-        mod = get_active_mod_item()
-        for item in _interface_inputs(self.id_data):
-            if mod:
-                outputs[item.name] = mod.get_input_value(item.name)
-            else:
-                outputs[item.name] = None
+        tree = getattr(self, "id_data", None)
+        ctx = getattr(tree, "fn_inputs", None) if tree else None
+        if tree:
+            for item in _interface_inputs(tree):
+                if ctx:
+                    outputs[item.name] = ctx.get_input_value(item.name)
+                else:
+                    outputs[item.name] = None
         return outputs
 
     def insert_link(self, link):

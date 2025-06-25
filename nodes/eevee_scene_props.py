@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
-from ..operators import get_active_mod_item
+
 
 
 class FNEeveeSceneProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNEeveeSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "eevee"):
             samples = inputs.get("Samples")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(scene.eevee, "taa_render_samples")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(scene.eevee, "taa_render_samples")
             try:
                 scene.eevee.taa_render_samples = samples
             except Exception:

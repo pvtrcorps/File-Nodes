@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketBool
-from ..operators import get_active_mod_item
+
 
 
 class FNCyclesObjectProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNCyclesObjectProps(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             holdout = inputs.get("Holdout")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(obj, "is_holdout")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(obj, "is_holdout")
             try:
                 obj.is_holdout = holdout
             except Exception:

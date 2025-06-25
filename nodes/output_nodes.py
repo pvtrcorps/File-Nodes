@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketSceneList
-from ..operators import get_active_mod_item
+
 
 
 class FNRenderScenesNode(Node, FNBaseNode):
@@ -40,9 +40,9 @@ class FNOutputScenesNode(Node, FNBaseNode):
 
     def process(self, context, inputs):
         scenes = inputs.get("Scenes") or []
-        mod = get_active_mod_item()
-        if mod:
-            mod.scenes_to_keep.extend([s for s in scenes if s])
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            ctx.scenes_to_keep.extend([s for s in scenes if s])
         return {}
 
 

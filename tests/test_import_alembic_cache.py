@@ -56,24 +56,7 @@ sys.modules['addon.sockets'] = _sockets
 _sockets.FNSocketObjectList = FNSocketObjectList
 _sockets.FNSocketString = FNSocketString
 
-_operators = pytypes.ModuleType('addon.operators')
-def get_active_mod_item():
-    return dummy_mod()
-_operators.get_active_mod_item = get_active_mod_item
-sys.modules['addon.operators'] = _operators
-
-# Fake context and modifier helpers
-class DummyMod:
-    def __init__(self):
-        self.created = []
-        self.links = []
-    def remember_object_link(self, collection, obj):
-        self.links.append((collection, obj))
-    def remember_created_id(self, data):
-        self.created.append(data)
-
-def dummy_mod():
-    return DummyMod()
+# Fake context helper
 
 def setup_module(module):
     global _context
@@ -91,8 +74,8 @@ class AlembicCacheTest(unittest.TestCase):
         ia.__package__ = 'addon.nodes'
         code = Path('nodes/import_alembic.py').read_text()
         exec(compile(code, 'nodes/import_alembic.py', 'exec'), ia.__dict__)
-        ia.get_active_mod_item = dummy_mod
         node = ia.FNImportAlembic.__new__(ia.FNImportAlembic)
+        node.id_data = pytypes.SimpleNamespace(fn_inputs=None)
         out1 = ia.FNImportAlembic.process(node, _context, {"File Path": "some.abc"})
         out2 = ia.FNImportAlembic.process(node, _context, {"File Path": "some.abc"})
         self.assertEqual(_bpy.ops.wm.call_count, 1)

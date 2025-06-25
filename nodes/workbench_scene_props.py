@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
-from ..operators import get_active_mod_item
+
 
 
 class FNWorkbenchSceneProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNWorkbenchSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "display"):
             samples = inputs.get("AA Samples")
-            mod = get_active_mod_item()
-            if mod and hasattr(scene.display, 'render_aa'):
-                mod.store_original(scene.display, 'render_aa')
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx and hasattr(scene.display, 'render_aa'):
+                ctx.store_original(scene.display, 'render_aa')
             try:
                 if hasattr(scene.display, 'render_aa'):
                     scene.display.render_aa = samples

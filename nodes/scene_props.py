@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
-from ..operators import get_active_mod_item
+
 
 
 class FNSceneProps(Node, FNBaseNode):
@@ -28,10 +28,10 @@ class FNSceneProps(Node, FNBaseNode):
         if scene:
             start = inputs.get("Start")
             end = inputs.get("End")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(scene, "frame_start")
-                mod.store_original(scene, "frame_end")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(scene, "frame_start")
+                ctx.store_original(scene, "frame_end")
             try:
                 scene.frame_start = start
                 scene.frame_end = end

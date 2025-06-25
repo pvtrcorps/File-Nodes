@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
-from ..operators import get_active_mod_item
+
 
 
 class FNCyclesSceneProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNCyclesSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "cycles"):
             samples = inputs.get("Samples")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(scene.cycles, "samples")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(scene.cycles, "samples")
             try:
                 scene.cycles.samples = samples
             except Exception:

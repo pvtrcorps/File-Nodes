@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketBool
-from ..operators import get_active_mod_item
+
 
 
 class FNEeveeObjectProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNEeveeObjectProps(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             shadow = inputs.get("Visible Shadow")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(obj, "visible_shadow")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(obj, "visible_shadow")
             try:
                 obj.visible_shadow = shadow
             except Exception:

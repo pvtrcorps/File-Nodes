@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketBool
-from ..operators import get_active_mod_item
+
 
 
 class FNObjectProps(Node, FNBaseNode):
@@ -28,10 +28,10 @@ class FNObjectProps(Node, FNBaseNode):
         if obj:
             hide_vp = inputs.get("Hide Viewport")
             hide_re = inputs.get("Hide Render")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(obj, "hide_viewport")
-                mod.store_original(obj, "hide_render")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(obj, "hide_viewport")
+                ctx.store_original(obj, "hide_render")
             try:
                 obj.hide_viewport = hide_vp
                 obj.hide_render = hide_re

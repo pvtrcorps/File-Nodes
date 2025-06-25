@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketString
-from ..operators import get_active_mod_item
+
 
 
 class FNSetRenderEngine(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNSetRenderEngine(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene:
             engine = inputs.get("Engine")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(scene.render, "engine")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(scene.render, "engine")
             try:
                 scene.render.engine = engine
             except Exception:
