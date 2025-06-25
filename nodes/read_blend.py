@@ -8,6 +8,8 @@ from ..sockets import (
     FNSocketString,
 )
 
+# Cache loaded libraries so repeated evaluations don't reload and
+# duplicate linked datablocks.
 _blend_cache = {}
 
 class FNReadBlendNode(Node, FNBaseNode):

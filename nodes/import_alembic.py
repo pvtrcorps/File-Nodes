@@ -5,6 +5,8 @@ from .base import FNBaseNode
 from ..sockets import FNSocketString, FNSocketObjectList
 from ..operators import get_active_mod_item
 
+_abc_cache = {}
+
 
 class FNImportAlembic(Node, FNBaseNode):
     bl_idname = "FNImportAlembicNode"
@@ -19,25 +21,51 @@ class FNImportAlembic(Node, FNBaseNode):
         sock = self.outputs.new('FNSocketObjectList', "Objects")
         sock.display_shape = 'SQUARE'
 
+    def free(self):
+        self._invalidate_cache()
+
+    def _invalidate_cache(self, path=None):
+        path = path or getattr(self, "_cached_filepath", None)
+        if path:
+            _abc_cache.pop(path, None)
+            self._cached_filepath = None
+
     def process(self, context, inputs):
         filepath = inputs.get("File Path") or ""
         abs_path = bpy.path.abspath(filepath)
+        if filepath != getattr(self, "_cached_filepath", None):
+            self._invalidate_cache()
         objects = []
-        if filepath:
-            scene = context.scene
-            before = set(scene.objects)
-            try:
-                bpy.ops.wm.alembic_import(filepath=abs_path)
-            except Exception:
-                return {"Objects": []}
-            for obj in scene.objects:
-                if obj not in before:
-                    objects.append(obj)
-            mod = get_active_mod_item()
-            if mod:
-                root = scene.collection
-                for obj in objects:
-                    mod.remember_object_link(root, obj)
+        if not filepath:
+            self._cached_filepath = None
+            return {"Objects": objects}
+
+        cached = _abc_cache.get(abs_path)
+        if cached is not None:
+            self._cached_filepath = abs_path
+            return {"Objects": cached}
+
+        scene = context.scene
+        before = set(scene.objects)
+        try:
+            bpy.ops.wm.alembic_import(filepath=abs_path)
+        except Exception:
+            self._cached_filepath = None
+            return {"Objects": objects}
+        for obj in scene.objects:
+            if obj not in before:
+                objects.append(obj)
+        mod = get_active_mod_item()
+        if mod:
+            root = scene.collection
+            for obj in objects:
+                mod.remember_object_link(root, obj)
+                mod.remember_created_id(obj)
+                data = getattr(obj, "data", None)
+                if data:
+                    mod.remember_created_id(data)
+        _abc_cache[abs_path] = objects
+        self._cached_filepath = abs_path
         return {"Objects": objects}
 
 
