@@ -100,6 +100,8 @@ def evaluate_tree(context):
     count = 0
     mods = sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index)
     for mod in mods:
+        # remove scenes from previous evaluations
+        mod.scenes_to_keep = []
         mod.reset_to_originals()
 
     for mod in mods:
@@ -131,6 +133,12 @@ def _evaluate_tree(tree, context):
         'FNSocketWorkSpaceList': 'FNSocketWorkSpace',
     }
 
+    output_types = {
+        'FNOutputScenesNode',
+        'FNRenderScenesNode',
+        'FNGroupOutputNode',
+    }
+
     def eval_socket(sock):
         if sock.is_linked and sock.links:
             from_sock = sock.links[0].from_socket
@@ -139,7 +147,6 @@ def _evaluate_tree(tree, context):
             if single and from_sock.bl_idname == single:
                 return [value] if value is not None else []
             return value
-        # Unlinked: return stored value if exists
         if hasattr(sock, 'value'):
             return sock.value
         return None
@@ -147,20 +154,25 @@ def _evaluate_tree(tree, context):
     def eval_node(node):
         if node in resolved:
             return resolved[node]
-        # Build inputs dict
-        inputs = {sock.name: eval_socket(sock) for sock in node.inputs}
+
+        inputs = {s.name: eval_socket(s) for s in node.inputs}
         outputs = {}
         if hasattr(node, 'process'):
             outputs = node.process(context, inputs) or {}
-        # Fall back: store each output as None if not provided
-        for sock in node.outputs:
-            outputs.setdefault(sock.name, None)
+        for s in node.outputs:
+            outputs.setdefault(s.name, None)
         resolved[node] = outputs
         return outputs
 
-    # Evaluate all nodes to resolve actions
-    for n in tree.nodes:
-        eval_node(n)
+    for node in tree.nodes:
+        if node.bl_idname in output_types:
+            eval_node(node)
+
+    for node in tree.nodes:
+        if node.bl_idname in output_types:
+            continue
+        if not node.outputs or not any(s.is_linked for s in node.outputs):
+            eval_node(node)
 
 ### Registration ###
 def register():
