@@ -1,10 +1,10 @@
 import bpy
 from bpy.types import Node
-from .base import FNBaseNode
+from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketScene, FNSocketString
 from ..operators import get_active_mod_item
 
-class FNNewScene(Node, FNBaseNode):
+class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewScene"
     bl_label = "New Scene"
 
@@ -17,9 +17,16 @@ class FNNewScene(Node, FNBaseNode):
         sock.value = "Scene"
         self.outputs.new('FNSocketScene', "Scene")
 
+    def free(self):
+        self._invalidate_cache()
+
     def process(self, context, inputs):
         name = inputs.get("Name") or "Scene"
+        cached = self.cache_get(name)
+        if cached is not None:
+            return {"Scene": cached}
         scene = bpy.data.scenes.new(name)
+        self.cache_store(name, scene)
         mod = get_active_mod_item()
         if mod:
             mod.remember_created_scene(scene)

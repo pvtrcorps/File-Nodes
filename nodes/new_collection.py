@@ -1,10 +1,10 @@
 import bpy
 from bpy.types import Node
-from .base import FNBaseNode
+from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketCollection, FNSocketString
 from ..operators import get_active_mod_item
 
-class FNNewCollection(Node, FNBaseNode):
+class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewCollection"
     bl_label = "New Collection"
 
@@ -17,9 +17,16 @@ class FNNewCollection(Node, FNBaseNode):
         sock.value = "Collection"
         self.outputs.new('FNSocketCollection', "Collection")
 
+    def free(self):
+        self._invalidate_cache()
+
     def process(self, context, inputs):
         name = inputs.get("Name") or "Collection"
+        cached = self.cache_get(name)
+        if cached is not None:
+            return {"Collection": cached}
         coll = bpy.data.collections.new(name)
+        self.cache_store(name, coll)
         mod = get_active_mod_item()
         if mod:
             mod.remember_created_id(coll)

@@ -13,35 +13,48 @@ bl_info = {
 # preferences without guessing the package string.
 ADDON_NAME = __name__
 
-import bpy
-import importlib
-from . import tree, sockets, nodes, operators, ui, menu, modifiers
+try:
+    import bpy
+except Exception:  # pragma: no cover - allow running tests without bpy
+    bpy = None
 
-modules = [tree, sockets, nodes, operators, ui, menu, modifiers]
+if bpy and __package__:
+    import importlib
+    from . import tree, sockets, nodes, operators, ui, menu, modifiers
+    modules = [tree, sockets, nodes, operators, ui, menu, modifiers]
+else:  # Running outside Blender or without a package context
+    modules = []
 
 
-class FileNodesPreferences(bpy.types.AddonPreferences):
-    bl_idname = ADDON_NAME
+if bpy and getattr(getattr(bpy, 'types', None), 'AddonPreferences', None):
+    class FileNodesPreferences(bpy.types.AddonPreferences):
+        bl_idname = ADDON_NAME
 
-    auto_evaluate: bpy.props.BoolProperty(
-        name="Auto Evaluate",
-        description="Automatically evaluate node trees when properties change",
-        default=False,
-    )
+        auto_evaluate: bpy.props.BoolProperty(
+            name="Auto Evaluate",
+            description="Automatically evaluate node trees when properties change",
+            default=False,
+        )
 
-    def draw(self, context):
-        layout = self.layout
-        layout.prop(self, "auto_evaluate")
+        def draw(self, context):
+            layout = self.layout
+            layout.prop(self, "auto_evaluate")
 
-def register():
-    bpy.utils.register_class(FileNodesPreferences)
-    for m in modules:
-        importlib.reload(m)
-        if hasattr(m, "register"):
-            m.register()
+    def register():
+        bpy.utils.register_class(FileNodesPreferences)
+        for m in modules:
+            importlib.reload(m)
+            if hasattr(m, "register"):
+                m.register()
 
-def unregister():
-    for m in reversed(modules):
-        if hasattr(m, "unregister"):
-            m.unregister()
-    bpy.utils.unregister_class(FileNodesPreferences)
+    def unregister():
+        for m in reversed(modules):
+            if hasattr(m, "unregister"):
+                m.unregister()
+        bpy.utils.unregister_class(FileNodesPreferences)
+else:  # pragma: no cover - noop if bpy is unavailable
+    def register():
+        pass
+
+    def unregister():
+        pass
