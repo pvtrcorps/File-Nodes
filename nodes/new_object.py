@@ -1,6 +1,6 @@
 import bpy
 from bpy.types import Node
-from .base import FNBaseNode
+from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
     FNSocketObject, FNSocketMesh, FNSocketLight, FNSocketCamera, FNSocketString
 )
@@ -13,7 +13,7 @@ _object_data_socket = {
     'CAMERA': 'FNSocketCamera',
 }
 
-class FNNewObject(Node, FNBaseNode):
+class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewObject"
     bl_label = "New Object"
     obj_type: bpy.props.EnumProperty(
@@ -50,6 +50,9 @@ class FNNewObject(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "obj_type", text="Type")
 
+    def free(self):
+        self._invalidate_cache()
+
     def process(self, context, inputs):
         data = None
         created_data = None
@@ -69,7 +72,12 @@ class FNNewObject(Node, FNBaseNode):
                 data = bpy.data.cameras.new(f"{inputs.get('Name') or 'Object'}Camera")
                 created_data = data
         name = inputs.get("Name") or "Object"
+        key = (self.obj_type, name, data)
+        cached = self.cache_get(key)
+        if cached is not None:
+            return {"Object": cached}
         obj = bpy.data.objects.new(name, data)
+        self.cache_store(key, obj)
         mod = get_active_mod_item()
         if mod:
             mod.remember_created_id(obj)
