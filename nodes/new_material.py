@@ -2,6 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketMaterial, FNSocketString
+from ..operators import get_active_mod_item
 
 class FNNewMaterial(Node, FNBaseNode):
     bl_idname = "FNNewMaterial"
@@ -19,6 +20,9 @@ class FNNewMaterial(Node, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Material"
         mat = bpy.data.materials.new(name)
+        mod = get_active_mod_item()
+        if mod:
+            mod.remember_created_id(mat)
         return {"Material": mat}
 
 

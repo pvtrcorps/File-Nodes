@@ -23,6 +23,7 @@ class FNNewScene(Node, FNBaseNode):
         mod = get_active_mod_item()
         if mod:
             mod.remember_created_scene(scene)
+            mod.remember_created_id(scene)
         return {"Scene": scene}
 
 

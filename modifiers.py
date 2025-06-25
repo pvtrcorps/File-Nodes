@@ -81,6 +81,8 @@ class FileNodeModItem(PropertyGroup):
             self._original_values["linked_collections"] = []
         if "new_scenes" not in self._original_values:
             self._original_values["new_scenes"] = []
+        if "created_ids" not in self._original_values:
+            self._original_values["created_ids"] = []
         return self._original_values
 
     def store_original(self, data, attr):
@@ -98,18 +100,50 @@ class FileNodeModItem(PropertyGroup):
     def remember_created_scene(self, scene):
         self._ensure_storage()["new_scenes"].append(scene)
 
+    def remember_created_id(self, data):
+        """Store a reference to a created ID datablock."""
+        if data:
+            self._ensure_storage()["created_ids"].append(data)
+
+    def _remove_id(self, data):
+        """Remove a datablock from bpy.data based on its type."""
+        try:
+            remove_map = {
+                bpy.types.Scene: bpy.data.scenes.remove,
+                bpy.types.Object: bpy.data.objects.remove,
+                bpy.types.Collection: bpy.data.collections.remove,
+                bpy.types.World: bpy.data.worlds.remove,
+                bpy.types.Material: bpy.data.materials.remove,
+                bpy.types.Mesh: bpy.data.meshes.remove,
+                bpy.types.Camera: bpy.data.cameras.remove,
+                bpy.types.Light: bpy.data.lights.remove,
+            }
+            fn = remove_map.get(type(data))
+            if fn:
+                fn(data)
+        except Exception:
+            pass
+
     def reset_to_originals(self):
         self.clear_eval_data()
         storage = getattr(self, "_original_values", None)
         if not storage:
             return
         keep_ids = {s.as_pointer() for s in getattr(self, "scenes_to_keep", []) if s}
-        for s in list(storage.get("new_scenes", [])):
+
+        new_ids = []
+        for id_data in list(storage.get("created_ids", [])):
+            if not id_data:
+                continue
             try:
-                if s and s.as_pointer() not in keep_ids:
-                    bpy.data.scenes.remove(s)
+                if isinstance(id_data, bpy.types.Scene) and id_data.as_pointer() in keep_ids:
+                    new_ids.append(id_data)
+                    continue
+                self._remove_id(id_data)
             except Exception:
                 pass
+        storage["created_ids"] = new_ids
+
         # Remove dynamically linked objects/collections
         for coll, obj in storage.get("linked_objects", []):
             try:
@@ -141,6 +175,7 @@ class FileNodeModItem(PropertyGroup):
             storage.get("linked_objects", []).clear()
             storage.get("linked_collections", []).clear()
             storage.get("new_scenes", []).clear()
+            storage.get("created_ids", []).clear()
             # remove key entries that hold property values
             for k in list(storage.keys()):
                 if isinstance(k, tuple):
