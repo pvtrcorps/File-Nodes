@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketCamera, FNSocketFloat
-from ..operators import get_active_mod_item
+
 
 
 class FNCameraProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNCameraProps(Node, FNBaseNode):
         cam = inputs.get("Camera")
         if cam:
             lens = inputs.get("Focal Length")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(cam, "lens")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(cam, "lens")
             try:
                 cam.lens = lens
             except Exception:

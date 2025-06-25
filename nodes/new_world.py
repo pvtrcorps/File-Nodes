@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketWorld, FNSocketString
-from ..operators import get_active_mod_item
+
 
 class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewWorld"
@@ -27,9 +27,9 @@ class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
             return {"World": cached}
         world = bpy.data.worlds.new(name)
         self.cache_store(name, world)
-        mod = get_active_mod_item()
-        if mod:
-            mod.remember_created_id(world)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            ctx.remember_created_id(world)
         return {"World": world}
 
 

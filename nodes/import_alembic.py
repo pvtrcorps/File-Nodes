@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketString, FNSocketObjectList
-from ..operators import get_active_mod_item
+
 
 _abc_cache = {}
 
@@ -55,15 +55,15 @@ class FNImportAlembic(Node, FNBaseNode):
         for obj in scene.objects:
             if obj not in before:
                 objects.append(obj)
-        mod = get_active_mod_item()
-        if mod:
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
             root = scene.collection
             for obj in objects:
-                mod.remember_object_link(root, obj)
-                mod.remember_created_id(obj)
+                ctx.remember_object_link(root, obj)
+                ctx.remember_created_id(obj)
                 data = getattr(obj, "data", None)
                 if data:
-                    mod.remember_created_id(data)
+                    ctx.remember_created_id(data)
         _abc_cache[abs_path] = objects
         self._cached_filepath = abs_path
         return {"Objects": objects}

@@ -4,7 +4,7 @@ from .base import FNBaseNode
 from ..sockets import (
     FNSocketScene, FNSocketObjectList, FNSocketCollectionList
 )
-from ..operators import get_active_mod_item
+
 
 class FNLinkToScene(Node, FNBaseNode):
     bl_idname = "FNLinkToScene"
@@ -28,7 +28,7 @@ class FNLinkToScene(Node, FNBaseNode):
         collections = inputs.get("Collections", []) or []
         if scene:
             root = scene.collection
-            mod = get_active_mod_item()
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
             for obj in objects:
                 if not obj:
                     continue
@@ -38,8 +38,8 @@ class FNLinkToScene(Node, FNBaseNode):
                     continue  # Object was removed
                 if not root.objects.get(name):
                     root.objects.link(obj)
-                    if mod:
-                        mod.remember_object_link(root, obj)
+                    if ctx:
+                        ctx.remember_object_link(root, obj)
             for coll in collections:
                 if not coll:
                     continue
@@ -49,8 +49,8 @@ class FNLinkToScene(Node, FNBaseNode):
                     continue  # Collection was removed
                 if not root.children.get(name):
                     root.children.link(coll)
-                    if mod:
-                        mod.remember_collection_link(root, coll)
+                    if ctx:
+                        ctx.remember_collection_link(root, coll)
         return {"Scene": scene}
 
 def register():

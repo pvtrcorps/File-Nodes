@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketObjectList, FNSocketCollectionList
-from ..operators import get_active_mod_item
+
 
 class FNLinkToCollection(Node, FNBaseNode):
     bl_idname = "FNLinkToCollection"
@@ -25,7 +25,7 @@ class FNLinkToCollection(Node, FNBaseNode):
         objects = inputs.get("Objects", []) or []
         collections = inputs.get("Collections", []) or []
         if collection:
-            mod = get_active_mod_item()
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
             for obj in objects:
                 if not obj:
                     continue
@@ -35,8 +35,8 @@ class FNLinkToCollection(Node, FNBaseNode):
                     continue  # Object was removed
                 if not collection.objects.get(name):
                     collection.objects.link(obj)
-                    if mod:
-                        mod.remember_object_link(collection, obj)
+                    if ctx:
+                        ctx.remember_object_link(collection, obj)
             for child in collections:
                 if not child:
                     continue
@@ -46,8 +46,8 @@ class FNLinkToCollection(Node, FNBaseNode):
                     continue  # Collection was removed
                 if not collection.children.get(name):
                     collection.children.link(child)
-                    if mod:
-                        mod.remember_collection_link(collection, child)
+                    if ctx:
+                        ctx.remember_collection_link(collection, child)
         return {"Collection": collection}
 
 def register():

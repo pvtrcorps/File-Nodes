@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketString
-from ..operators import get_active_mod_item
+
 
 
 class FNSetSceneName(Node, FNBaseNode):
@@ -23,9 +23,9 @@ class FNSetSceneName(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene:
             name = inputs.get("Name") or ""
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(scene, "name")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(scene, "name")
             try:
                 scene.name = name
             except Exception:

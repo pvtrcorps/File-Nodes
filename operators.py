@@ -2,13 +2,9 @@
 import bpy
 from .tree import FileNodesTree
 from bpy.types import Operator
-from collections import deque
 from . import ADDON_NAME
 
-_active_mod_item = None
-
-def get_active_mod_item():
-    return _active_mod_item
+_active_tree = None
 
 class FN_OT_evaluate_all(Operator):
     bl_idname = "file_nodes.evaluate"
@@ -96,21 +92,26 @@ def auto_evaluate_if_enabled(self=None, context=None):
 
 ### Evaluator ###
 def evaluate_tree(context):
-    global _active_mod_item
+    global _active_tree
     count = 0
-    mods = sorted(context.scene.file_node_modifiers, key=lambda m: m.stack_index)
-    for mod in mods:
-        # remove scenes from previous evaluations
-        mod.scenes_to_keep = []
-        mod.reset_to_originals()
+    trees = [t for t in bpy.data.node_groups
+             if isinstance(t, FileNodesTree) and getattr(t, "fn_enabled", True)]
+    trees = sorted(trees, key=lambda t: getattr(t, "fn_stack_index", 0))
 
-    for mod in mods:
-        if mod.enabled and mod.node_tree:
-            mod.sync_inputs()
-            mod.prepare_eval_scene(context.scene)
-            _active_mod_item = mod
-            _evaluate_tree(mod.node_tree, context)
-            _active_mod_item = None
+    for tree in trees:
+        ctx = getattr(tree, "fn_inputs", None)
+        if ctx:
+            ctx.scenes_to_keep = []
+            ctx.reset_to_originals()
+
+    for tree in trees:
+        ctx = getattr(tree, "fn_inputs", None)
+        if ctx:
+            ctx.sync_inputs(tree)
+            ctx.prepare_eval_scene(context.scene)
+            _active_tree = tree
+            _evaluate_tree(tree, context)
+            _active_tree = None
             count += 1
     return count
 

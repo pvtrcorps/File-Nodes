@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketMaterial, FNSocketBool
-from ..operators import get_active_mod_item
+
 
 
 class FNMaterialProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNMaterialProps(Node, FNBaseNode):
         mat = inputs.get("Material")
         if mat:
             use_nodes = inputs.get("Use Nodes")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(mat, "use_nodes")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(mat, "use_nodes")
             try:
                 mat.use_nodes = use_nodes
             except Exception:

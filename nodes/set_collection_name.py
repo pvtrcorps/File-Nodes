@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketString
-from ..operators import get_active_mod_item
+
 
 
 class FNSetCollectionName(Node, FNBaseNode):
@@ -23,9 +23,9 @@ class FNSetCollectionName(Node, FNBaseNode):
         coll = inputs.get("Collection")
         if coll:
             name = inputs.get("Name") or ""
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(coll, "name")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(coll, "name")
             try:
                 coll.name = name
             except Exception:

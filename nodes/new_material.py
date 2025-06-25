@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketMaterial, FNSocketString
-from ..operators import get_active_mod_item
+
 
 class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewMaterial"
@@ -27,9 +27,9 @@ class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
             return {"Material": cached}
         mat = bpy.data.materials.new(name)
         self.cache_store(name, mat)
-        mod = get_active_mod_item()
-        if mod:
-            mod.remember_created_id(mat)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            ctx.remember_created_id(mat)
         return {"Material": mat}
 
 

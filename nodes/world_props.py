@@ -3,7 +3,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketWorld, FNSocketBool
-from ..operators import get_active_mod_item
+
 
 
 class FNWorldProps(Node, FNBaseNode):
@@ -25,9 +25,9 @@ class FNWorldProps(Node, FNBaseNode):
         world = inputs.get("World")
         if world:
             use_nodes = inputs.get("Use Nodes")
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(world, "use_nodes")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(world, "use_nodes")
             try:
                 world.use_nodes = use_nodes
             except Exception:

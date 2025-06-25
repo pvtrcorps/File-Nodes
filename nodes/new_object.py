@@ -4,7 +4,7 @@ from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
     FNSocketObject, FNSocketMesh, FNSocketLight, FNSocketCamera, FNSocketString
 )
-from ..operators import auto_evaluate_if_enabled, get_active_mod_item
+from ..operators import auto_evaluate_if_enabled
 
 _object_data_socket = {
     'EMPTY': None,
@@ -78,11 +78,11 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
             return {"Object": cached}
         obj = bpy.data.objects.new(name, data)
         self.cache_store(key, obj)
-        mod = get_active_mod_item()
-        if mod:
-            mod.remember_created_id(obj)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            ctx.remember_created_id(obj)
             if created_data:
-                mod.remember_created_id(created_data)
+                ctx.remember_created_id(created_data)
         return {"Object": obj}
 
 

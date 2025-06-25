@@ -3,7 +3,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketWorld
-from ..operators import get_active_mod_item
+
 
 class FNSetWorld(Node, FNBaseNode):
     @classmethod
@@ -21,9 +21,9 @@ class FNSetWorld(Node, FNBaseNode):
         scene = inputs.get("Scene")
         world = inputs.get("World")
         if scene and world:
-            mod = get_active_mod_item()
-            if mod:
-                mod.store_original(scene, "world")
+            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            if ctx:
+                ctx.store_original(scene, "world")
             scene.world = world
         return {"Scene": scene}
 

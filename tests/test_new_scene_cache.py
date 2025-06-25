@@ -44,24 +44,7 @@ class FNSocketString: pass
 _sockets.FNSocketScene = FNSocketScene
 _sockets.FNSocketString = FNSocketString
 
-_operators = pytypes.ModuleType('addon.operators')
-def get_active_mod_item():
-    return dummy_mod()
-_operators.get_active_mod_item = get_active_mod_item
-sys.modules['addon.operators'] = _operators
 
-# Dummy modifier
-class DummyMod:
-    def __init__(self):
-        self.created = []
-        self.scenes = []
-    def remember_created_scene(self, sc):
-        self.scenes.append(sc)
-    def remember_created_id(self, data):
-        self.created.append(data)
-
-def dummy_mod():
-    return DummyMod()
 
 def setup_module(module):
     global _context
@@ -77,8 +60,8 @@ class NewSceneCacheTest(unittest.TestCase):
         ns.__package__ = 'addon.nodes'
         code = Path('nodes/new_scene.py').read_text()
         exec(compile(code, 'nodes/new_scene.py', 'exec'), ns.__dict__)
-        ns.get_active_mod_item = dummy_mod
         node = ns.FNNewScene.__new__(ns.FNNewScene)
+        node.id_data = pytypes.SimpleNamespace(fn_inputs=None)
         out1 = ns.FNNewScene.process(node, _context, {"Name": "Scene"})
         out2 = ns.FNNewScene.process(node, _context, {"Name": "Scene"})
         self.assertEqual(_bpy.data.scenes.call_count, 1)
