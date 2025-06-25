@@ -92,27 +92,28 @@ def auto_evaluate_if_enabled(self=None, context=None):
 
 ### Evaluator ###
 def evaluate_tree(context):
+    """Evaluate all File Nodes trees in the current blend file."""
     global _active_tree
     count = 0
-    trees = [t for t in bpy.data.node_groups
-             if isinstance(t, FileNodesTree) and getattr(t, "fn_enabled", True)]
-    trees = sorted(trees, key=lambda t: getattr(t, "fn_stack_index", 0))
 
-    for tree in trees:
+    for tree in bpy.data.node_groups:
+        if getattr(tree, "bl_idname", "") != "FileNodesTreeType":
+            continue
+        if not getattr(tree, "fn_enabled", True):
+            continue
+
         ctx = getattr(tree, "fn_inputs", None)
         if ctx:
             ctx.scenes_to_keep = []
             ctx.reset_to_originals()
-
-    for tree in trees:
-        ctx = getattr(tree, "fn_inputs", None)
-        if ctx:
             ctx.sync_inputs(tree)
             ctx.prepare_eval_scene(context.scene)
-            _active_tree = tree
-            _evaluate_tree(tree, context)
-            _active_tree = None
-            count += 1
+
+        _active_tree = tree
+        _evaluate_tree(tree, context)
+        _active_tree = None
+        count += 1
+
     return count
 
 def _evaluate_tree(tree, context):
