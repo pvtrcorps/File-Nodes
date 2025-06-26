@@ -201,7 +201,6 @@ class FileNodesTree(NodeTree):
     bl_use_group_interface = True
 
     fn_enabled: bpy.props.BoolProperty(name='Enabled', default=True)
-    fn_stack_index: bpy.props.IntProperty(name='Stack Index', default=0, min=0)
     fn_inputs: bpy.props.PointerProperty(type=FileNodesTreeInputs)
 
     # Poll: always available
