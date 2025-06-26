@@ -5,7 +5,6 @@ categories = [
     NodeCategory('FILE_NODES_GROUP', 'Group', items=[
         NodeItem('FNGroupInputNode', label='Interface Input'),
         NodeItem('FNGroupOutputNode'),
-        NodeItem('FNGroupNode'),
     ]),
     NodeCategory('FILE_NODES_FILE', 'File', items=[
         NodeItem('FNReadBlendNode'),

@@ -17,7 +17,6 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 - **Link to Scene** y **Link to Collection**: añaden objetos o colecciones a otras estructuras.
 - **Set World to Scene**: ejemplo de nodo de acción que modifica una `Scene`.
 - **Set Scene Name**, **Set Collection Name** y **Set Object Name**: renombran escenas, colecciones y objetos.
-- **Group**: permite encapsular varios nodos en un `FNGroupNode` para organizar el grafo.
 
 ## Arquitectura general
 1. **NodeTree personalizado**: contenedor del grafo.
