@@ -130,9 +130,10 @@ class FNCreateList(Node, FNBaseNode):
             # without errors.
             tree = self.id_data
             tree.links.new(link.from_socket, new_sock)
-            # Remove Blender's temporary link if it exists to avoid runtime
-            # errors when Blender has not added the link to the tree yet.
-            if link in tree.links:
+            # Remove Blender's temporary link if it exists. Some Blender
+            # versions raise a TypeError when using `link in tree.links`, so
+            # check membership manually.
+            if any(l is link for l in tree.links):
                 tree.links.remove(link)
             self._ensure_virtual()
             return {'FINISHED'}
