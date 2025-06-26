@@ -75,8 +75,10 @@ class FNGroupInputNode(Node, FNBaseNode):
             # Reuse the dragged link, remove Blender's temporary one and
             # return a success status so no additional link is created.
             tree.links.new(new_sock, link.to_socket)
-            # Remove the temporary link if it exists to prevent errors
-            if link in tree.links:
+            # Remove the temporary link if it exists. Some Blender versions
+            # raise TypeError when checking membership with `in`, so check
+            # manually using object identity.
+            if any(l is link for l in tree.links):
                 tree.links.remove(link)
             self._ensure_virtual()
             return {'FINISHED'}
