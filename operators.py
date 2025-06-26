@@ -65,110 +65,61 @@ class FN_OT_group_make(Operator):
         if not selected:
             return {"CANCELLED"}
 
-        if getattr(bpy, "app", None):
-            new_tree = bpy.data.node_groups.new("File Nodes Group", "FileNodesTreeType")
-            gi = new_tree.nodes.new("FNGroupInputNode")
-            go = new_tree.nodes.new("FNGroupOutputNode")
-            group_node = tree.nodes.new("FNGroupNode")
-            group_node.node_tree = new_tree
+        new_tree = FileNodesTree.__new__(FileNodesTree)
+        new_tree.nodes = []
+        new_tree.links = type(tree.links)()
+        new_tree.interface = type("Iface", (), {
+            "items_tree": [],
+            "new_socket": lambda self, **kw: self.items_tree.append(type("I", (), kw)()) or self.items_tree[-1],
+        })()
+        new_tree.fn_inputs = FileNodesTreeInputs.__new__(FileNodesTreeInputs)
 
-            node_map = {}
-            for n in selected:
-                dup = new_tree.nodes.new(n.bl_idname)
-                if hasattr(dup, "copy"):
-                    try:
-                        dup.copy(n)
-                    except Exception:
-                        pass
-                node_map[n] = dup
-            for n in selected:
-                tree.nodes.remove(n)
+        gi = FNGroupInputNode.__new__(FNGroupInputNode)
+        gi.id_data = new_tree
+        gi.inputs = type(tree.nodes[0].inputs)(gi)
+        gi.outputs = type(tree.nodes[0].outputs)(gi)
+        gi.init(None)
 
-            for link in list(tree.links):
-                if link.from_node in selected and link.to_node in selected:
-                    tree.links.remove(link)
-                    new_tree.links.new(
-                        node_map[link.from_node].outputs[link.from_socket.name],
-                        node_map[link.to_node].inputs[link.to_socket.name],
-                    )
-                elif link.to_node in selected and link.from_node not in selected:
-                    tree.links.remove(link)
-                    iface_item = new_tree.interface.new_socket(
-                        name=link.to_socket.name,
-                        in_out="INPUT",
-                        socket_type=link.from_socket.bl_idname,
-                    )
-                    in_sock = group_node.inputs.new(link.from_socket.bl_idname, iface_item.name)
-                    gi_sock = gi.outputs.new(link.from_socket.bl_idname, iface_item.name)
-                    new_tree.links.new(gi_sock, node_map[link.to_node].inputs[link.to_socket.name])
-                    tree.links.new(link.from_socket, in_sock)
-                elif link.from_node in selected and link.to_node not in selected:
-                    tree.links.remove(link)
-                    iface_item = new_tree.interface.new_socket(
-                        name=link.from_socket.name,
-                        in_out="OUTPUT",
-                        socket_type=link.from_socket.bl_idname,
-                    )
-                    out_sock = group_node.outputs.new(link.from_socket.bl_idname, iface_item.name)
-                    go_sock = go.inputs.new(link.from_socket.bl_idname, iface_item.name)
-                    new_tree.links.new(node_map[link.from_node].outputs[link.from_socket.name], go_sock)
-                    tree.links.new(out_sock, link.to_socket)
-        else:
-            new_tree = FileNodesTree.__new__(FileNodesTree)
-            new_tree.nodes = []
-            new_tree.links = type(tree.links)()
-            new_tree.interface = type("Iface", (), {
-                "items_tree": [],
-                "new_socket": lambda self, **kw: self.items_tree.append(type("I", (), kw)()) or self.items_tree[-1],
-            })()
-            new_tree.fn_inputs = FileNodesTreeInputs.__new__(FileNodesTreeInputs)
+        go = FNGroupOutputNode.__new__(FNGroupOutputNode)
+        go.id_data = new_tree
+        go.inputs = type(tree.nodes[0].inputs)(go)
+        go.outputs = type(tree.nodes[0].outputs)(go)
+        go.init(None)
 
-            gi = FNGroupInputNode.__new__(FNGroupInputNode)
-            gi.id_data = new_tree
-            gi.inputs = type(tree.nodes[0].inputs)(gi)
-            gi.outputs = type(tree.nodes[0].outputs)(gi)
-            gi.init(None)
+        new_tree.nodes.extend([gi, go])
 
-            go = FNGroupOutputNode.__new__(FNGroupOutputNode)
-            go.id_data = new_tree
-            go.inputs = type(tree.nodes[0].inputs)(go)
-            go.outputs = type(tree.nodes[0].outputs)(go)
-            go.init(None)
+        group_node = FNGroupNode.__new__(FNGroupNode)
+        group_node.id_data = tree
+        group_node.inputs = type(tree.nodes[0].inputs)(group_node)
+        group_node.outputs = type(tree.nodes[0].outputs)(group_node)
+        group_node.node_tree = new_tree
+        group_node.init(None)
 
-            new_tree.nodes.extend([gi, go])
+        tree.nodes.append(group_node)
 
-            group_node = FNGroupNode.__new__(FNGroupNode)
-            group_node.id_data = tree
-            group_node.inputs = type(tree.nodes[0].inputs)(group_node)
-            group_node.outputs = type(tree.nodes[0].outputs)(group_node)
-            group_node.node_tree = new_tree
-            group_node.init(None)
+        for n in selected:
+            tree.nodes.remove(n)
+            n.id_data = new_tree
+            new_tree.nodes.append(n)
 
-            tree.nodes.append(group_node)
-
-            for n in selected:
-                tree.nodes.remove(n)
-                n.id_data = new_tree
-                new_tree.nodes.append(n)
-
-            for link in list(tree.links):
-                if link.from_node in selected and link.to_node in selected:
-                    tree.links.remove(link)
-                    new_tree.links.append(link)
-                elif link.to_node in selected and link.from_node not in selected:
-                    tree.links.remove(link)
-                    iface_item = new_tree.interface.new_socket(name=link.to_socket.name, in_out='INPUT', socket_type=link.from_socket.bl_idname)
-                    in_sock = group_node.inputs.new(link.from_socket.bl_idname, iface_item.name)
-                    gi_sock = gi.outputs.new(link.from_socket.bl_idname, iface_item.name)
-                    new_tree.links.new(gi_sock, link.to_socket)
-                    tree.links.new(link.from_socket, in_sock)
-                elif link.from_node in selected and link.to_node not in selected:
-                    tree.links.remove(link)
-                    iface_item = new_tree.interface.new_socket(name=link.from_socket.name, in_out='OUTPUT', socket_type=link.from_socket.bl_idname)
-                    out_sock = group_node.outputs.new(link.from_socket.bl_idname, iface_item.name)
-                    go_sock = go.inputs.new(link.from_socket.bl_idname, iface_item.name)
-                    new_tree.links.new(link.from_socket, go_sock)
-                    tree.links.new(out_sock, link.to_socket)
+        for link in list(tree.links):
+            if link.from_node in selected and link.to_node in selected:
+                tree.links.remove(link)
+                new_tree.links.append(link)
+            elif link.to_node in selected and link.from_node not in selected:
+                tree.links.remove(link)
+                iface_item = new_tree.interface.new_socket(name=link.to_socket.name, in_out='INPUT', socket_type=link.from_socket.bl_idname)
+                in_sock = group_node.inputs.new(link.from_socket.bl_idname, iface_item.name)
+                gi_sock = gi.outputs.new(link.from_socket.bl_idname, iface_item.name)
+                new_tree.links.new(gi_sock, link.to_socket)
+                tree.links.new(link.from_socket, in_sock)
+            elif link.from_node in selected and link.to_node not in selected:
+                tree.links.remove(link)
+                iface_item = new_tree.interface.new_socket(name=link.from_socket.name, in_out='OUTPUT', socket_type=link.from_socket.bl_idname)
+                out_sock = group_node.outputs.new(link.from_socket.bl_idname, iface_item.name)
+                go_sock = go.inputs.new(link.from_socket.bl_idname, iface_item.name)
+                new_tree.links.new(link.from_socket, go_sock)
+                tree.links.new(out_sock, link.to_socket)
 
         return {"FINISHED"}
 
@@ -196,75 +147,31 @@ class FN_OT_group_ungroup(Operator):
         go = next((n for n in sub.nodes if n.bl_idname == "FNGroupOutputNode"), None)
         inner = [n for n in sub.nodes if n not in (gi, go)]
 
-        if getattr(bpy, "app", None):
-            node_map = {}
-            for n in inner:
-                dup = tree.nodes.new(n.bl_idname)
-                if hasattr(dup, "copy"):
-                    try:
-                        dup.copy(n)
-                    except Exception:
-                        pass
-                node_map[n] = dup
-            for n in inner:
-                sub.nodes.remove(n)
+        for n in inner:
+            sub.nodes.remove(n)
+            n.id_data = tree
+            tree.nodes.append(n)
 
-            for link in list(sub.links):
-                if link.from_node in inner and link.to_node in inner:
-                    sub.links.remove(link)
-                    tree.links.new(
-                        node_map[link.from_node].outputs[link.from_socket.name],
-                        node_map[link.to_node].inputs[link.to_socket.name],
-                    )
+        for link in list(sub.links):
+            if link.from_node in inner and link.to_node in inner:
+                sub.links.remove(link)
+                tree.links.append(link)
 
-            for link in list(tree.links):
-                if link.to_node == group_node:
-                    name = link.to_socket.name
-                    target_link = next(
-                        (l for l in sub.links if l.from_node == gi and l.from_socket.name == name),
-                        None,
-                    )
-                    if target_link:
-                        tree.links.new(link.from_socket, node_map[target_link.to_node].inputs[target_link.to_socket.name])
-                    tree.links.remove(link)
-                elif link.from_node == group_node:
-                    name = link.from_socket.name
-                    target_link = next(
-                        (l for l in sub.links if l.to_node == go and l.to_socket.name == name),
-                        None,
-                    )
-                    if target_link:
-                        tree.links.new(node_map[target_link.from_node].outputs[target_link.from_socket.name], link.to_socket)
-                    tree.links.remove(link)
+        for link in list(tree.links):
+            if link.to_node == group_node:
+                name = link.to_socket.name
+                target_link = next((l for l in sub.links if l.from_node == gi and l.from_socket.name == name), None)
+                if target_link:
+                    tree.links.new(link.from_socket, target_link.to_socket)
+                tree.links.remove(link)
+            elif link.from_node == group_node:
+                name = link.from_socket.name
+                target_link = next((l for l in sub.links if l.to_node == go and l.to_socket.name == name), None)
+                if target_link:
+                    tree.links.new(target_link.from_socket, link.to_socket)
+                tree.links.remove(link)
 
-            bpy.data.node_groups.remove(sub)
-            tree.nodes.remove(group_node)
-        else:
-            for n in inner:
-                sub.nodes.remove(n)
-                n.id_data = tree
-                tree.nodes.append(n)
-
-            for link in list(sub.links):
-                if link.from_node in inner and link.to_node in inner:
-                    sub.links.remove(link)
-                    tree.links.append(link)
-
-            for link in list(tree.links):
-                if link.to_node == group_node:
-                    name = link.to_socket.name
-                    target_link = next((l for l in sub.links if l.from_node == gi and l.from_socket.name == name), None)
-                    if target_link:
-                        tree.links.new(link.from_socket, target_link.to_socket)
-                    tree.links.remove(link)
-                elif link.from_node == group_node:
-                    name = link.from_socket.name
-                    target_link = next((l for l in sub.links if l.to_node == go and l.to_socket.name == name), None)
-                    if target_link:
-                        tree.links.new(target_link.from_socket, link.to_socket)
-                    tree.links.remove(link)
-
-            tree.nodes.remove(group_node)
+        tree.nodes.remove(group_node)
 
         return {"FINISHED"}
 
