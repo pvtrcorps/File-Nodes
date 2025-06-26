@@ -72,12 +72,12 @@ class FNGroupInputNode(Node, FNBaseNode):
             new_item = iface.new_socket(name=name, in_out='INPUT', socket_type=link.to_socket.bl_idname)
             new_sock = self.outputs.new(new_item.socket_type, new_item.name)
             self.outputs.move(self.outputs.find(new_sock.name), len(self.outputs)-1)
-            # Reuse the dragged link instead of creating a new one to
-            # avoid potential crashes when Blender removes the temporary
-            # link at the end of the operation.
+            # Reuse the dragged link, remove Blender's temporary one and
+            # return a success status so no additional link is created.
             tree.links.new(new_sock, link.to_socket)
+            tree.links.remove(link)
             self._ensure_virtual()
-            return None
+            return {'FINISHED'}
         return None
 
     def _ensure_virtual(self):
