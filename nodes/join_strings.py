@@ -53,7 +53,9 @@ class FNJoinStrings(Node, FNBaseNode):
             # operation succeeds without Blender creating another link.
             tree = self.id_data
             tree.links.new(link.from_socket, new_sock)
-            tree.links.remove(link)
+            # Safely remove Blender's temporary link if it was added
+            if link in tree.links:
+                tree.links.remove(link)
             self._ensure_virtual()
             return {'FINISHED'}
         return None
