@@ -125,13 +125,14 @@ class FNCreateList(Node, FNBaseNode):
                 len(self.inputs) - 2
             )
             self.item_count += 1
-            # Reuse the dragged link instead of creating a new one
-            # to avoid potential crashes when the temporary link
-            # is removed by Blender during the operation.
+            # Reuse the dragged link instead of letting Blender create a new one
+            # and remove the original temporary link so the operation completes
+            # without errors.
             tree = self.id_data
             tree.links.new(link.from_socket, new_sock)
+            tree.links.remove(link)
             self._ensure_virtual()
-            return None
+            return {'FINISHED'}
         return None
 
     def _ensure_virtual(self):
