@@ -42,6 +42,8 @@ class FNOutputScenesNode(Node, FNBaseNode):
         scenes = inputs.get("Scenes") or []
         ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
+            if getattr(ctx, "scenes_to_keep", None) is None:
+                ctx.scenes_to_keep = []
             ctx.scenes_to_keep.extend([s for s in scenes if s])
         return {}
 
