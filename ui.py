@@ -33,8 +33,6 @@ class FILE_NODES_PT_global(Panel):
                 if prop:
                     box.prop(inp, prop, text=inp.name)
 
-        layout.prop(context.scene.render, "engine")
-
 
 def register():
     bpy.utils.register_class(FILE_NODES_PT_global)
