@@ -5,7 +5,7 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 ## Objetivos del MVP
 - Crear un nuevo `NodeTree` personalizado.
 - Implementar nodos básicos para leer y manipular datablocks.
-- Integrar una pila de *modificadores de archivo* a nivel de `Scene`.
+- Gestionar una lista global de árboles *File Nodes* que se evalúan sobre la escena activa.
 
 ## Nodos principales
 - **Interface Input**: expone datablocks del archivo actual.
@@ -22,15 +22,15 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 1. **NodeTree personalizado**: contenedor del grafo.
 2. **Nodos**: clases que heredan de `bpy.types.Node`.
 3. **Sockets**: tipos propios para listas de objetos, escenas, etc.
-4. **File Modifiers**: colección en `Scene` que permite apilar varios grafos.
+4. **Árboles globales**: los `FileNodesTree` residen en `bpy.data.node_groups` y se evalúan de forma conjunta.
 
 ## Modelo de ejecución
-Los nodos se evalúan directamente sobre la escena activa. Antes de cada ejecución los modificadores restauran los valores originales que han guardado para mantener la no destructividad. Esto asegura que los mismos inputs producen siempre los mismos resultados.
+Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la ejecución se restauran los valores originales guardados para mantener la no destructividad. Esto asegura que los mismos inputs producen siempre los mismos resultados.
 
 ## Gestión de datablocks
 - Los datos externos se vinculan mediante *library linking* para mantener la no destructividad.
 - Se recomienda marcar los `NodeTree` con *Fake User* para no perderlos al cerrar el archivo.
-- Al desactivar un modificador se restauran los valores previos de la escena.
+- Al desactivar un árbol se restauran los valores previos de la escena.
 - Durante la evaluación la escena se modifica en vivo pero se conservan copias internas para volver al estado previo en la siguiente ejecución.
 
 ## Requisitos
