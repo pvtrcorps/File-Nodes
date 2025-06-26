@@ -1,12 +1,12 @@
 import bpy
 from bpy.types import Node
 
-from .base import FNBaseNode, DynamicSocketMixin
+from .base import FNBaseNode
 from ..sockets import FNSocketString
 from ..operators import auto_evaluate_if_enabled
 
 
-class FNJoinStrings(Node, FNBaseNode, DynamicSocketMixin):
+class FNJoinStrings(Node, FNBaseNode):
     bl_idname = "FNJoinStrings"
     bl_label = "Join Strings"
 
@@ -21,36 +21,25 @@ class FNJoinStrings(Node, FNBaseNode, DynamicSocketMixin):
         layout.prop(self, "separator", text="Separator")
 
     def process(self, context, inputs):
-        parts = []
-        for sock in self.inputs:
-            if sock.bl_idname == 'NodeSocketVirtual':
-                continue
-            value = inputs.get(sock.name)
-            if value is not None:
-                parts.append(str(value))
+        values = inputs.get("String")
+        if values is None:
+            parts = []
+        elif isinstance(values, (list, tuple)):
+            parts = [str(v) for v in values if v is not None]
+        else:
+            parts = [str(values)]
         joined = self.separator.join(parts)
         return {"String": joined}
-
-    def insert_link(self, link):
-        return DynamicSocketMixin.insert_link(self, link)
-
-    def add_socket(self, idx):
-        return self.inputs.new('FNSocketString', f"String {idx}")
-
-    def socket_name(self, idx):
-        return f"String {idx}"
 
     def _update_sockets(self):
         while self.inputs:
             self.inputs.remove(self.inputs[-1])
         while self.outputs:
             self.outputs.remove(self.outputs[-1])
-        self.add_socket(1)
-        self.add_socket(2)
-        self.inputs.new('NodeSocketVirtual', "")
+        sock = self.inputs.new('FNSocketString', "String")
+        sock.link_limit = 0
+        sock.display_shape = 'CIRCLE_DOT'
         self.outputs.new('FNSocketString', "String")
-        self.item_count = 2
-        self.update()
 
 
 def register():
