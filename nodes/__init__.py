@@ -4,7 +4,8 @@ import bpy, importlib
 # FNWorldInputNode for providing World datablocks.
 from . import (
     read_blend, create_list, get_item_by_name, get_item_by_index,
-    link_to_scene, link_to_collection, set_world, group_input, group_output,
+    link_to_scene, link_to_collection, set_world,
+    group_input, group_output, group_node,
     input_nodes, import_alembic, output_nodes,
     join_strings, split_string,
     set_render_engine, cycles_scene_props, eevee_scene_props,
@@ -18,7 +19,8 @@ from . import (
 
 _modules = [
     read_blend, create_list, get_item_by_name, get_item_by_index,
-    link_to_scene, link_to_collection, set_world, group_input, group_output,
+    link_to_scene, link_to_collection, set_world,
+    group_input, group_output, group_node,
     input_nodes, import_alembic, output_nodes,
     join_strings, split_string,
     set_render_engine, cycles_scene_props, eevee_scene_props,
