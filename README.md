@@ -33,6 +33,9 @@ Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la 
 - Al desactivar un árbol se restauran los valores previos de la escena.
 - Durante la evaluación la escena se modifica en vivo pero se conservan copias internas para volver al estado previo en la siguiente ejecución.
 
+## Sockets dinámicos
+El último socket libre de estos nodos es **virtual**. Nunca lo borres manualmente; al conectar cables se crean nuevas entradas automáticamente y el socket virtual pasa al final.
+
 ## Requisitos
 - Blender 4.4 o superior.
 - Python 3.10 o superior.
