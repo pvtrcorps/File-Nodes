@@ -136,7 +136,7 @@ class FNCreateList(Node, FNBaseNode):
             if any(l is link for l in tree.links):
                 tree.links.remove(link)
             self._ensure_virtual()
-            return {'FINISHED'}
+            return None
         return None
 
     def _ensure_virtual(self):
