@@ -13,6 +13,7 @@ from . import (
     world_props, camera_props, light_props, mesh_props, material_props,
     new_scene, new_object, new_collection, new_world, new_material,
     set_scene_name, set_collection_name, set_object_name,
+    switch, index_switch
 )
 
 _modules = [
@@ -26,6 +27,7 @@ _modules = [
     world_props, camera_props, light_props, mesh_props, material_props,
     new_scene, new_object, new_collection, new_world, new_material,
     set_scene_name, set_collection_name, set_object_name,
+    switch, index_switch
 ]
 
 def register():
