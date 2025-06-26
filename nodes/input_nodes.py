@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
 
-from .base import FNBaseNode
+from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
     FNSocketBool, FNSocketFloat, FNSocketInt, FNSocketString,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
@@ -75,20 +75,38 @@ class FNStringInputNode(Node, FNBaseNode):
         return {"String": self.value}
 
 
-class FNSceneInputNode(Node, FNBaseNode):
+class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNSceneInputNode"
     bl_label = "Scene Input"
 
     value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
+    new_name: bpy.props.StringProperty(update=auto_evaluate_if_enabled, name="Name")
 
     def init(self, context):
         self.outputs.new('FNSocketScene', "Scene")
+        self.new_name = ""
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Scene")
+        layout.prop(self, "new_name")
 
     def process(self, context, inputs):
-        return {"Scene": self.value}
+        scene = self.value
+        if not scene:
+            return {"Scene": None}
+        name = self.new_name or scene.name
+        key = (scene.as_pointer(), name)
+        cached = self.cache_get(key)
+        if cached is not None:
+            return {"Scene": cached}
+        dup = scene.copy()
+        dup.name = name
+        self.cache_store(key, dup)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            ctx.remember_created_scene(dup)
+            ctx.remember_created_id(dup)
+        return {"Scene": dup}
 
 
 class FNObjectInputNode(Node, FNBaseNode):
