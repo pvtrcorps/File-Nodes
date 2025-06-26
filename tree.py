@@ -203,6 +203,10 @@ class FileNodesTree(NodeTree):
     fn_enabled: bpy.props.BoolProperty(name='Enabled', default=True)
     fn_inputs: bpy.props.PointerProperty(type=FileNodesTreeInputs)
 
+    def interface_update(self, context=None):
+        if getattr(self, "fn_inputs", None):
+            self.fn_inputs.sync_inputs(self)
+
     # Poll: always available
     @classmethod
     def poll(cls, context):

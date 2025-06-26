@@ -26,7 +26,6 @@ class FILE_NODES_PT_global(Panel):
 
         tree = scene.file_nodes_tree
         if tree and getattr(tree, "fn_inputs", None):
-            tree.fn_inputs.sync_inputs(tree)
             box = layout.box()
             for inp in tree.fn_inputs.inputs:
                 prop = inp.prop_name()
@@ -34,9 +33,18 @@ class FILE_NODES_PT_global(Panel):
                     box.prop(inp, prop, text=inp.name)
 
 
+def _tree_prop_update(self, context):
+    tree = self.file_nodes_tree
+    if tree and getattr(tree, "fn_inputs", None):
+        tree.fn_inputs.sync_inputs(tree)
+
+
 def register():
     bpy.utils.register_class(FILE_NODES_PT_global)
-    bpy.types.Scene.file_nodes_tree = bpy.props.PointerProperty(type=FileNodesTree)
+    bpy.types.Scene.file_nodes_tree = bpy.props.PointerProperty(
+        type=FileNodesTree,
+        update=_tree_prop_update,
+    )
 
 
 def unregister():
