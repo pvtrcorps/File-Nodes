@@ -64,7 +64,6 @@ class FNGetItemByName(Node, FNBaseNode):
         update=lambda self, context: self.update_type(context)
     )
 
-    item_name: bpy.props.StringProperty(name='Name', default='', update=auto_evaluate_if_enabled)
 
     def update_type(self, context):
         self.update_sockets()
@@ -79,6 +78,7 @@ class FNGetItemByName(Node, FNBaseNode):
         single = _socket_single[self.data_type]
         sock = self.inputs.new(list_sock, f"{self.data_type.title()}s")
         sock.display_shape = 'SQUARE'
+        self.inputs.new('FNSocketString', "Name")
         self.outputs.new(single, self.data_type.title())
 
     def init(self, context):
@@ -86,13 +86,13 @@ class FNGetItemByName(Node, FNBaseNode):
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "data_type", text="Type")
-        layout.prop(self, "item_name", text="Name")
 
     def process(self, context, inputs):
         lst = inputs.get(f"{self.data_type.title()}s", [])
+        name = inputs.get("Name") or ""
         target = None
         for item in lst:
-            if item and item.name == self.item_name:
+            if item and item.name == name:
                 target = item
                 break
         return {self.data_type.title(): target}
