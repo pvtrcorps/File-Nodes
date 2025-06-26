@@ -77,6 +77,8 @@ def _load_module(name):
 
 join_mod = _load_module('join_strings')
 create_mod = _load_module('create_list')
+switch_mod = _load_module('switch')
+index_switch_mod = _load_module('index_switch')
 
 
 class FakeSocket:
@@ -178,6 +180,21 @@ class DynamicSocketTests(unittest.TestCase):
         node.separator = ''
         result = node.process(None, {"String": ["A", "B", "C"]})
         self.assertEqual(result["String"], "ABC")
+
+    def test_switch_basic(self):
+        node, _ = self._setup_node(switch_mod.FNSwitch)
+        self.assertEqual(len(node.inputs), 3)
+        self.assertEqual(node.inputs[0].bl_idname, 'FNSocketBool')
+        out = node.process(None, {"Switch": True, "True": "A", "False": "B"})
+        self.assertEqual(out[node.data_type.title()], "A")
+
+    def test_index_switch_count(self):
+        node, _ = self._setup_node(index_switch_mod.FNIndexSwitch)
+        node.input_count = 3
+        node.update_sockets(None)
+        self.assertEqual(len(node.inputs), 4)  # Index + 3 values
+        out = node.process(None, {"Index": 2, "Value 0": "A", "Value 1": "B", "Value 2": "C"})
+        self.assertEqual(out[node.data_type.title()], "C")
 
 
 if __name__ == '__main__':
