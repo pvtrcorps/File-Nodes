@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
-from .base import FNBaseNode, DynamicSocketMixin
+from .base import FNBaseNode
 from ..sockets import (
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
@@ -40,7 +40,7 @@ _socket_list = {
     'WORKSPACE': 'FNSocketWorkSpaceList',
 }
 
-class FNCreateList(Node, FNBaseNode, DynamicSocketMixin):
+class FNCreateList(Node, FNBaseNode):
     bl_idname = "FNCreateList"
     bl_label = "Create List"
 
@@ -77,13 +77,11 @@ class FNCreateList(Node, FNBaseNode, DynamicSocketMixin):
             self.outputs.remove(self.outputs[-1])
         single = _socket_single[self.data_type]
         lst = _socket_list[self.data_type]
-        self.item_count = 2
-        self.inputs.new(single, f"{self.data_type.title()} 1")
-        self.inputs.new(single, f"{self.data_type.title()} 2")
-        self.inputs.new('NodeSocketVirtual', "")
-        sock = self.outputs.new(lst, f"{self.data_type.title()}s")
-        sock.display_shape = 'SQUARE'
-        self.update()
+        sock = self.inputs.new(single, self.data_type.title())
+        sock.link_limit = 0
+        sock.display_shape = 'CIRCLE_DOT'
+        out = self.outputs.new(lst, f"{self.data_type.title()}s")
+        out.display_shape = 'SQUARE'
 
     def init(self, context):
         self._update_sockets()
@@ -93,26 +91,14 @@ class FNCreateList(Node, FNBaseNode, DynamicSocketMixin):
 
     def process(self, context, inputs):
         output_name = f"{self.data_type.title()}s"
-        lst = []
-        for sock in self.inputs:
-            if sock.is_linked:
-                lst.append(inputs.get(sock.name))
-            else:
-                if getattr(sock, 'value', None):
-                    lst.append(sock.value)
+        values = inputs.get(self.data_type.title())
+        if values is None:
+            lst = []
+        elif isinstance(values, (list, tuple)):
+            lst = [v for v in values if v is not None]
+        else:
+            lst = [values]
         return {output_name: lst}
-
-    def insert_link(self, link):
-        return DynamicSocketMixin.insert_link(self, link)
-
-    def add_socket(self, idx):
-        return self.inputs.new(
-            _socket_single[self.data_type],
-            f"{self.data_type.title()} {idx}"
-        )
-
-    def socket_name(self, idx):
-        return f"{self.data_type.title()} {idx}"
 
 
 def register():

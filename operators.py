@@ -174,12 +174,24 @@ def _evaluate_tree(tree, context):
 
     def eval_socket(sock):
         if sock.is_linked and sock.links:
-            from_sock = sock.links[0].from_socket
-            value = eval_node(from_sock.node)[from_sock.name]
             single = _list_to_single.get(sock.bl_idname)
-            if single and from_sock.bl_idname == single:
-                return [value] if value is not None else []
-            return value
+            if getattr(sock, "is_multi_input", False):
+                values = []
+                for link in sock.links:
+                    from_sock = link.from_socket
+                    value = eval_node(from_sock.node)[from_sock.name]
+                    if single and from_sock.bl_idname == single:
+                        if value is not None:
+                            values.append(value)
+                    else:
+                        values.append(value)
+                return values
+            else:
+                from_sock = sock.links[0].from_socket
+                value = eval_node(from_sock.node)[from_sock.name]
+                if single and from_sock.bl_idname == single:
+                    return [value] if value is not None else []
+                return value
         if hasattr(sock, "value"):
             return sock.value
         return None
@@ -206,8 +218,9 @@ def _evaluate_tree(tree, context):
         eval_node(node)
         for sock in node.inputs:
             if sock.is_linked and sock.links:
-                from_node = sock.links[0].from_node
-                traverse(from_node)
+                for link in sock.links:
+                    from_node = link.from_node
+                    traverse(from_node)
 
     for node in tree.nodes:
         if node.bl_idname in output_types:

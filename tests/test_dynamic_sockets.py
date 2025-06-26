@@ -87,6 +87,12 @@ class FakeSocket:
         self.links = []
         self.is_linked = False
         self.value = None
+        self.link_limit = 1
+        self.display_shape = 'CIRCLE'
+
+    @property
+    def is_multi_input(self):
+        return self.link_limit != 1
 
 
 class FakeSocketList(list):
@@ -158,27 +164,20 @@ class DynamicSocketTests(unittest.TestCase):
         if hasattr(cls, 'separator'):
             object.__setattr__(node, 'separator', '')
         node._update_sockets()
+        if hasattr(cls, 'separator'):
+            object.__setattr__(node, 'separator', '')
         return node, tree
 
-    def test_join_strings_dynamic(self):
-        node, tree = self._setup_node(join_mod.FNJoinStrings)
-        out_socket = FakeSocket('Out', 'FNSocketString')
-        out_socket.node = object()
+    def test_join_strings_multi_input(self):
+        node, _ = self._setup_node(join_mod.FNJoinStrings)
+        self.assertEqual(len(node.inputs), 1)
+        sock = node.inputs[0]
+        self.assertEqual(sock.link_limit, 0)
+        self.assertEqual(sock.display_shape, 'CIRCLE_DOT')
 
-        links = []
-        for _ in range(10):
-            link = FakeLink(out_socket, node.inputs[-1])
-            node.insert_link(link)
-            links.append(node.inputs[-2].links[0])
-
-        self.assertEqual(node.item_count, 12)
-
-        for link in links:
-            tree.links.remove(link)
-        node.update()
-
-        self.assertEqual(node.item_count, 2)
-        self.assertEqual(len(node.inputs), 3)
+        node.separator = ''
+        result = node.process(None, {"String": ["A", "B", "C"]})
+        self.assertEqual(result["String"], "ABC")
 
 
 if __name__ == '__main__':
