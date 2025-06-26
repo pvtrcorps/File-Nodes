@@ -7,9 +7,9 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 - Implementar nodos básicos para leer y manipular datablocks.
 - Gestionar una lista global de árboles *File Nodes* que se evalúan sobre la escena activa.
 
-## Nodos principales
+-## Nodos principales
 - **Interface Input**: expone datablocks del archivo actual.
-- **Scene Input**, **Object Input** y **Collection Input**: permiten referenciar manualmente estos datablocks.
+- **Scene Input**, **Object Input** y **Collection Input**: permiten referenciar manualmente estos datablocks. El nodo **Scene Input** siempre crea un duplicado y obliga a darle un nombre nuevo.
 - **Read Blend File**: importa escenas, colecciones, objetos y mundos desde archivos externos.
 - **Import Alembic**: carga objetos desde archivos `.abc`.
 - **Create List**, **Get Item by Name** y **Get Item by Index**: operan sobre listas de datablocks.
@@ -35,6 +35,7 @@ Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la 
 
 ## Sockets dinámicos
 El último socket libre de estos nodos es **virtual**. Nunca lo borres manualmente; al conectar cables se crean nuevas entradas automáticamente y el socket virtual pasa al final.
+Los sockets de entrada tipo **Scene** ya no permiten seleccionar un datablock manualmente.
 
 ## Requisitos
 - Blender 4.4 o superior.
