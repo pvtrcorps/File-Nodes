@@ -41,8 +41,8 @@ class FNOutputScenesNode(Node, FNBaseNode):
     def process(self, context, inputs):
         scenes = inputs.get("Scenes") or []
         ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-        if ctx:
-            if getattr(ctx, "scenes_to_keep", None) is None:
+        if ctx and scenes:
+            if not hasattr(ctx, "scenes_to_keep") or ctx.scenes_to_keep is None:
                 ctx.scenes_to_keep = []
             ctx.scenes_to_keep.extend([s for s in scenes if s])
         return {}

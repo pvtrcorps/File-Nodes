@@ -134,7 +134,8 @@ def evaluate_tree(context):
 
         ctx = getattr(tree, "fn_inputs", None)
         if ctx:
-            ctx.scenes_to_keep = []
+            if getattr(ctx, "scenes_to_keep", None) is None:
+                ctx.scenes_to_keep = []
             ctx.reset_to_originals()
             ctx.sync_inputs(tree)
             ctx.prepare_eval_scene(context.scene)
