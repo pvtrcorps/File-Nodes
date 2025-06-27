@@ -49,7 +49,7 @@ class FNSocketString(NodeSocket):
     bl_idname = "FNSocketString"
     bl_label = "String"
     def draw(self, context, layout, node, text):
-        _draw_value_socket(self, layout, text, 'FONT_DATA')
+        _draw_value_socket(self, layout, text)
     @classmethod
     def draw_color(cls, context, node):
         return _color(0.7, 0.7, 0.7)
