@@ -1,49 +1,68 @@
 import bpy
-from bpy.types import Node
-
+from bpy.types import NodeCustomGroup
 from .base import FNBaseNode
 from .. import operators
 
 
-class FNGroupInstanceNode(Node, FNBaseNode):
-    bl_idname = "FNGroupInstanceNode"
-    bl_label = "Group Instance"
+class FNGroupNode(NodeCustomGroup, FNBaseNode):
+    bl_idname = "FNGroupNode"
+    bl_label = "Group"
+    bl_icon = 'NODETREE'
 
-    def _tree_poll(self, tree):
-        return getattr(tree, "bl_idname", None) == "FileNodesTreeType"
-
-    def _tree_update(self, context):
-        self._sync_sockets()
-        operators.auto_evaluate_if_enabled(context)
-
-    node_tree: bpy.props.PointerProperty(
-        type=bpy.types.NodeTree,
-        poll=_tree_poll,
-        update=_tree_update,
-    )
+    @classmethod
+    def poll(cls, ntree):
+        return getattr(ntree, "bl_idname", None) == "FileNodesTreeType"
 
     def init(self, context):
+        if not self.node_tree:
+            self.node_tree = bpy.data.node_groups.new("Group", "FileNodesTreeType")
+        self._sync_sockets()
+
+    def copy(self, node):
+        self._sync_sockets()
+
+    def update(self):
         self._sync_sockets()
 
     def _sync_sockets(self):
-        while self.inputs:
-            self.inputs.remove(self.inputs[-1])
-        while self.outputs:
-            self.outputs.remove(self.outputs[-1])
         tree = getattr(self, "node_tree", None)
         iface = getattr(tree, "interface", None)
         if not tree or not iface:
+            while self.inputs:
+                self.inputs.remove(self.inputs[-1])
+            while self.outputs:
+                self.outputs.remove(self.outputs[-1])
             return
-        for item in iface.items_tree:
-            if getattr(item, "in_out", None) == "INPUT":
-                self.inputs.new(item.socket_type, item.name)
-            elif getattr(item, "in_out", None) == "OUTPUT":
-                self.outputs.new(item.socket_type, item.name)
+        iface_inputs = [i for i in iface.items_tree if getattr(i, "in_out", None) == 'INPUT']
+        iface_outputs = [i for i in iface.items_tree if getattr(i, "in_out", None) == 'OUTPUT']
+        names_in = [i.name for i in iface_inputs]
+        names_out = [i.name for i in iface_outputs]
+        for sock in list(self.inputs):
+            if sock.name not in names_in:
+                self.inputs.remove(sock)
+        for sock in list(self.outputs):
+            if sock.name not in names_out:
+                self.outputs.remove(sock)
+        for item in iface_inputs:
+            sock = self.inputs.get(item.name)
+            if sock is None or sock.bl_idname != item.socket_type:
+                if sock:
+                    self.inputs.remove(sock)
+                sock = self.inputs.new(item.socket_type, item.name)
+            sock.name = item.name
+        for item in iface_outputs:
+            sock = self.outputs.get(item.name)
+            if sock is None or sock.bl_idname != item.socket_type:
+                if sock:
+                    self.outputs.remove(sock)
+                sock = self.outputs.new(item.socket_type, item.name)
+            sock.name = item.name
 
     def process(self, context, inputs):
         tree = self.node_tree
         if not tree:
-            return {sock.name: None for sock in self.outputs}
+            return {s.name: None for s in self.outputs}
+
         ctx = getattr(tree, "fn_inputs", None)
         if ctx:
             ctx.sync_inputs(tree)
@@ -109,10 +128,9 @@ class FNGroupInstanceNode(Node, FNBaseNode):
             resolved[node] = node_outputs
             return node_outputs
 
-        # pick first group output node
         out_node = None
         for n in getattr(tree, "nodes", []):
-            if getattr(n, "bl_idname", "") == "FNGroupOutputNode":
+            if getattr(n, "bl_idname", "") in {"NodeGroupOutput", "FNGroupOutputNode"}:
                 out_node = n
                 break
         result = {}
@@ -128,8 +146,7 @@ class FNGroupInstanceNode(Node, FNBaseNode):
 
 
 def register():
-    bpy.utils.register_class(FNGroupInstanceNode)
-
+    bpy.utils.register_class(FNGroupNode)
 
 def unregister():
-    bpy.utils.unregister_class(FNGroupInstanceNode)
+    bpy.utils.unregister_class(FNGroupNode)

@@ -16,6 +16,8 @@ _bpy.props = _Props()
 
 class _Types:
     class Node: pass
+    class NodeCustomGroup(Node):
+        pass
     class NodeTree: pass
     class PropertyGroup: pass
     class Operator: pass
@@ -60,23 +62,11 @@ ops_mod.__package__ = 'addon'
 exec(spec_ops.loader.get_code('addon.operators'), ops_mod.__dict__)
 sys.modules['addon.operators'] = ops_mod
 
-spec_gi = importlib.util.spec_from_file_location('addon.nodes.group_input', Path('nodes/group_input.py'), submodule_search_locations=['nodes'])
-gi_mod = importlib.util.module_from_spec(spec_gi)
-gi_mod.__package__ = 'addon.nodes'
-exec(spec_gi.loader.get_code('addon.nodes.group_input'), gi_mod.__dict__)
-sys.modules['addon.nodes.group_input'] = gi_mod
-
-spec_go = importlib.util.spec_from_file_location('addon.nodes.group_output', Path('nodes/group_output.py'), submodule_search_locations=['nodes'])
-go_mod = importlib.util.module_from_spec(spec_go)
-go_mod.__package__ = 'addon.nodes'
-exec(spec_go.loader.get_code('addon.nodes.group_output'), go_mod.__dict__)
-sys.modules['addon.nodes.group_output'] = go_mod
-
-spec_inst = importlib.util.spec_from_file_location('addon.nodes.group_instance', Path('nodes/group_instance.py'), submodule_search_locations=['nodes'])
-inst_mod = importlib.util.module_from_spec(spec_inst)
-inst_mod.__package__ = 'addon.nodes'
-exec(spec_inst.loader.get_code('addon.nodes.group_instance'), inst_mod.__dict__)
-sys.modules['addon.nodes.group_instance'] = inst_mod
+spec_group = importlib.util.spec_from_file_location('addon.nodes.group', Path('nodes/group.py'), submodule_search_locations=['nodes'])
+group_mod = importlib.util.module_from_spec(spec_group)
+group_mod.__package__ = 'addon.nodes'
+exec(spec_group.loader.get_code('addon.nodes.group'), group_mod.__dict__)
+sys.modules['addon.nodes.group'] = group_mod
 
 
 class FakeSocket:
@@ -178,6 +168,44 @@ class DummyInputs:
     def reset_to_originals(self):
         pass
 
+class NodeGroupInput:
+    bl_idname = "NodeGroupInput"
+
+    def __init__(self):
+        self.inputs = FakeSocketList(self)
+        self.outputs = FakeSocketList(self)
+
+    def init(self, context=None):
+        tree = self.id_data
+        for item in tree.interface.items_tree:
+            if item.in_out == 'INPUT':
+                self.outputs.new(item.socket_type, item.name)
+
+    def process(self, context, inputs):
+        out = {}
+        tree = self.id_data
+        for item in tree.interface.items_tree:
+            if item.in_out == 'INPUT':
+                out[item.name] = tree.fn_inputs.get_input_value(item.name)
+        return out
+
+
+class NodeGroupOutput:
+    bl_idname = "NodeGroupOutput"
+
+    def __init__(self):
+        self.inputs = FakeSocketList(self)
+        self.outputs = FakeSocketList(self)
+
+    def init(self, context=None):
+        tree = self.id_data
+        for item in tree.interface.items_tree:
+            if item.in_out == 'OUTPUT':
+                self.inputs.new(item.socket_type, item.name)
+
+    def process(self, context, inputs):
+        return {}
+
 class FakeTree:
     bl_idname = 'FileNodesTreeType'
     def __init__(self):
@@ -198,23 +226,19 @@ class GroupInstanceTests(unittest.TestCase):
         sub_tree.interface.new_socket('Result', 'OUTPUT', 'FNSocketString')
         sub_tree.fn_inputs.sync_inputs(sub_tree)
 
-        g_in = gi_mod.FNGroupInputNode.__new__(gi_mod.FNGroupInputNode)
+        g_in = NodeGroupInput()
         g_in.id_data = sub_tree
-        g_in.inputs = FakeSocketList(g_in)
-        g_in.outputs = FakeSocketList(g_in)
         g_in.init(None)
 
-        g_out = go_mod.FNGroupOutputNode.__new__(go_mod.FNGroupOutputNode)
+        g_out = NodeGroupOutput()
         g_out.id_data = sub_tree
-        g_out.inputs = FakeSocketList(g_out)
-        g_out.outputs = FakeSocketList(g_out)
         g_out.init(None)
 
         link_sockets(g_in.outputs[0], g_out.inputs[0], sub_tree)
         sub_tree.nodes = [g_in, g_out]
 
         root_tree = FakeTree()
-        node = inst_mod.FNGroupInstanceNode.__new__(inst_mod.FNGroupInstanceNode)
+        node = group_mod.FNGroupNode.__new__(group_mod.FNGroupNode)
         node.id_data = root_tree
         node.inputs = FakeSocketList(node)
         node.outputs = FakeSocketList(node)

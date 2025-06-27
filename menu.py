@@ -3,9 +3,9 @@ from nodeitems_utils import NodeCategory, NodeItem, register_node_categories, un
 
 categories = [
     NodeCategory('FILE_NODES_GROUP', 'Group', items=[
-        NodeItem('FNGroupInputNode', label='Interface Input'),
-        NodeItem('FNGroupOutputNode'),
-        NodeItem('FNGroupInstanceNode'),
+        NodeItem('NodeGroupInput', label='Group Input'),
+        NodeItem('NodeGroupOutput', label='Group Output'),
+        NodeItem('FNGroupNode'),
     ]),
     NodeCategory('FILE_NODES_FILE', 'File', items=[
         NodeItem('FNReadBlendNode'),
