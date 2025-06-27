@@ -139,12 +139,15 @@ class SceneInputDuplicateTest(unittest.TestCase):
         tree = tree_mod.FileNodesTree.__new__(tree_mod.FileNodesTree)
         node = ins.FNSceneInputNode.__new__(ins.FNSceneInputNode)
         node.id_data = tree
-        node.inputs = [FakeSocket("Name", "FNSocketString")]
+        node.inputs = [
+            FakeSocket("Scene", "FNSocketScene"),
+            FakeSocket("Name", "FNSocketString")
+        ]
         node.outputs = [FakeSocket("Scene", "FNSocketScene", True)]
         for s in node.inputs + node.outputs:
             s.node = node
         node.value = _DummyScene("Base")
-        node.inputs[0].value = "Copy"
+        node.inputs[1].value = "Copy"
 
         out = DummyOutputNode()
         link_sockets(node.outputs[0], out.inputs[0])

@@ -46,6 +46,13 @@ class FNCreateList(Node, FNBaseNode):
 
 
 
+    input_count: bpy.props.IntProperty(
+        name="Inputs",
+        default=2,
+        min=1,
+        update=lambda self, context: self._update_sockets(context)
+    )
+
     data_type: bpy.props.EnumProperty(
         name="Type",
         items=[
@@ -62,43 +69,46 @@ class FNCreateList(Node, FNBaseNode):
             ('TEXT', 'Text', ''),
             ('WORKSPACE', 'WorkSpace', ''),
         ],
-        default='WORLD',
+        default='SCENE',
         update=lambda self, context: self.update_type(context)
     )
 
     def update_type(self, context):
-        self._update_sockets()
+        self._update_sockets(context)
         auto_evaluate_if_enabled(context)
 
-    def _update_sockets(self):
+    def _update_sockets(self, context=None):
         while self.inputs:
             self.inputs.remove(self.inputs[-1])
         while self.outputs:
             self.outputs.remove(self.outputs[-1])
         single = _socket_single[self.data_type]
         lst = _socket_list[self.data_type]
-        sock = self.inputs.new(single, self.data_type.title())
-        sock.link_limit = 0
-        sock.display_shape = 'CIRCLE_DOT'
+        count = max(1, int(self.input_count))
+        for i in range(count):
+            self.inputs.new(single, f"{self.data_type.title()} {i}")
         out = self.outputs.new(lst, f"{self.data_type.title()}s")
         out.display_shape = 'SQUARE'
+        if context is not None:
+            auto_evaluate_if_enabled(context)
 
     def init(self, context):
-        self._update_sockets()
+        self._update_sockets(context)
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "data_type", text="Type")
 
     def process(self, context, inputs):
         output_name = f"{self.data_type.title()}s"
-        values = inputs.get(self.data_type.title())
-        if values is None:
-            lst = []
-        elif isinstance(values, (list, tuple)):
-            lst = [v for v in values if v is not None]
-        else:
-            lst = [values]
-        return {output_name: lst}
+        items = []
+        count = max(1, int(self.input_count))
+        for i in range(count):
+            value = inputs.get(f"{self.data_type.title()} {i}")
+            if isinstance(value, (list, tuple)):
+                items.extend(v for v in value if v is not None)
+            elif value is not None:
+                items.append(value)
+        return {output_name: items}
 
 
 def register():

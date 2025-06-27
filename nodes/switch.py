@@ -44,7 +44,7 @@ class FNSwitch(Node, FNBaseNode):
             ('TEXT', 'Text', ''),
             ('WORKSPACE', 'WorkSpace', ''),
         ],
-        default='WORLD',
+        default='SCENE',
         update=lambda self, context: self.update_type(context)
     )
 

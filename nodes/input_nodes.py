@@ -82,6 +82,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
 
     def init(self, context):
+        self.inputs.new('FNSocketScene', "Scene")
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new('FNSocketScene', "Scene")
 
@@ -89,7 +90,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
         layout.prop(self, "value", text="Scene")
 
     def process(self, context, inputs):
-        scene = self.value
+        scene = inputs.get("Scene") or self.value
         if not scene:
             return {"Scene": None}
         name = inputs.get("Name") or scene.name
