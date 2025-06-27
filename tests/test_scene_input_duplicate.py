@@ -71,7 +71,7 @@ sys.modules['addon.nodes'] = _nodes_pkg
 _sockets = pytypes.ModuleType('addon.sockets')
 _socket_names = [
     'FNSocketBool', 'FNSocketFloat', 'FNSocketInt', 'FNSocketString',
-    'FNSocketScene', 'FNSocketObject', 'FNSocketCollection', 'FNSocketWorld',
+    'FNSocketScene', 'FNSocketSceneInput', 'FNSocketObject', 'FNSocketCollection', 'FNSocketWorld',
     'FNSocketCamera', 'FNSocketImage', 'FNSocketLight', 'FNSocketMaterial',
     'FNSocketMesh', 'FNSocketNodeTree', 'FNSocketText', 'FNSocketWorkSpace',
     'FNSocketSceneList', 'FNSocketObjectList', 'FNSocketCollectionList',
@@ -140,13 +140,13 @@ class SceneInputDuplicateTest(unittest.TestCase):
         node = ins.FNSceneInputNode.__new__(ins.FNSceneInputNode)
         node.id_data = tree
         node.inputs = [
-            FakeSocket("Scene", "FNSocketScene"),
+            FakeSocket("Scene", "FNSocketSceneInput"),
             FakeSocket("Name", "FNSocketString")
         ]
         node.outputs = [FakeSocket("Scene", "FNSocketScene", True)]
         for s in node.inputs + node.outputs:
             s.node = node
-        node.value = _DummyScene("Base")
+        node.inputs[0].value = _DummyScene("Base")
         node.inputs[1].value = "Copy"
 
         out = DummyOutputNode()

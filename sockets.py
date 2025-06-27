@@ -64,6 +64,14 @@ class FNSocketScene(NodeSocket):
     def draw_color(self, context, node): return _color(0.6,0.9,1.0)
     value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
 
+# Editable scene socket used only by the Scene Input node
+class FNSocketSceneInput(FNSocketScene):
+    bl_idname = "FNSocketSceneInput"
+    bl_label = "Scene"
+
+    def draw(self, context, layout, node, text):
+        _draw_value_socket(self, layout, text, 'SCENE_DATA')
+
 class FNSocketObject(NodeSocket):
     bl_idname = "FNSocketObject"
     bl_label = "Object"
@@ -254,7 +262,7 @@ class FNSocketWorkSpaceList(NodeSocket):
 
 _all_sockets = (
     FNSocketBool, FNSocketFloat, FNSocketInt, FNSocketString, FNSocketStringList,
-    FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
+    FNSocketScene, FNSocketSceneInput, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
     FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
