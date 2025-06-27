@@ -25,18 +25,26 @@ class FILE_NODES_PT_global(Panel):
         )
 
         tree = scene.file_nodes_tree
-        if tree and getattr(tree, "fn_inputs", None):
+        iface = getattr(tree, "interface", None)
+        ctx = getattr(tree, "fn_inputs", None)
+        if tree and iface and ctx:
+            ctx.sync_inputs(tree)
             box = layout.box()
-            for inp in tree.fn_inputs.inputs:
-                prop = inp.prop_name()
-                if prop:
-                    box.prop(inp, prop, text=inp.name)
+            if hasattr(box, "template_node_view"):
+                box.template_node_view(tree, None, None)
+            for item in iface.items_tree:
+                if getattr(item, "in_out", None) == 'INPUT':
+                    inp = ctx.inputs.get(item.name)
+                    if inp:
+                        prop = inp.prop_name()
+                        if prop:
+                            box.prop(inp, prop, text=item.name)
 
 
 def _tree_prop_update(self, context):
     tree = self.file_nodes_tree
-    if tree and getattr(tree, "fn_inputs", None):
-        tree.fn_inputs.sync_inputs(tree)
+    if tree:
+        tree.interface_update(context)
 
 
 def register():
