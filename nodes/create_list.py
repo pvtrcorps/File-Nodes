@@ -97,6 +97,7 @@ class FNCreateList(Node, FNBaseNode):
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "data_type", text="Type")
+        layout.prop(self, "input_count", text="Inputs")
 
     def process(self, context, inputs):
         output_name = f"{self.data_type.title()}s"

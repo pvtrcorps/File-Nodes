@@ -25,6 +25,7 @@ class FNJoinStrings(Node, FNBaseNode):
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "separator", text="Separator")
+        layout.prop(self, "input_count", text="Inputs")
 
     def process(self, context, inputs):
         parts = []
