@@ -36,7 +36,6 @@ Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la 
 
 ## Sockets dinámicos
 El último socket libre de estos nodos es **virtual**. Nunca lo borres manualmente; al conectar cables se crean nuevas entradas automáticamente y el socket virtual pasa al final.
-Los sockets de entrada tipo **Scene** ya no permiten seleccionar un datablock manualmente, salvo en el nodo **Scene Input**.
 
 ## Grupos de File Nodes
 Al igual que en los nodos de *Shader* y *Geometry*, puedes agrupar varios File Nodes para reutilizarlos como una única unidad. Selecciona los nodos deseados y pulsa **Ctrl+G** para crear el grupo; se abrirá automáticamente mostrando los nodos de entrada y salida.
