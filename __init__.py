@@ -22,6 +22,7 @@ if bpy and __package__:
     import importlib
     from . import tree, sockets, nodes, operators, ui, menu
     modules = [tree, sockets, nodes, operators, ui, menu]
+    addon_keymaps = []
 else:  # Running outside Blender or without a package context
     modules = []
 
@@ -46,8 +47,24 @@ if bpy and getattr(getattr(bpy, 'types', None), 'AddonPreferences', None):
             importlib.reload(m)
             if hasattr(m, "register"):
                 m.register()
+        wm = getattr(getattr(bpy, "context", None), "window_manager", None)
+        kc = getattr(getattr(wm, "keyconfigs", None), "addon", None)
+        if kc:
+            km = kc.keymaps.new(name="Node Editor", space_type="NODE_EDITOR")
+            kmi = km.keymap_items.new("file_nodes.group_nodes", "G", "PRESS", ctrl=True)
+            addon_keymaps.append((km, kmi))
+            kmi = km.keymap_items.new(
+                "file_nodes.ungroup_nodes", "G", "PRESS", ctrl=True, alt=True
+            )
+            addon_keymaps.append((km, kmi))
 
     def unregister():
+        for km, kmi in addon_keymaps:
+            try:
+                km.keymap_items.remove(kmi)
+            except Exception:
+                pass
+        addon_keymaps.clear()
         for m in reversed(modules):
             if hasattr(m, "unregister"):
                 m.unregister()
