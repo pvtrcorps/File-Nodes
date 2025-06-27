@@ -38,6 +38,18 @@ Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la 
 El último socket libre de estos nodos es **virtual**. Nunca lo borres manualmente; al conectar cables se crean nuevas entradas automáticamente y el socket virtual pasa al final.
 Los sockets de entrada tipo **Scene** ya no permiten seleccionar un datablock manualmente, salvo en el nodo **Scene Input**.
 
+## Grupos de File Nodes
+Al igual que en los nodos de *Shader* y *Geometry*, puedes agrupar varios File Nodes para reutilizarlos como una única unidad. Selecciona los nodos deseados y pulsa **Ctrl+G** para crear el grupo; se abrirá automáticamente mostrando los nodos de entrada y salida.
+
+Dentro del grupo puedes añadir entradas y salidas desde el panel lateral **Group** que aparece en la barra **N**. Con **Tab** alternas entre entrar y salir del grupo.
+
+Ejemplo mínimo:
+1. Añade dos nodos y conéctalos.
+2. Selecciónalos y presiona **Ctrl+G** para agruparlos.
+3. Pulsa **Ctrl+Alt+G** para deshacer el grupo y volver al nivel superior.
+
+Esta funcionalidad funciona de la misma manera que en Shader Nodes y Geometry Nodes, por lo que las expectativas de uso son las mismas.
+
 ## Requisitos
 - Blender 4.4 o superior.
 - Python 3.10 o superior.
