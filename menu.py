@@ -11,12 +11,14 @@ categories = [
         NodeItem('FNReadBlendNode'),
         NodeItem('FNImportAlembicNode'),
     ]),
-    NodeCategory('FILE_NODES_LIST', 'Lists', items=[
+    NodeCategory('FILE_NODES_LIST', 'Utils', items=[
         NodeItem('FNCreateList'),
         NodeItem('FNGetItemByName'),
         NodeItem('FNGetItemByIndex'),
         NodeItem('FNJoinStrings'),
         NodeItem('FNSplitString'),
+        NodeItem('FNSwitch'),
+        NodeItem('FNIndexSwitch'),
     ]),
     NodeCategory('FILE_NODES_SCENE', 'Scene', items=[
         NodeItem('FNSceneInputNode'),
