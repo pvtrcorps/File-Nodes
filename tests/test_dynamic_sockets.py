@@ -161,8 +161,10 @@ class DynamicSocketTests(unittest.TestCase):
         node.id_data = tree
         node.inputs = FakeSocketList(node)
         node.outputs = FakeSocketList(node)
-        if hasattr(cls, 'data_type'):
+        if hasattr(cls, 'data_type') or 'data_type' in getattr(cls, '__annotations__', {}):
             object.__setattr__(node, 'data_type', 'WORLD')
+        if 'input_count' in getattr(cls, '__annotations__', {}):
+            object.__setattr__(node, 'input_count', 2)
         if hasattr(cls, 'separator'):
             object.__setattr__(node, 'separator', '')
         node._update_sockets()

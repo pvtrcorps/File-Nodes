@@ -33,7 +33,7 @@ class FNIndexSwitch(Node, FNBaseNode):
         default=2,
         min=1,
         update=lambda self, context: self._update_sockets(context)
-    ) = 2
+    )
 
     data_type: bpy.props.EnumProperty(
         name="Type",
@@ -53,7 +53,7 @@ class FNIndexSwitch(Node, FNBaseNode):
         ],
         default='WORLD',
         update=lambda self, context: self._update_sockets(context)
-    ) = 'WORLD'
+    )
 
     def _update_sockets(self, context=None):
         while self.inputs:

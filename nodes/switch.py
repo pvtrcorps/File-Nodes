@@ -46,7 +46,7 @@ class FNSwitch(Node, FNBaseNode):
         ],
         default='WORLD',
         update=lambda self, context: self.update_type(context)
-    ) = 'WORLD'
+    )
 
     def update_type(self, context):
         self._update_sockets()
