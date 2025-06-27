@@ -10,36 +10,44 @@ class FNJoinStrings(Node, FNBaseNode):
     bl_idname = "FNJoinStrings"
     bl_label = "Join Strings"
 
-    # Start with two string inputs by default so users can immediately
-    # join at least two items without manually adding sockets.
+    input_count: bpy.props.IntProperty(
+        name="Inputs",
+        default=2,
+        min=1,
+        update=lambda self, context: self._update_sockets(context)
+    )
+
+    # Join separator between strings
     separator: bpy.props.StringProperty(name="Separator", default="", update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        self._update_sockets()
+        self._update_sockets(context)
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "separator", text="Separator")
 
     def process(self, context, inputs):
-        values = inputs.get("String")
-        if values is None:
-            parts = []
-        elif isinstance(values, (list, tuple)):
-            parts = [str(v) for v in values if v is not None]
-        else:
-            parts = [str(values)]
+        parts = []
+        for i in range(max(1, int(self.input_count))):
+            value = inputs.get(f"String {i}")
+            if isinstance(value, (list, tuple)):
+                parts.extend(str(v) for v in value if v is not None)
+            elif value is not None:
+                parts.append(str(value))
         joined = self.separator.join(parts)
         return {"String": joined}
 
-    def _update_sockets(self):
+    def _update_sockets(self, context=None):
         while self.inputs:
             self.inputs.remove(self.inputs[-1])
         while self.outputs:
             self.outputs.remove(self.outputs[-1])
-        sock = self.inputs.new('FNSocketString', "String")
-        sock.link_limit = 0
-        sock.display_shape = 'CIRCLE_DOT'
+        count = max(1, int(self.input_count))
+        for i in range(count):
+            self.inputs.new('FNSocketString', f"String {i}")
         self.outputs.new('FNSocketString', "String")
+        if context is not None:
+            auto_evaluate_if_enabled(context)
 
 
 def register():

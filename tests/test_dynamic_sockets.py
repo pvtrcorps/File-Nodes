@@ -162,7 +162,7 @@ class DynamicSocketTests(unittest.TestCase):
         node.inputs = FakeSocketList(node)
         node.outputs = FakeSocketList(node)
         if hasattr(cls, 'data_type') or 'data_type' in getattr(cls, '__annotations__', {}):
-            object.__setattr__(node, 'data_type', 'WORLD')
+            object.__setattr__(node, 'data_type', 'SCENE')
         if 'input_count' in getattr(cls, '__annotations__', {}):
             object.__setattr__(node, 'input_count', 2)
         if hasattr(cls, 'separator'):
@@ -174,13 +174,14 @@ class DynamicSocketTests(unittest.TestCase):
 
     def test_join_strings_multi_input(self):
         node, _ = self._setup_node(join_mod.FNJoinStrings)
-        self.assertEqual(len(node.inputs), 1)
-        sock = node.inputs[0]
-        self.assertEqual(sock.link_limit, 0)
-        self.assertEqual(sock.display_shape, 'CIRCLE_DOT')
+        self.assertEqual(len(node.inputs), 2)
+        node.input_count = 3
+        node._update_sockets()
+        self.assertEqual(len(node.inputs), 3)
 
         node.separator = ''
-        result = node.process(None, {"String": ["A", "B", "C"]})
+        inputs = {f"String {i}": v for i, v in enumerate(["A", "B", "C"])}
+        result = node.process(None, inputs)
         self.assertEqual(result["String"], "ABC")
 
     def test_switch_basic(self):
