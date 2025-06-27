@@ -42,6 +42,30 @@ class FN_OT_remove_tree(Operator):
         return {"FINISHED"}
 
 
+class FN_OT_group_nodes(Operator):
+    bl_idname = "file_nodes.group_nodes"
+    bl_label = "Group Selected Nodes"
+
+    def execute(self, context):
+        try:
+            bpy.ops.node.group_make()
+        except Exception:
+            return {"CANCELLED"}
+        return {"FINISHED"}
+
+
+class FN_OT_ungroup_nodes(Operator):
+    bl_idname = "file_nodes.ungroup_nodes"
+    bl_label = "Ungroup Nodes"
+
+    def execute(self, context):
+        try:
+            bpy.ops.node.group_ungroup()
+        except Exception:
+            return {"CANCELLED"}
+        return {"FINISHED"}
+
+
 class FN_OT_render_scenes(Operator):
     bl_idname = "file_nodes.render_scenes"
     bl_label = "Render Scenes"
@@ -231,6 +255,8 @@ def _evaluate_tree(tree, context):
 ### Registration ###
 def register():
     bpy.utils.register_class(FN_OT_evaluate_all)
+    bpy.utils.register_class(FN_OT_group_nodes)
+    bpy.utils.register_class(FN_OT_ungroup_nodes)
     bpy.utils.register_class(FN_OT_render_scenes)
     bpy.utils.register_class(FN_OT_new_tree)
     bpy.utils.register_class(FN_OT_remove_tree)
@@ -240,4 +266,6 @@ def unregister():
     bpy.utils.unregister_class(FN_OT_remove_tree)
     bpy.utils.unregister_class(FN_OT_new_tree)
     bpy.utils.unregister_class(FN_OT_render_scenes)
+    bpy.utils.unregister_class(FN_OT_ungroup_nodes)
+    bpy.utils.unregister_class(FN_OT_group_nodes)
     bpy.utils.unregister_class(FN_OT_evaluate_all)
