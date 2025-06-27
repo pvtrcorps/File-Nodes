@@ -79,18 +79,13 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNSceneInputNode"
     bl_label = "Scene Input"
 
-    value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
-
     def init(self, context):
-        self.inputs.new('FNSocketScene', "Scene")
+        self.inputs.new('FNSocketSceneInput', "Scene")
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new('FNSocketScene', "Scene")
 
-    def draw_buttons(self, context, layout):
-        layout.prop(self, "value", text="Scene")
-
     def process(self, context, inputs):
-        scene = inputs.get("Scene") or self.value
+        scene = inputs.get("Scene")
         if not scene:
             return {"Scene": None}
         name = inputs.get("Name") or scene.name

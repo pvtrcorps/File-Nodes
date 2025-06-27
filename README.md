@@ -36,7 +36,7 @@ Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la 
 
 ## Sockets dinámicos
 El último socket libre de estos nodos es **virtual**. Nunca lo borres manualmente; al conectar cables se crean nuevas entradas automáticamente y el socket virtual pasa al final.
-Los sockets de entrada tipo **Scene** ya no permiten seleccionar un datablock manualmente.
+Los sockets de entrada tipo **Scene** ya no permiten seleccionar un datablock manualmente, salvo en el nodo **Scene Input**.
 
 ## Requisitos
 - Blender 4.4 o superior.
