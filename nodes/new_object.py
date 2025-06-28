@@ -45,6 +45,7 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
+        FNBaseNode.init(self, context)
         self.update_sockets(context)
 
     def draw_buttons(self, context, layout):

@@ -82,6 +82,7 @@ class FNGetItemByIndex(Node, FNBaseNode):
         self.outputs.new(single, self.data_type.title())
 
     def init(self, context):
+        FNBaseNode.init(self, context)
         self.update_sockets()
 
     def draw_buttons(self, context, layout):

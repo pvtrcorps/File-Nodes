@@ -16,6 +16,7 @@ class FNMaterialProps(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
+        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketMaterial', "Material")
         sock = self.inputs.new('FNSocketBool', "Use Nodes")
         sock.value = True
