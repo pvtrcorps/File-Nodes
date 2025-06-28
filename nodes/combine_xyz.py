@@ -10,7 +10,6 @@ class FNCombineXYZ(Node, FNBaseNode):
     bl_label = "Combine XYZ"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketFloat', "X")
         self.inputs.new('FNSocketFloat', "Y")
         self.inputs.new('FNSocketFloat', "Z")

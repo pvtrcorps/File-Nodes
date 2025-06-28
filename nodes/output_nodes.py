@@ -15,7 +15,6 @@ class FNRenderScenesNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         sock = self.inputs.new('FNSocketSceneList', "Scenes")
         sock.display_shape = 'SQUARE'
 
@@ -36,7 +35,6 @@ class FNOutputScenesNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         sock = self.inputs.new('FNSocketSceneList', "Scenes")
         sock.display_shape = 'SQUARE'
 

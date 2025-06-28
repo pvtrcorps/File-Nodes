@@ -93,7 +93,6 @@ class FNCreateList(Node, FNBaseNode):
             auto_evaluate_if_enabled(context)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self._update_sockets(context)
 
     def draw_buttons(self, context, layout):

@@ -13,7 +13,6 @@ class FNSetWorld(Node, FNBaseNode):
     bl_label = "Set World to Scene"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketScene', "Scene")
         self.inputs.new('FNSocketWorld', "World")
         self.outputs.new('FNSocketScene', "Scene")

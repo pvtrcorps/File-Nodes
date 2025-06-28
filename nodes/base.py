@@ -26,10 +26,7 @@ class FNBaseNode:
     bl_width_default = 200
     # Default header color for all nodes
     color = (0.1, 0.1, 0.1)
-
-    def init(self, context):
-        self.use_custom_color = True
-        self.color = type(self).color
+    color_tag = (0.1, 0.1, 0.1)
 
     def process(self, context, inputs):
         return {}

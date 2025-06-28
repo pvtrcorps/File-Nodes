@@ -16,7 +16,6 @@ class FNEeveeObjectProps(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketObject', "Object")
         sock = self.inputs.new('FNSocketBool', "Visible Shadow")
         sock.value = False

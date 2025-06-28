@@ -20,7 +20,6 @@ class FNReadBlendNode(Node, FNBaseNode):
     bl_label = "Read Blend File"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         sock = self.inputs.new('FNSocketString', "File Path")
         sock.display_shape = 'SQUARE'
         sock = self.outputs.new('FNSocketSceneList', "Scenes")

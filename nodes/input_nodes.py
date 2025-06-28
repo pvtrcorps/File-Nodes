@@ -18,7 +18,6 @@ class FNBoolInputNode(Node, FNBaseNode):
     value: bpy.props.BoolProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketBool', "Boolean")
 
     def draw_buttons(self, context, layout):
@@ -35,7 +34,6 @@ class FNFloatInputNode(Node, FNBaseNode):
     value: bpy.props.FloatProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketFloat', "Float")
 
     def draw_buttons(self, context, layout):
@@ -52,7 +50,6 @@ class FNIntInputNode(Node, FNBaseNode):
     value: bpy.props.IntProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketInt', "Integer")
 
     def draw_buttons(self, context, layout):
@@ -69,7 +66,6 @@ class FNStringInputNode(Node, FNBaseNode):
     value: bpy.props.StringProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketString', "String")
 
     def draw_buttons(self, context, layout):
@@ -86,7 +82,6 @@ class FNVectorInputNode(Node, FNBaseNode):
     value: bpy.props.FloatVectorProperty(name="Value", size=3, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketVector', "Vector")
 
     def draw_buttons(self, context, layout):
@@ -101,7 +96,6 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
     bl_label = "Scene Input"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketScene', "Scene")
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new('FNSocketScene', "Scene")
@@ -132,7 +126,6 @@ class FNObjectInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Object, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketObject', "Object")
 
     def draw_buttons(self, context, layout):
@@ -149,7 +142,6 @@ class FNCollectionInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Collection, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketCollection', "Collection")
 
     def draw_buttons(self, context, layout):
@@ -166,7 +158,6 @@ class FNWorldInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.World, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketWorld', "World")
 
     def draw_buttons(self, context, layout):
@@ -183,7 +174,6 @@ class FNCameraInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Camera, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketCamera', "Camera")
 
     def draw_buttons(self, context, layout):
@@ -200,7 +190,6 @@ class FNImageInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Image, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketImage', "Image")
 
     def draw_buttons(self, context, layout):
@@ -217,7 +206,6 @@ class FNLightInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Light, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketLight', "Light")
 
     def draw_buttons(self, context, layout):
@@ -234,7 +222,6 @@ class FNMaterialInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Material, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketMaterial', "Material")
 
     def draw_buttons(self, context, layout):
@@ -251,7 +238,6 @@ class FNMeshInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Mesh, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketMesh', "Mesh")
 
     def draw_buttons(self, context, layout):
@@ -268,7 +254,6 @@ class FNNodeTreeInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.NodeTree, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketNodeTree', "Node Tree")
 
     def draw_buttons(self, context, layout):
@@ -285,7 +270,6 @@ class FNTextInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.Text, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketText', "Text")
 
     def draw_buttons(self, context, layout):
@@ -302,7 +286,6 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
     value: bpy.props.PointerProperty(type=bpy.types.WorkSpace, update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.outputs.new('FNSocketWorkSpace', "WorkSpace")
 
     def draw_buttons(self, context, layout):

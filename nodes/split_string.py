@@ -10,7 +10,6 @@ class FNSplitString(Node, FNBaseNode):
     bl_label = "Split String"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketString', "String")
         self.inputs.new('FNSocketString', "Separator")
         self.outputs.new('FNSocketStringList', "Strings")

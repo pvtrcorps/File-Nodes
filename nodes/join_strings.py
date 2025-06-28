@@ -21,7 +21,6 @@ class FNJoinStrings(Node, FNBaseNode):
     separator: bpy.props.StringProperty(name="Separator", default="", update=auto_evaluate_if_enabled)
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self._update_sockets(context)
 
     def draw_buttons(self, context, layout):

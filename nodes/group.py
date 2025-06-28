@@ -14,7 +14,6 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         return getattr(ntree, "bl_idname", None) == "FileNodesTreeType"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         if not self.node_tree:
             self.node_tree = bpy.data.node_groups.new("Group", "FileNodesTreeType")
         self._sync_sockets()

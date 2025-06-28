@@ -13,7 +13,6 @@ class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         sock = self.inputs.new('FNSocketString', "Name")
         sock.value = "Scene"
         self.outputs.new('FNSocketScene', "Scene")

@@ -10,7 +10,6 @@ class FNSeparateXYZ(Node, FNBaseNode):
     bl_label = "Separate XYZ"
 
     def init(self, context):
-        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketVector', "Vector")
         self.outputs.new('FNSocketFloat', "X")
         self.outputs.new('FNSocketFloat', "Y")
