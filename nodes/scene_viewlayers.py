@@ -1,17 +1,16 @@
-"""Node that outputs view layers from a scene."""
+"""Node that outputs viewlayers from a scene."""
 
 import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..operators import auto_evaluate_if_enabled
-from ..sockets import FNSocketScene, FNSocketViewLayer
+from ..sockets import FNSocketScene, FNSocketViewLayerList
 
 
 class FNSceneViewlayers(Node, FNBaseNode):
-    """Provide each view layer of a scene as a separate output socket."""
+    """Output all viewlayers from a scene as a list."""
     bl_idname = "FNSceneViewlayers"
-    bl_label = "Scene View Layers"
+    bl_label = "Scene Viewlayers"
 
     @classmethod
     def poll(cls, ntree):
@@ -19,39 +18,16 @@ class FNSceneViewlayers(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
-        scene = getattr(context, "scene", None)
-        self._cached_names = []
-        self._update_sockets(scene, context)
+        self.outputs.new('FNSocketViewLayerList', "Viewlayers")
 
     def update(self):
-        """Update sockets when the scene input changes."""
-        sock = self.inputs.get("Scene")
-        scene = getattr(sock, "value", None) if sock else None
-        self._update_sockets(scene, bpy.context)
-
-    def _update_sockets(self, scene, context=None):
-        names = [vl.name for vl in getattr(scene, "view_layers", [])] if scene else []
-        if names == getattr(self, "_cached_names", None):
-            return
-        while self.outputs:
-            self.outputs.remove(self.outputs[-1])
-        for name in names:
-            self.outputs.new('FNSocketViewLayer', name)
-        self._cached_names = list(names)
-        if context is not None:
-            auto_evaluate_if_enabled(context)
+        pass
 
     def process(self, context, inputs):
         scene = inputs.get("Scene")
-        self._update_sockets(scene, context)
-        result = {}
         if scene:
-            for vl in scene.view_layers:
-                result[vl.name] = vl
-        else:
-            for sock in self.outputs:
-                result[sock.name] = None
-        return result
+            return {"Viewlayers": list(scene.view_layers)}
+        return {"Viewlayers": []}
 
 
 def register():
