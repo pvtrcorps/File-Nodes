@@ -34,6 +34,7 @@ categories = [
         NodeItem('FNWorkbenchSceneProps'),
         NodeItem('FNOutputProps'),
         NodeItem('FNSceneProps'),
+        NodeItem('FNSceneViewlayers'),
         NodeItem('FNRenderScenesNode'),
         NodeItem('FNOutputScenesNode'),
     ]),
