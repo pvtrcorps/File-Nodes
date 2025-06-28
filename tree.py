@@ -223,24 +223,11 @@ class FileNodesTree(NodeTree):
 
     @classmethod
     def valid_socket_type(cls, idname):
-        """Return True if ``idname`` refers to a valid socket type.
-
-        Blender expects this method to accept builtin socket types in
-        addition to those provided by the addon.  The previous
-        implementation only allowed sockets defined in ``addon.sockets``
-        which caused crashes when the UI queried other socket types,
-        e.g. while dragging a link.  The new version falls back to any
-        type present in ``bpy.types``.
-        """
         try:
             from . import sockets
-            if hasattr(sockets, idname):
-                return True
         except Exception:
-            pass
-        if hasattr(getattr(bpy, "types", None), idname):
-            return True
-        return idname == "NodeSocketVirtual"
+            return idname == "NodeSocketVirtual"
+        return hasattr(sockets, idname) or idname == "NodeSocketVirtual"
 
     def contains_tree(self, sub_tree):
         if not sub_tree:
