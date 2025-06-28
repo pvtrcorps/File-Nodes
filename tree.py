@@ -204,7 +204,7 @@ class FileNodesTree(NodeTree):
     fn_enabled: bpy.props.BoolProperty(name='Enabled', default=True)
     fn_inputs: bpy.props.PointerProperty(type=FileNodesTreeInputs)
 
-    def interface_update(self, context=None):
+    def interface_update(self, context):
         if getattr(self, "fn_inputs", None):
             self.fn_inputs.sync_inputs(self)
 
@@ -250,7 +250,7 @@ class FileNodesTree(NodeTree):
         return walk(self)
 
     def update(self):
-        self.interface_update()
+        self.interface_update(bpy.context)
         if getattr(self, "fn_inputs", None):
             self.fn_inputs.restore_and_clear()
 
