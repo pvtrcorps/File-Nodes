@@ -26,6 +26,7 @@ _socket_single = {
     'NODETREE': 'FNSocketNodeTree',
     'TEXT': 'FNSocketText',
     'WORKSPACE': 'FNSocketWorkSpace',
+    'VIEW_LAYER': 'FNSocketViewLayer',
 }
 _socket_list = {
     'SCENE': 'FNSocketSceneList',
@@ -40,6 +41,7 @@ _socket_list = {
     'NODETREE': 'FNSocketNodeTreeList',
     'TEXT': 'FNSocketTextList',
     'WORKSPACE': 'FNSocketWorkSpaceList',
+    'VIEW_LAYER': 'FNSocketViewLayerList',
 }
 
 class FNGetItemByName(Node, FNBaseNode):
@@ -62,6 +64,7 @@ class FNGetItemByName(Node, FNBaseNode):
             ('NODETREE', 'Node Tree', ''),
             ('TEXT', 'Text', ''),
             ('WORKSPACE', 'WorkSpace', ''),
+            ('VIEW_LAYER', 'View Layer', ''),
         ],
         default='SCENE',
         update=lambda self, context: self.update_type(context)

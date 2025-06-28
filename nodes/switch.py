@@ -23,6 +23,7 @@ _socket_single = {
     'NODETREE': 'FNSocketNodeTree',
     'TEXT': 'FNSocketText',
     'WORKSPACE': 'FNSocketWorkSpace',
+    'VIEW_LAYER': 'FNSocketViewLayer',
 }
 
 
@@ -46,6 +47,7 @@ class FNSwitch(Node, FNBaseNode):
             ('NODETREE', 'Node Tree', ''),
             ('TEXT', 'Text', ''),
             ('WORKSPACE', 'WorkSpace', ''),
+            ('VIEW_LAYER', 'View Layer', ''),
         ],
         default='SCENE',
         update=lambda self, context: self.update_type(context)
