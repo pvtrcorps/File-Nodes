@@ -9,6 +9,7 @@ from ..sockets import FNSocketObject, FNSocketBool
 class FNObjectProps(Node, FNBaseNode):
     bl_idname = "FNObjectProps"
     bl_label = "Object Properties"
+    color_tag = 'OUTPUT'
 
 
     @classmethod

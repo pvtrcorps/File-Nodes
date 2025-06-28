@@ -8,6 +8,7 @@ from ..sockets import FNSocketScene, FNSocketString
 class FNSetSceneName(Node, FNBaseNode):
     bl_idname = "FNSetSceneName"
     bl_label = "Set Scene Name"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

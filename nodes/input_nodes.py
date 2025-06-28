@@ -14,6 +14,7 @@ from ..sockets import (
 class FNBoolInputNode(Node, FNBaseNode):
     bl_idname = "FNBoolInputNode"
     bl_label = "Boolean Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.BoolProperty(name="Value", update=auto_evaluate_if_enabled)
 
@@ -30,6 +31,7 @@ class FNBoolInputNode(Node, FNBaseNode):
 class FNFloatInputNode(Node, FNBaseNode):
     bl_idname = "FNFloatInputNode"
     bl_label = "Float Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.FloatProperty(name="Value", update=auto_evaluate_if_enabled)
 
@@ -46,6 +48,7 @@ class FNFloatInputNode(Node, FNBaseNode):
 class FNIntInputNode(Node, FNBaseNode):
     bl_idname = "FNIntInputNode"
     bl_label = "Integer Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.IntProperty(name="Value", update=auto_evaluate_if_enabled)
 
@@ -62,6 +65,7 @@ class FNIntInputNode(Node, FNBaseNode):
 class FNStringInputNode(Node, FNBaseNode):
     bl_idname = "FNStringInputNode"
     bl_label = "String Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.StringProperty(name="Value", update=auto_evaluate_if_enabled)
 
@@ -78,6 +82,7 @@ class FNStringInputNode(Node, FNBaseNode):
 class FNVectorInputNode(Node, FNBaseNode):
     bl_idname = "FNVectorInputNode"
     bl_label = "Vector Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.FloatVectorProperty(name="Value", size=3, update=auto_evaluate_if_enabled)
 
@@ -94,6 +99,7 @@ class FNVectorInputNode(Node, FNBaseNode):
 class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNSceneInputNode"
     bl_label = "Scene Input"
+    color_tag = 'OUTPUT'
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
@@ -122,6 +128,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
 class FNObjectInputNode(Node, FNBaseNode):
     bl_idname = "FNObjectInputNode"
     bl_label = "Object Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Object, update=auto_evaluate_if_enabled)
 
@@ -138,6 +145,7 @@ class FNObjectInputNode(Node, FNBaseNode):
 class FNCollectionInputNode(Node, FNBaseNode):
     bl_idname = "FNCollectionInputNode"
     bl_label = "Collection Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Collection, update=auto_evaluate_if_enabled)
 
@@ -154,6 +162,7 @@ class FNCollectionInputNode(Node, FNBaseNode):
 class FNWorldInputNode(Node, FNBaseNode):
     bl_idname = "FNWorldInputNode"
     bl_label = "World Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.World, update=auto_evaluate_if_enabled)
 
@@ -170,6 +179,7 @@ class FNWorldInputNode(Node, FNBaseNode):
 class FNCameraInputNode(Node, FNBaseNode):
     bl_idname = "FNCameraInputNode"
     bl_label = "Camera Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Camera, update=auto_evaluate_if_enabled)
 
@@ -186,6 +196,7 @@ class FNCameraInputNode(Node, FNBaseNode):
 class FNImageInputNode(Node, FNBaseNode):
     bl_idname = "FNImageInputNode"
     bl_label = "Image Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Image, update=auto_evaluate_if_enabled)
 
@@ -202,6 +213,7 @@ class FNImageInputNode(Node, FNBaseNode):
 class FNLightInputNode(Node, FNBaseNode):
     bl_idname = "FNLightInputNode"
     bl_label = "Light Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Light, update=auto_evaluate_if_enabled)
 
@@ -218,6 +230,7 @@ class FNLightInputNode(Node, FNBaseNode):
 class FNMaterialInputNode(Node, FNBaseNode):
     bl_idname = "FNMaterialInputNode"
     bl_label = "Material Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Material, update=auto_evaluate_if_enabled)
 
@@ -234,6 +247,7 @@ class FNMaterialInputNode(Node, FNBaseNode):
 class FNMeshInputNode(Node, FNBaseNode):
     bl_idname = "FNMeshInputNode"
     bl_label = "Mesh Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Mesh, update=auto_evaluate_if_enabled)
 
@@ -250,6 +264,7 @@ class FNMeshInputNode(Node, FNBaseNode):
 class FNNodeTreeInputNode(Node, FNBaseNode):
     bl_idname = "FNNodeTreeInputNode"
     bl_label = "Node Tree Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.NodeTree, update=auto_evaluate_if_enabled)
 
@@ -266,6 +281,7 @@ class FNNodeTreeInputNode(Node, FNBaseNode):
 class FNTextInputNode(Node, FNBaseNode):
     bl_idname = "FNTextInputNode"
     bl_label = "Text Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.Text, update=auto_evaluate_if_enabled)
 
@@ -282,6 +298,7 @@ class FNTextInputNode(Node, FNBaseNode):
 class FNWorkSpaceInputNode(Node, FNBaseNode):
     bl_idname = "FNWorkSpaceInputNode"
     bl_label = "WorkSpace Input"
+    color_tag = 'OUTPUT'
 
     value: bpy.props.PointerProperty(type=bpy.types.WorkSpace, update=auto_evaluate_if_enabled)
 

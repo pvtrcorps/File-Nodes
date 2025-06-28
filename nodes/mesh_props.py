@@ -9,6 +9,7 @@ from ..sockets import FNSocketMesh, FNSocketBool
 class FNMeshProps(Node, FNBaseNode):
     bl_idname = "FNMeshProps"
     bl_label = "Mesh Properties"
+    color_tag = 'OUTPUT'
 
 
     @classmethod

@@ -9,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketString
 class FNSetRenderEngine(Node, FNBaseNode):
     bl_idname = "FNSetRenderEngine"
     bl_label = "Set Render Engine"
+    color_tag = 'OUTPUT'
 
 
     @classmethod
