@@ -91,13 +91,21 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         existing = {item.collection for item in self.layer_states}
 
         def add_items(layer):
-            if layer.collection not in existing:
+            coll = layer.collection
+            # Skip the scene master collection as it's an embedded ID and cannot
+            # be stored in an IDProperty.
+            if getattr(coll, "is_embedded_data", False):
+                for ch in layer.children:
+                    add_items(ch)
+                return
+
+            if coll not in existing:
                 item = self.layer_states.add()
-                item.collection = layer.collection
+                item.collection = coll
                 item.exclude = layer.exclude
                 item.holdout = layer.holdout
                 item.indirect_only = layer.indirect_only
-                existing.add(layer.collection)
+                existing.add(coll)
             for ch in layer.children:
                 add_items(ch)
         add_items(view_layer.layer_collection)
