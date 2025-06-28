@@ -232,6 +232,8 @@ class FileNodesTree(NodeTree):
         e.g. while dragging a link.  The new version falls back to any
         type present in ``bpy.types``.
         """
+        if not idname:
+            return False
         try:
             from . import sockets
             if hasattr(sockets, idname):
