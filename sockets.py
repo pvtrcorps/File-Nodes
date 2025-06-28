@@ -21,7 +21,7 @@ class FNSocketBool(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
-        return _color(0.8, 0.8, 0.2)
+        return _color(1.0, 0.4118, 0.8627)
     value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
 
 class FNSocketFloat(NodeSocket):
@@ -30,7 +30,7 @@ class FNSocketFloat(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
-        return _color(0.6, 0.8, 0.9)
+        return _color(0.7765, 0.7765, 0.7765)
     value: bpy.props.FloatProperty(update=auto_evaluate_if_enabled)
 
 class FNSocketVector(NodeSocket):
@@ -39,7 +39,7 @@ class FNSocketVector(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
-        return _color(0.4, 0.7, 0.9)
+        return _color(0.3882, 0.3882, 0.7804)
     value: bpy.props.FloatVectorProperty(size=3, update=auto_evaluate_if_enabled)
 
 class FNSocketInt(NodeSocket):
@@ -48,7 +48,7 @@ class FNSocketInt(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
-        return _color(0.9, 0.7, 0.5)
+        return _color(0.1765, 0.6392, 0.4078)
     value: bpy.props.IntProperty(update=auto_evaluate_if_enabled)
 
 class FNSocketString(NodeSocket):
@@ -57,7 +57,7 @@ class FNSocketString(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
-        return _color(0.7, 0.7, 0.7)
+        return _color(0.3137, 0.6667, 1.0)
     value: bpy.props.StringProperty(update=auto_evaluate_if_enabled)
 
 class FNSocketStringList(NodeSocket):
@@ -67,7 +67,7 @@ class FNSocketStringList(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name)
     def draw_color(self, context, node):
-        return _color(0.7, 0.7, 0.7)
+        return _color(0.3137, 0.6667, 1.0)
 
 # Single datablock sockets
 class FNSocketScene(NodeSocket):
@@ -76,7 +76,7 @@ class FNSocketScene(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'SCENE_DATA')
     def draw_color(self, context, node):
-        return _color(0.6, 0.9, 1.0)
+        return _color(0.0, 0.0, 0.0)
     value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
 
 
@@ -85,9 +85,8 @@ class FNSocketObject(NodeSocket):
     bl_label = "Object"
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'OBJECT_DATA')
-    # Use Blender's default orange object socket color
     def draw_color(self, context, node):
-        return _color(0.93, 0.62, 0.36)
+        return _color(0.9608, 0.5529, 0.0824)
     value: bpy.props.PointerProperty(type=bpy.types.Object, update=auto_evaluate_if_enabled)
 
 class FNSocketCollection(NodeSocket):
@@ -95,9 +94,8 @@ class FNSocketCollection(NodeSocket):
     bl_label = "Collection"
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'OUTLINER_COLLECTION')
-    # Blender's default collection socket color is white
     def draw_color(self, context, node):
-        return _color(0.96, 0.96, 0.96)
+        return _color(1.0, 1.0, 1.0)
     value: bpy.props.PointerProperty(type=bpy.types.Collection, update=auto_evaluate_if_enabled)
 
 class FNSocketCamera(NodeSocket):
@@ -133,7 +131,7 @@ class FNSocketMaterial(NodeSocket):
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'MATERIAL_DATA')
     def draw_color(self, context, node):
-        return _color(0.9, 0.6, 0.8)
+        return _color(0.8863, 0.3137, 0.3137)
     value: bpy.props.PointerProperty(type=bpy.types.Material, update=auto_evaluate_if_enabled)
 
 class FNSocketMesh(NodeSocket):
@@ -141,9 +139,8 @@ class FNSocketMesh(NodeSocket):
     bl_label = "Mesh"
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'MESH_DATA')
-    # Match geometry socket color used in Geometry Nodes (green)
     def draw_color(self, context, node):
-        return _color(0.0, 0.84, 0.64)
+        return _color(0.2118, 0.7529, 0.4471)
     value: bpy.props.PointerProperty(type=bpy.types.Mesh, update=auto_evaluate_if_enabled)
 
 class FNSocketNodeTree(NodeSocket):
@@ -190,7 +187,7 @@ class FNSocketSceneList(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='SCENE_DATA')
     def draw_color(self, context, node):
-        return _color(0.6, 0.9, 1.0)
+        return _color(0.0, 0.0, 0.0)
 
 class FNSocketObjectList(NodeSocket):
     bl_idname = "FNSocketObjectList"
@@ -199,7 +196,7 @@ class FNSocketObjectList(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='OBJECT_DATA')
     def draw_color(self, context, node):
-        return _color(0.93, 0.62, 0.36)
+        return _color(0.9608, 0.5529, 0.0824)
 
 class FNSocketCollectionList(NodeSocket):
     bl_idname = "FNSocketCollectionList"
@@ -208,7 +205,7 @@ class FNSocketCollectionList(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='OUTLINER_COLLECTION')
     def draw_color(self, context, node):
-        return _color(0.96, 0.96, 0.96)
+        return _color(1.0, 1.0, 1.0)
 
 class FNSocketWorldList(NodeSocket):
     bl_idname = "FNSocketWorldList"
@@ -253,7 +250,7 @@ class FNSocketMaterialList(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='MATERIAL_DATA')
     def draw_color(self, context, node):
-        return _color(0.9, 0.6, 0.8)
+        return _color(0.8863, 0.3137, 0.3137)
 
 class FNSocketMeshList(NodeSocket):
     bl_idname = "FNSocketMeshList"
@@ -262,7 +259,7 @@ class FNSocketMeshList(NodeSocket):
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='MESH_DATA')
     def draw_color(self, context, node):
-        return _color(0.0, 0.84, 0.64)
+        return _color(0.2118, 0.7529, 0.4471)
 
 class FNSocketNodeTreeList(NodeSocket):
     bl_idname = "FNSocketNodeTreeList"
