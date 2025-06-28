@@ -17,6 +17,8 @@ categories = [
         NodeItem('FNGetItemByIndex'),
         NodeItem('FNJoinStrings'),
         NodeItem('FNSplitString'),
+        NodeItem('FNCombineXYZ'),
+        NodeItem('FNSeparateXYZ'),
         NodeItem('FNSwitch'),
         NodeItem('FNIndexSwitch'),
     ]),
