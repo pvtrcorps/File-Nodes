@@ -15,7 +15,7 @@ class FNBoolInputNode(Node, FNBaseNode):
     bl_idname = "FNBoolInputNode"
     bl_label = "Boolean Input"
 
-    value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
+    value: bpy.props.BoolProperty(name="Value", update=auto_evaluate_if_enabled)
 
     def init(self, context):
         self.outputs.new('FNSocketBool', "Boolean")
