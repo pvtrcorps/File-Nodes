@@ -198,6 +198,7 @@ class FileNodesTree(NodeTree):
     bl_idname = "FileNodesTreeType"
     bl_label = "File Nodes"
     bl_icon = 'NODETREE'
+    bl_description = "Node tree for managing data across files"
     bl_use_group_interface = True
 
     fn_enabled: bpy.props.BoolProperty(name='Enabled', default=True)
@@ -211,6 +212,47 @@ class FileNodesTree(NodeTree):
     @classmethod
     def poll(cls, context):
         return True
+
+    @classmethod
+    def get_from_context(cls, context):
+        scene = getattr(context, "scene", None)
+        tree = getattr(scene, "file_nodes_tree", None) if scene else None
+        if tree:
+            return tree, scene, scene
+        return None, None, None
+
+    @classmethod
+    def valid_socket_type(cls, idname):
+        try:
+            from . import sockets
+        except Exception:
+            return idname == "NodeSocketVirtual"
+        return hasattr(sockets, idname) or idname == "NodeSocketVirtual"
+
+    def contains_tree(self, sub_tree):
+        if not sub_tree:
+            return False
+        visited = set()
+
+        def walk(tree):
+            if tree == sub_tree:
+                return True
+            if tree in visited:
+                return False
+            visited.add(tree)
+            for node in getattr(tree, "nodes", []):
+                if getattr(node, "bl_idname", "") == "FNGroupNode":
+                    child = getattr(node, "node_tree", None)
+                    if child and walk(child):
+                        return True
+            return False
+
+        return walk(self)
+
+    def update(self):
+        self.interface_update()
+        if getattr(self, "fn_inputs", None):
+            self.fn_inputs.restore_and_clear()
 
 classes = (
     FileNodeTreeInput,
