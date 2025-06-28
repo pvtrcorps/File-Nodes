@@ -19,7 +19,7 @@ class FNSocketBool(NodeSocket):
     bl_idname = "FNSocketBool"
     bl_label = "Boolean"
     def draw(self, context, layout, node, text):
-        _draw_value_socket(self, layout, text, 'CHECKBOX_HLT')
+        _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
         return _color(0.8, 0.8, 0.2)
     value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
@@ -28,7 +28,7 @@ class FNSocketFloat(NodeSocket):
     bl_idname = "FNSocketFloat"
     bl_label = "Float"
     def draw(self, context, layout, node, text):
-        _draw_value_socket(self, layout, text, 'PROP_FLOAT')
+        _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
         return _color(0.6, 0.8, 0.9)
     value: bpy.props.FloatProperty(update=auto_evaluate_if_enabled)
@@ -37,7 +37,7 @@ class FNSocketInt(NodeSocket):
     bl_idname = "FNSocketInt"
     bl_label = "Integer"
     def draw(self, context, layout, node, text):
-        _draw_value_socket(self, layout, text, 'SORTSIZE')
+        _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
         return _color(0.9, 0.7, 0.5)
     value: bpy.props.IntProperty(update=auto_evaluate_if_enabled)
@@ -56,7 +56,7 @@ class FNSocketStringList(NodeSocket):
     bl_label = "String List"
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
-        layout.label(text=text or self.name, icon='FONT_DATA')
+        layout.label(text=text or self.name)
     def draw_color(self, context, node):
         return _color(0.7, 0.7, 0.7)
 
