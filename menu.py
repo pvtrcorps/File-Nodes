@@ -34,11 +34,13 @@ categories = [
         NodeItem('FNWorkbenchSceneProps'),
         NodeItem('FNOutputProps'),
         NodeItem('FNSceneProps'),
+        NodeItem('FNSceneViewlayers'),
         NodeItem('FNRenderScenesNode'),
         NodeItem('FNOutputScenesNode'),
     ]),
     NodeCategory('FILE_NODES_VIEWLAYER', 'Viewlayer', items=[
         NodeItem('FNViewLayerVisibility'),
+        NodeItem('FNNewViewLayer'),
     ]),
     NodeCategory('FILE_NODES_OBJECT', 'Object', items=[
         NodeItem('FNObjectInputNode'),
