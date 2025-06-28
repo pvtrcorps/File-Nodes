@@ -5,19 +5,6 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 ## Objetivos del MVP
 - Crear un nuevo `NodeTree` personalizado.
 - Implementar nodos básicos para leer y manipular datablocks.
-- Gestionar una lista global de árboles *File Nodes* que se evalúan sobre la escena activa.
-
--## Nodos principales
-- **Interface Input**: expone datablocks del archivo actual.
-- **Scene Input**, **Object Input** y **Collection Input**: permiten referenciar manualmente estos datablocks. El nodo **Scene Input** siempre crea un duplicado y obliga a darle un nombre nuevo.
-- **Read Blend File**: importa escenas, colecciones, objetos y mundos desde archivos externos.
-- **Import Alembic**: carga objetos desde archivos `.abc`.
-- **Create List**, **Get Item by Name** y **Get Item by Index**: operan sobre listas de datablocks.
-- **Join Strings** y **Split String**: operaciones básicas con cadenas.
-- **Link to Scene** y **Link to Collection**: añaden objetos o colecciones a otras estructuras.
-- **Set World to Scene**: ejemplo de nodo de acción que modifica una `Scene`.
-- **Set Scene Name**, **Set Collection Name** y **Set Object Name**: renombran escenas, colecciones y objetos.
-- **Group Instance**: ejecuta otro árbol de File Nodes y devuelve sus salidas.
 
 ## Arquitectura general
 1. **NodeTree personalizado**: contenedor del grafo.
@@ -26,26 +13,17 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 4. **Árboles globales**: los `FileNodesTree` residen en `bpy.data.node_groups` y se evalúan de forma conjunta.
 
 ## Modelo de ejecución
-Cada `FileNodesTree` se evalúa globalmente sobre la escena activa. Antes de la ejecución se restauran los valores originales guardados para mantener la no destructividad. Esto asegura que los mismos inputs producen siempre los mismos resultados.
+Cada `FileNodesTree` se evalúa globalmente. File Nodes no edita ni elimina ningún Datablock existente, trabaja siempre sobre copias recién creadas en cada ejecución  para mantener la no destructividad, y eliminando y limpiando antes de la siguiente ejecución cualquier copia . Esto asegura que los mismos inputs producen siempre los mismos resultados.
 
 ## Gestión de datablocks
 - Los datos externos se vinculan mediante *library linking* para mantener la no destructividad.
 - Se recomienda marcar los `NodeTree` con *Fake User* para no perderlos al cerrar el archivo.
-- Al desactivar un árbol se restauran los valores previos de la escena.
-- Durante la evaluación la escena se modifica en vivo pero se conservan copias internas para volver al estado previo en la siguiente ejecución.
-
-## Sockets dinámicos
-El último socket libre de estos nodos es **virtual**. Nunca lo borres manualmente; al conectar cables se crean nuevas entradas automáticamente y el socket virtual pasa al final.
+- Durante la evaluación la copia de la escena (o cualquier otro Datablock) se modifica en vivo pero se conservan las copias originales internas.
 
 ## Grupos de File Nodes
 Al igual que en los nodos de *Shader* y *Geometry*, puedes agrupar varios File Nodes para reutilizarlos como una única unidad. Selecciona los nodos deseados y pulsa **Ctrl+G** para crear el grupo; se abrirá automáticamente mostrando los nodos de entrada y salida.
-
 Dentro del grupo puedes añadir entradas y salidas desde el panel lateral **Group** que aparece en la barra **N**. Con **Tab** alternas entre entrar y salir del grupo.
-
-Ejemplo mínimo:
-1. Añade dos nodos y conéctalos.
-2. Selecciónalos y presiona **Ctrl+G** para agruparlos.
-3. Pulsa **Ctrl+Alt+G** para deshacer el grupo y volver al nivel superior.
+Del mismo modo, en el menú Add > Group Se listan los Nodegroups disponibles. (No es posible añadir recursivamente un grupo de nodos dentro de otros)
 
 Esta funcionalidad funciona de la misma manera que en Shader Nodes y Geometry Nodes, por lo que las expectativas de uso son las mismas.
 
@@ -55,4 +33,3 @@ Esta funcionalidad funciona de la misma manera que en Shader Nodes y Geometry No
 
 ## Conclusión
 File Nodes sienta las bases para gestionar escenas y recursos de varios archivos con un enfoque nodal. Aunque este MVP es limitado, abre la puerta a expandir el concepto de **Everything Nodes** también a la organización de proyectos.
-
