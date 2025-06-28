@@ -35,7 +35,7 @@ class FN_UL_view_layer_collections(UIList):
                 item,
                 "exclude",
                 text="",
-                icon='CHECKBOX_HLT' if item.exclude else 'CHECKBOX_DEHLT',
+                icon='CHECKBOX_DEHLT' if item.exclude else 'CHECKBOX_HLT',
                 emboss=False,
             )
             icon_row.prop(
@@ -101,41 +101,39 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         if not view_layer:
             self.layer_states.clear()
             return
-        valid = []
+        active_coll = None
+        if 0 <= self.active_index < len(self.layer_states):
+            active_coll = self.layer_states[self.active_index].collection
 
-        def walk(layer):
-            valid.append(layer.collection)
-            for ch in layer.children:
-                walk(ch)
-        walk(view_layer.layer_collection)
-
-        for i in reversed(range(len(self.layer_states))):
-            if self.layer_states[i].collection not in valid:
-                self.layer_states.remove(i)
-
-        existing_map = {item.collection: item for item in self.layer_states}
-
-        def add_items(layer, depth=0):
+        def collect(layer, depth=0, items=None):
+            if items is None:
+                items = []
             coll = layer.collection
-            # Skip the scene master collection as it's an embedded ID and cannot
-            # be stored in an IDProperty.
             if getattr(coll, "is_embedded_data", False):
                 for ch in layer.children:
-                    add_items(ch, depth + 1)
-                return
-
-            item = existing_map.get(coll)
-            if not item:
-                item = self.layer_states.add()
-                item.collection = coll
-                existing_map[coll] = item
-            item.exclude = layer.exclude
-            item.holdout = layer.holdout
-            item.indirect_only = layer.indirect_only
-            item.depth = depth
+                    collect(ch, depth + 1, items)
+                return items
+            items.append((coll, layer.exclude, layer.holdout, layer.indirect_only, depth))
             for ch in layer.children:
-                add_items(ch, depth + 1)
-        add_items(view_layer.layer_collection)
+                collect(ch, depth + 1, items)
+            return items
+
+        states = collect(view_layer.layer_collection)
+
+        self.layer_states.clear()
+        for coll, excl, hold, ind_only, depth in states:
+            item = self.layer_states.add()
+            item.collection = coll
+            item.exclude = excl
+            item.holdout = hold
+            item.indirect_only = ind_only
+            item.depth = depth
+
+        if active_coll:
+            for idx, item in enumerate(self.layer_states):
+                if item.collection == active_coll:
+                    self.active_index = idx
+                    break
 
     def draw_buttons(self, context, layout):
         view_layer = self._get_view_layer_for_ui(context)
