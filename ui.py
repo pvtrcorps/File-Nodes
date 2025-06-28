@@ -30,14 +30,7 @@ class FILE_NODES_PT_global(Panel):
         if tree and iface and ctx:
             box = layout.box()
             if hasattr(box, "template_node_view") and iface:
-                # Blender 4.4 switched `template_node_view` to take three
-                # arguments: `(node_tree, node, socket)`. Older versions still
-                # expect a `context` argument first. Try the old signature and
-                # fall back to the new one to keep compatibility.
-                try:
-                    box.template_node_view(context, tree, None, None)
-                except TypeError:
-                    box.template_node_view(tree, None, None)
+                box.template_node_view(context, tree, None, None)
             for item in getattr(iface, "items_tree", []):
                 if getattr(item, "in_out", None) == 'INPUT':
                     inp = ctx.inputs.get(item.name)
