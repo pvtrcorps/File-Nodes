@@ -1,3 +1,5 @@
+"""Node that encapsulates a group of other nodes."""
+
 import bpy
 from bpy.types import NodeCustomGroup
 from .base import FNBaseNode
@@ -6,6 +8,7 @@ from ..common import LIST_TO_SINGLE
 
 
 class FNGroupNode(NodeCustomGroup, FNBaseNode):
+    """Execute an embedded node group and output its results."""
     bl_idname = "FNGroupNode"
     bl_label = "Group"
     bl_icon = 'NODETREE'

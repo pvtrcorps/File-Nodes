@@ -1,3 +1,5 @@
+"""Node for creating new scenes."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
@@ -5,6 +7,7 @@ from ..sockets import FNSocketScene, FNSocketString
 
 
 class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
+    """Create a new scene with the given name."""
     bl_idname = "FNNewScene"
     bl_label = "New Scene"
 

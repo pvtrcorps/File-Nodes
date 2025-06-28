@@ -1,3 +1,5 @@
+"""Node to concatenate multiple strings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..operators import auto_evaluate_if_enabled
 
 
 class FNJoinStrings(Node, FNBaseNode):
+    """Join input strings with a separator."""
     bl_idname = "FNJoinStrings"
     bl_label = "Join Strings"
 

@@ -1,3 +1,5 @@
+"""Node for adjusting object visibility settings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketObject, FNSocketBool
 
 
 class FNObjectProps(Node, FNBaseNode):
+    """Set visibility flags on an object."""
     bl_idname = "FNObjectProps"
     bl_label = "Object Properties"
 

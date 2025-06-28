@@ -1,3 +1,5 @@
+"""Node for adjusting Cycles scene settings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 
 
 class FNCyclesSceneProps(Node, FNBaseNode):
+    """Configure Cycles rendering options for a scene."""
     bl_idname = "FNCyclesSceneProps"
     bl_label = "Cycles Scene Properties"
 

@@ -1,3 +1,5 @@
+"""Node that links objects or collections to a scene."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -7,6 +9,7 @@ from ..sockets import (
 
 
 class FNLinkToScene(Node, FNBaseNode):
+    """Link provided data to the specified scene."""
     bl_idname = "FNLinkToScene"
     bl_label = "Link to Scene"
 

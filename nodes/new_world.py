@@ -1,3 +1,5 @@
+"""Node for creating a new World datablock."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
@@ -5,6 +7,7 @@ from ..sockets import FNSocketWorld, FNSocketString
 
 
 class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
+    """Create a new world with the given name."""
     bl_idname = "FNNewWorld"
     bl_label = "New World"
 

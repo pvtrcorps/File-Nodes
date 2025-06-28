@@ -1,3 +1,5 @@
+"""Load and register all node modules for the add-on."""
+# Initialization module for File Nodes.
 
 import bpy, importlib
 # Node modules used by the File Nodes addon. `input_nodes` now contains

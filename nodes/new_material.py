@@ -1,3 +1,5 @@
+"""Node for creating new materials."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
@@ -5,6 +7,7 @@ from ..sockets import FNSocketMaterial, FNSocketString
 
 
 class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
+    """Create a new material with the given name."""
     bl_idname = "FNNewMaterial"
     bl_label = "New Material"
 

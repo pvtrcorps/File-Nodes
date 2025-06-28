@@ -1,3 +1,5 @@
+"""Node to import objects from an Alembic file."""
+
 import bpy
 from bpy.types import Node
 
@@ -9,6 +11,7 @@ _abc_cache = {}
 
 
 class FNImportAlembic(Node, FNBaseNode):
+    """Load objects from an Alembic archive."""
     bl_idname = "FNImportAlembicNode"
     bl_label = "Import Alembic"
 

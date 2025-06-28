@@ -1,3 +1,5 @@
+"""Node to rename a collection."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -6,6 +8,7 @@ from ..sockets import FNSocketCollection, FNSocketString
 
 
 class FNSetCollectionName(Node, FNBaseNode):
+    """Rename a collection datablock."""
     bl_idname = "FNSetCollectionName"
     bl_label = "Set Collection Name"
 

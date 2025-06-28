@@ -1,3 +1,5 @@
+"""Node to retrieve an item from a list by its index."""
+
 import bpy
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
@@ -41,6 +43,7 @@ _socket_list = {
 }
 
 class FNGetItemByIndex(Node, FNBaseNode):
+    """Output the item at the given index from an input list."""
     bl_idname = "FNGetItemByIndex"
     bl_label = "Get Item by Index"
 

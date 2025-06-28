@@ -1,3 +1,5 @@
+"""Node for adjusting Workbench scene properties."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 
 
 class FNWorkbenchSceneProps(Node, FNBaseNode):
+    """Set the anti-aliasing samples for Workbench renderer."""
     bl_idname = "FNWorkbenchSceneProps"
     bl_label = "Workbench Scene Properties"
 

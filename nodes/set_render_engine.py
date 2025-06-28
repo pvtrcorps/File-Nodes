@@ -1,3 +1,5 @@
+"""Node to set the render engine for a scene."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketString
 
 
 class FNSetRenderEngine(Node, FNBaseNode):
+    """Change which render engine a scene uses."""
     bl_idname = "FNSetRenderEngine"
     bl_label = "Set Render Engine"
 

@@ -1,3 +1,5 @@
+"""Node to rename a scene."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -6,6 +8,7 @@ from ..sockets import FNSocketScene, FNSocketString
 
 
 class FNSetSceneName(Node, FNBaseNode):
+    """Rename the provided scene."""
     bl_idname = "FNSetSceneName"
     bl_label = "Set Scene Name"
 

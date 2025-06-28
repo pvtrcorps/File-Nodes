@@ -1,3 +1,5 @@
+"""Node that separates a vector into X, Y and Z components."""
+
 import bpy
 from bpy.types import Node
 
@@ -6,6 +8,7 @@ from ..sockets import FNSocketFloat, FNSocketVector
 
 
 class FNSeparateXYZ(Node, FNBaseNode):
+    """Split a vector into its individual components."""
     bl_idname = "FNSeparateXYZ"
     bl_label = "Separate XYZ"
 

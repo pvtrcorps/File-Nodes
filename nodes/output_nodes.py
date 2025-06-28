@@ -1,3 +1,5 @@
+"""Nodes that output or render scenes."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketSceneList
 
 
 class FNRenderScenesNode(Node, FNBaseNode):
+    """Operator button to render all provided scenes."""
     bl_idname = "FNRenderScenesNode"
     bl_label = "Render Scenes"
 
@@ -27,6 +30,7 @@ class FNRenderScenesNode(Node, FNBaseNode):
 
 
 class FNOutputScenesNode(Node, FNBaseNode):
+    """Collect scenes for use elsewhere in the tree."""
     bl_idname = "FNOutputScenesNode"
     bl_label = "Output Scenes"
 

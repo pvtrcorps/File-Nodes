@@ -1,3 +1,5 @@
+"""Node for editing collection properties."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketCollection, FNSocketBool
 
 
 class FNCollectionProps(Node, FNBaseNode):
+    """Set collection options such as visibility."""
     bl_idname = "FNCollectionProps"
     bl_label = "Collection Properties"
 

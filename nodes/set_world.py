@@ -1,3 +1,4 @@
+"""Node that assigns a world to a scene."""
 
 import bpy
 from bpy.types import Node
@@ -6,6 +7,7 @@ from ..sockets import FNSocketScene, FNSocketWorld
 
 
 class FNSetWorld(Node, FNBaseNode):
+    """Assign the provided world to the scene."""
     @classmethod
     def poll(cls, ntree):
         return ntree.bl_idname == "FileNodesTreeType"

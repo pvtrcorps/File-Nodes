@@ -1,3 +1,5 @@
+"""Node for adjusting Cycles-specific object properties."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketObject, FNSocketBool
 
 
 class FNCyclesObjectProps(Node, FNBaseNode):
+    """Set Cycles render properties for an object."""
     bl_idname = "FNCyclesObjectProps"
     bl_label = "Cycles Object Properties"
 
