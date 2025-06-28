@@ -29,6 +29,7 @@ categories = [
         NodeItem('FNSetWorldNode'),
         NodeItem('FNSetRenderEngine'),
         NodeItem('FNSetSceneName'),
+        NodeItem('FNSetSceneViewlayers'),
         NodeItem('FNCyclesSceneProps'),
         NodeItem('FNEeveeSceneProps'),
         NodeItem('FNWorkbenchSceneProps'),
