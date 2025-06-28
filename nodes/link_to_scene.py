@@ -9,6 +9,7 @@ from ..sockets import (
 class FNLinkToScene(Node, FNBaseNode):
     bl_idname = "FNLinkToScene"
     bl_label = "Link to Scene"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

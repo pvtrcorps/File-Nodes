@@ -16,6 +16,7 @@ _object_data_socket = {
 class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewObject"
     bl_label = "New Object"
+    color_tag = 'OUTPUT'
     obj_type: bpy.props.EnumProperty(
         name="Type",
         items=[

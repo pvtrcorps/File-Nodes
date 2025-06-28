@@ -11,6 +11,7 @@ class FNSetWorld(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
     bl_idname = "FNSetWorldNode"
     bl_label = "Set World to Scene"
+    color_tag = 'OUTPUT'
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")

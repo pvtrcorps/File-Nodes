@@ -9,6 +9,7 @@ from ..sockets import FNSocketSceneList
 class FNRenderScenesNode(Node, FNBaseNode):
     bl_idname = "FNRenderScenesNode"
     bl_label = "Render Scenes"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):
@@ -29,6 +30,7 @@ class FNRenderScenesNode(Node, FNBaseNode):
 class FNOutputScenesNode(Node, FNBaseNode):
     bl_idname = "FNOutputScenesNode"
     bl_label = "Output Scenes"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

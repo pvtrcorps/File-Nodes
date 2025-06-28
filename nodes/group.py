@@ -7,6 +7,7 @@ from .. import operators
 class FNGroupNode(NodeCustomGroup, FNBaseNode):
     bl_idname = "FNGroupNode"
     bl_label = "Group"
+    color_tag = 'OUTPUT'
     bl_icon = 'NODETREE'
 
     @classmethod

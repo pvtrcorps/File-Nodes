@@ -9,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 class FNEeveeSceneProps(Node, FNBaseNode):
     bl_idname = "FNEeveeSceneProps"
     bl_label = "Eevee Scene Properties"
+    color_tag = 'OUTPUT'
 
 
     @classmethod

@@ -11,6 +11,7 @@ _abc_cache = {}
 class FNImportAlembic(Node, FNBaseNode):
     bl_idname = "FNImportAlembicNode"
     bl_label = "Import Alembic"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

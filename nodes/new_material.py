@@ -7,6 +7,7 @@ from ..sockets import FNSocketMaterial, FNSocketString
 class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewMaterial"
     bl_label = "New Material"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

@@ -9,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 class FNWorkbenchSceneProps(Node, FNBaseNode):
     bl_idname = "FNWorkbenchSceneProps"
     bl_label = "Workbench Scene Properties"
+    color_tag = 'OUTPUT'
 
 
     @classmethod

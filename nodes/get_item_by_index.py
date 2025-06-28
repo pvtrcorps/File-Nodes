@@ -43,6 +43,7 @@ _socket_list = {
 class FNGetItemByIndex(Node, FNBaseNode):
     bl_idname = "FNGetItemByIndex"
     bl_label = "Get Item by Index"
+    color_tag = 'OUTPUT'
 
     data_type: bpy.props.EnumProperty(
         name="Type",

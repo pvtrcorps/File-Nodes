@@ -9,6 +9,7 @@ from ..sockets import FNSocketLight, FNSocketFloat
 class FNLightProps(Node, FNBaseNode):
     bl_idname = "FNLightProps"
     bl_label = "Light Properties"
+    color_tag = 'OUTPUT'
 
 
     @classmethod

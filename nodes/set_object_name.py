@@ -8,6 +8,7 @@ from ..sockets import FNSocketObject, FNSocketString
 class FNSetObjectName(Node, FNBaseNode):
     bl_idname = "FNSetObjectName"
     bl_label = "Set Object Name"
+    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

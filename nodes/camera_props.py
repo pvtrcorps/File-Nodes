@@ -9,6 +9,7 @@ from ..sockets import FNSocketCamera, FNSocketFloat
 class FNCameraProps(Node, FNBaseNode):
     bl_idname = "FNCameraProps"
     bl_label = "Camera Properties"
+    color_tag = 'OUTPUT'
 
 
     @classmethod

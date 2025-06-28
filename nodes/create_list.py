@@ -43,6 +43,7 @@ _socket_list = {
 class FNCreateList(Node, FNBaseNode):
     bl_idname = "FNCreateList"
     bl_label = "Create List"
+    color_tag = 'OUTPUT'
 
 
 
