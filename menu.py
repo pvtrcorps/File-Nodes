@@ -37,6 +37,9 @@ categories = [
         NodeItem('FNRenderScenesNode'),
         NodeItem('FNOutputScenesNode'),
     ]),
+    NodeCategory('FILE_NODES_VIEWLAYER', 'Viewlayer', items=[
+        NodeItem('FNViewLayerVisibility'),
+    ]),
     NodeCategory('FILE_NODES_OBJECT', 'Object', items=[
         NodeItem('FNObjectInputNode'),
         NodeItem('FNNewObject'),
