@@ -29,7 +29,7 @@ class FILE_NODES_PT_global(Panel):
         ctx = getattr(tree, "fn_inputs", None)
         if tree and iface and ctx:
             box = layout.box()
-            if hasattr(box, "template_node_view") and iface and tree.nodes:
+            if hasattr(box, "template_node_view") and iface:
                 # Blender 4.4 switched `template_node_view` to take three
                 # arguments: `(node_tree, node, socket)`. Older versions still
                 # expect a `context` argument first. Try the old signature and
