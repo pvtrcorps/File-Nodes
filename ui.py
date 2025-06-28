@@ -31,7 +31,7 @@ class FILE_NODES_PT_global(Panel):
             ctx.sync_inputs(tree)
             box = layout.box()
             if hasattr(box, "template_node_view") and iface:
-                box.template_node_view(tree, None, None)
+                box.template_node_view(context, tree, None, None)
             for item in getattr(iface, "items_tree", []):
                 if getattr(item, "in_out", None) == 'INPUT':
                     inp = ctx.inputs.get(item.name)
