@@ -1,3 +1,5 @@
+"""Node to retrieve an item from a list by its name."""
+
 import bpy
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
@@ -41,6 +43,7 @@ _socket_list = {
 }
 
 class FNGetItemByName(Node, FNBaseNode):
+    """Output the item matching a given name from a list."""
     bl_idname = "FNGetItemByName"
     bl_label = "Get Item by Name"
 

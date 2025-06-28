@@ -1,3 +1,5 @@
+"""Node that links objects or collections to a target collection."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -5,6 +7,7 @@ from ..sockets import FNSocketCollection, FNSocketObjectList, FNSocketCollection
 
 
 class FNLinkToCollection(Node, FNBaseNode):
+    """Link provided objects or collections to another collection."""
     bl_idname = "FNLinkToCollection"
     bl_label = "Link to Collection"
 

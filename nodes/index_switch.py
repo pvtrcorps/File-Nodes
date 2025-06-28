@@ -1,3 +1,5 @@
+"""Node to choose one of several inputs based on an index."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -25,6 +27,7 @@ _socket_single = {
 
 
 class FNIndexSwitch(Node, FNBaseNode):
+    """Select an input socket by index."""
     bl_idname = "FNIndexSwitch"
     bl_label = "Index Switch"
 

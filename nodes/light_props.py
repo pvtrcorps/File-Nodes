@@ -1,3 +1,5 @@
+"""Node for modifying light properties."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketLight, FNSocketFloat
 
 
 class FNLightProps(Node, FNBaseNode):
+    """Adjust light settings such as energy."""
     bl_idname = "FNLightProps"
     bl_label = "Light Properties"
 

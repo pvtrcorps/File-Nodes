@@ -1,3 +1,5 @@
+"""Node to rename an object."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -6,6 +8,7 @@ from ..sockets import FNSocketObject, FNSocketString
 
 
 class FNSetObjectName(Node, FNBaseNode):
+    """Change the name of an object."""
     bl_idname = "FNSetObjectName"
     bl_label = "Set Object Name"
 

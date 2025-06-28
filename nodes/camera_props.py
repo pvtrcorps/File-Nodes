@@ -1,3 +1,5 @@
+"""Node for editing camera properties."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketCamera, FNSocketFloat
 
 
 class FNCameraProps(Node, FNBaseNode):
+    """Set camera properties such as focal length."""
     bl_idname = "FNCameraProps"
     bl_label = "Camera Properties"
 

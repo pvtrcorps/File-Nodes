@@ -1,3 +1,5 @@
+"""Node for setting scene frame range."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 
 
 class FNSceneProps(Node, FNBaseNode):
+    """Adjust the frame start and end of a scene."""
     bl_idname = "FNSceneProps"
     bl_label = "Scene Properties"
 

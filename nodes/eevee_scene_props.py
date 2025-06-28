@@ -1,3 +1,5 @@
+"""Node for configuring Eevee scene rendering options."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 
 
 class FNEeveeSceneProps(Node, FNBaseNode):
+    """Adjust Eevee render samples for a scene."""
     bl_idname = "FNEeveeSceneProps"
     bl_label = "Eevee Scene Properties"
 

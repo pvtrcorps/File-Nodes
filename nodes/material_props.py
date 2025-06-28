@@ -1,3 +1,5 @@
+"""Node for modifying material settings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketMaterial, FNSocketBool
 
 
 class FNMaterialProps(Node, FNBaseNode):
+    """Toggle the use of nodes for a material."""
     bl_idname = "FNMaterialProps"
     bl_label = "Material Properties"
 

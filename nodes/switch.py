@@ -1,3 +1,5 @@
+"""Node that outputs one of two values based on a boolean switch."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode
@@ -25,6 +27,7 @@ _socket_single = {
 
 
 class FNSwitch(Node, FNBaseNode):
+    """Choose between two inputs based on a boolean value."""
     bl_idname = "FNSwitch"
     bl_label = "Switch"
 

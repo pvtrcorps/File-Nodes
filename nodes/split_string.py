@@ -1,3 +1,5 @@
+"""Node that splits a string by a separator."""
+
 import bpy
 from bpy.types import Node
 
@@ -6,6 +8,7 @@ from ..sockets import FNSocketString, FNSocketStringList
 
 
 class FNSplitString(Node, FNBaseNode):
+    """Split an input string into a list of substrings."""
     bl_idname = "FNSplitString"
     bl_label = "Split String"
 

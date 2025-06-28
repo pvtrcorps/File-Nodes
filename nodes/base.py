@@ -1,3 +1,4 @@
+"""Base mixins and helpers used by node implementations."""
 
 import bpy
 

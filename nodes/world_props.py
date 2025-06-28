@@ -1,3 +1,5 @@
+"""Node for changing world settings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketWorld, FNSocketBool
 
 
 class FNWorldProps(Node, FNBaseNode):
+    """Enable or disable nodes for a world."""
     bl_idname = "FNWorldProps"
     bl_label = "World Properties"
 

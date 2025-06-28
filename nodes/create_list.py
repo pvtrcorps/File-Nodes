@@ -1,3 +1,5 @@
+"""Node for gathering multiple inputs into a list."""
+
 import bpy
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
@@ -41,6 +43,7 @@ _socket_list = {
 }
 
 class FNCreateList(Node, FNBaseNode):
+    """Create a list from several inputs of the chosen type."""
     bl_idname = "FNCreateList"
     bl_label = "Create List"
 

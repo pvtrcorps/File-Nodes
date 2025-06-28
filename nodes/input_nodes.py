@@ -1,3 +1,5 @@
+"""Nodes that provide constant input values for node trees."""
+
 import bpy
 from bpy.types import Node
 from ..operators import auto_evaluate_if_enabled
@@ -12,6 +14,7 @@ from ..sockets import (
 
 
 class FNBoolInputNode(Node, FNBaseNode):
+    """Output a boolean value."""
     bl_idname = "FNBoolInputNode"
     bl_label = "Boolean Input"
 
@@ -28,6 +31,7 @@ class FNBoolInputNode(Node, FNBaseNode):
 
 
 class FNFloatInputNode(Node, FNBaseNode):
+    """Output a float value."""
     bl_idname = "FNFloatInputNode"
     bl_label = "Float Input"
 
@@ -44,6 +48,7 @@ class FNFloatInputNode(Node, FNBaseNode):
 
 
 class FNIntInputNode(Node, FNBaseNode):
+    """Output an integer value."""
     bl_idname = "FNIntInputNode"
     bl_label = "Integer Input"
 
@@ -60,6 +65,7 @@ class FNIntInputNode(Node, FNBaseNode):
 
 
 class FNStringInputNode(Node, FNBaseNode):
+    """Output a string value."""
     bl_idname = "FNStringInputNode"
     bl_label = "String Input"
 
@@ -76,6 +82,7 @@ class FNStringInputNode(Node, FNBaseNode):
 
 
 class FNVectorInputNode(Node, FNBaseNode):
+    """Output a 3D vector."""
     bl_idname = "FNVectorInputNode"
     bl_label = "Vector Input"
 
@@ -92,6 +99,7 @@ class FNVectorInputNode(Node, FNBaseNode):
 
 
 class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
+    """Duplicate a scene with a new name."""
     bl_idname = "FNSceneInputNode"
     bl_label = "Scene Input"
 
@@ -120,6 +128,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
 
 
 class FNObjectInputNode(Node, FNBaseNode):
+    """Provide a reference to an object."""
     bl_idname = "FNObjectInputNode"
     bl_label = "Object Input"
 
@@ -136,6 +145,7 @@ class FNObjectInputNode(Node, FNBaseNode):
 
 
 class FNCollectionInputNode(Node, FNBaseNode):
+    """Provide a reference to a collection."""
     bl_idname = "FNCollectionInputNode"
     bl_label = "Collection Input"
 
@@ -152,6 +162,7 @@ class FNCollectionInputNode(Node, FNBaseNode):
 
 
 class FNWorldInputNode(Node, FNBaseNode):
+    """Provide a reference to a world."""
     bl_idname = "FNWorldInputNode"
     bl_label = "World Input"
 
@@ -168,6 +179,7 @@ class FNWorldInputNode(Node, FNBaseNode):
 
 
 class FNCameraInputNode(Node, FNBaseNode):
+    """Provide a reference to a camera."""
     bl_idname = "FNCameraInputNode"
     bl_label = "Camera Input"
 
@@ -184,6 +196,7 @@ class FNCameraInputNode(Node, FNBaseNode):
 
 
 class FNImageInputNode(Node, FNBaseNode):
+    """Provide a reference to an image."""
     bl_idname = "FNImageInputNode"
     bl_label = "Image Input"
 
@@ -200,6 +213,7 @@ class FNImageInputNode(Node, FNBaseNode):
 
 
 class FNLightInputNode(Node, FNBaseNode):
+    """Provide a reference to a light."""
     bl_idname = "FNLightInputNode"
     bl_label = "Light Input"
 
@@ -216,6 +230,7 @@ class FNLightInputNode(Node, FNBaseNode):
 
 
 class FNMaterialInputNode(Node, FNBaseNode):
+    """Provide a reference to a material."""
     bl_idname = "FNMaterialInputNode"
     bl_label = "Material Input"
 
@@ -232,6 +247,7 @@ class FNMaterialInputNode(Node, FNBaseNode):
 
 
 class FNMeshInputNode(Node, FNBaseNode):
+    """Provide a reference to a mesh."""
     bl_idname = "FNMeshInputNode"
     bl_label = "Mesh Input"
 
@@ -248,6 +264,7 @@ class FNMeshInputNode(Node, FNBaseNode):
 
 
 class FNNodeTreeInputNode(Node, FNBaseNode):
+    """Provide a reference to a node tree."""
     bl_idname = "FNNodeTreeInputNode"
     bl_label = "Node Tree Input"
 
@@ -264,6 +281,7 @@ class FNNodeTreeInputNode(Node, FNBaseNode):
 
 
 class FNTextInputNode(Node, FNBaseNode):
+    """Provide a reference to a text block."""
     bl_idname = "FNTextInputNode"
     bl_label = "Text Input"
 
@@ -280,6 +298,7 @@ class FNTextInputNode(Node, FNBaseNode):
 
 
 class FNWorkSpaceInputNode(Node, FNBaseNode):
+    """Provide a reference to a workspace."""
     bl_idname = "FNWorkSpaceInputNode"
     bl_label = "WorkSpace Input"
 

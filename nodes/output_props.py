@@ -1,3 +1,5 @@
+"""Node for configuring scene output settings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketScene, FNSocketInt
 
 
 class FNOutputProps(Node, FNBaseNode):
+    """Set render resolution for a scene."""
     bl_idname = "FNOutputProps"
     bl_label = "Output Properties"
 

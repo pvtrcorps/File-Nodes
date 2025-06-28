@@ -1,3 +1,5 @@
+"""Node for configuring Eevee object settings."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketObject, FNSocketBool
 
 
 class FNEeveeObjectProps(Node, FNBaseNode):
+    """Set Eevee properties on an object."""
     bl_idname = "FNEeveeObjectProps"
     bl_label = "Eevee Object Properties"
 

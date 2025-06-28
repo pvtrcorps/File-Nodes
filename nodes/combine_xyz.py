@@ -1,3 +1,5 @@
+"""Node that combines X, Y and Z values into a vector."""
+
 import bpy
 from bpy.types import Node
 
@@ -6,6 +8,7 @@ from ..sockets import FNSocketFloat, FNSocketVector
 
 
 class FNCombineXYZ(Node, FNBaseNode):
+    """Combine separate X, Y and Z inputs into a vector."""
     bl_idname = "FNCombineXYZ"
     bl_label = "Combine XYZ"
 

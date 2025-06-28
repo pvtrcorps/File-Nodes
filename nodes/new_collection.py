@@ -1,3 +1,5 @@
+"""Node for creating new collections."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
@@ -5,6 +7,7 @@ from ..sockets import FNSocketCollection, FNSocketString
 
 
 class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
+    """Create a new collection with the specified name."""
     bl_idname = "FNNewCollection"
     bl_label = "New Collection"
 

@@ -1,3 +1,5 @@
+"""Node for creating new objects of various types."""
+
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
@@ -14,6 +16,7 @@ _object_data_socket = {
 }
 
 class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
+    """Create a new object of the chosen type."""
     bl_idname = "FNNewObject"
     bl_label = "New Object"
     obj_type: bpy.props.EnumProperty(

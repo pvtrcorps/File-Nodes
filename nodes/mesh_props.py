@@ -1,3 +1,5 @@
+"""Node for changing mesh properties."""
+
 import bpy
 from bpy.types import Node
 
@@ -7,6 +9,7 @@ from ..sockets import FNSocketMesh, FNSocketBool
 
 
 class FNMeshProps(Node, FNBaseNode):
+    """Toggle auto-smoothing on a mesh."""
     bl_idname = "FNMeshProps"
     bl_label = "Mesh Properties"
 

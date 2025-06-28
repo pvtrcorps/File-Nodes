@@ -1,3 +1,5 @@
+"""Node that loads datablocks from a .blend file."""
+
 import bpy, os, warnings
 from bpy.types import Node
 from .base import FNBaseNode
@@ -13,6 +15,7 @@ from ..sockets import (
 _blend_cache = {}
 
 class FNReadBlendNode(Node, FNBaseNode):
+    """Load a blend file and output its contained datablocks."""
     @classmethod
     def poll(cls, ntree):
         return ntree.bl_idname == "FileNodesTreeType"
