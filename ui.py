@@ -30,9 +30,9 @@ class FILE_NODES_PT_global(Panel):
         if tree and iface and ctx:
             ctx.sync_inputs(tree)
             box = layout.box()
-            if hasattr(box, "template_node_view"):
+            if hasattr(box, "template_node_view") and iface:
                 box.template_node_view(tree, None, None)
-            for item in iface.items_tree:
+            for item in getattr(iface, "items_tree", []):
                 if getattr(item, "in_out", None) == 'INPUT':
                     inp = ctx.inputs.get(item.name)
                     if inp:
@@ -43,8 +43,14 @@ class FILE_NODES_PT_global(Panel):
 
 def _tree_prop_update(self, context):
     tree = self.file_nodes_tree
-    if tree:
-        tree.interface_update(context)
+    if tree and getattr(tree, "interface", None) and getattr(tree, "fn_inputs", None):
+        try:
+            tree.interface_update(context)
+        except Exception as exc:
+            if hasattr(self, "report"):
+                self.report({'ERROR'}, f"File Nodes: {exc}")
+            else:
+                print(f"File Nodes: {exc}")
 
 
 def register():
