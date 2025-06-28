@@ -17,14 +17,24 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         if not self.node_tree:
             self.node_tree = bpy.data.node_groups.new("Group", "FileNodesTreeType")
         self._sync_sockets()
+        self._cached_tree = self.node_tree
 
     def copy(self, node):
         self._sync_sockets()
+        self._cached_tree = self.node_tree
 
     def update(self):
-        self._sync_sockets()
+        tree_changed = getattr(self, "_cached_tree", None) is not self.node_tree
+        sockets_changed = self._sync_sockets()
+        if tree_changed or sockets_changed:
+            operators.auto_evaluate_if_enabled(context=bpy.context)
+        self._cached_tree = self.node_tree
 
     def _sync_sockets(self):
+        prev = [(s.name, s.bl_idname) for s in self.inputs] + [
+            (s.name, s.bl_idname) for s in self.outputs
+        ]
+
         tree = getattr(self, "node_tree", None)
         iface = getattr(tree, "interface", None)
         if not tree or not iface:
@@ -32,7 +42,9 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
                 self.inputs.remove(self.inputs[-1])
             while self.outputs:
                 self.outputs.remove(self.outputs[-1])
-            return
+            changed = prev != []
+            self._socket_hash = []
+            return changed
         iface_inputs = [i for i in iface.items_tree if getattr(i, "in_out", None) == 'INPUT']
         iface_outputs = [i for i in iface.items_tree if getattr(i, "in_out", None) == 'OUTPUT']
         names_in = [i.name for i in iface_inputs]
@@ -57,6 +69,13 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
                     self.outputs.remove(sock)
                 sock = self.outputs.new(item.socket_type, item.name)
             sock.name = item.name
+
+        new = [(s.name, s.bl_idname) for s in self.inputs] + [
+            (s.name, s.bl_idname) for s in self.outputs
+        ]
+        changed = prev != new
+        self._socket_hash = new
+        return changed
 
     def process(self, context, inputs):
         tree = self.node_tree
