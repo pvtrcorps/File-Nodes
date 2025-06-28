@@ -25,6 +25,7 @@ class FileNodeTreeInput(PropertyGroup):
     nodetree_value: bpy.props.PointerProperty(type=bpy.types.NodeTree, update=auto_evaluate_if_enabled)
     text_value: bpy.props.PointerProperty(type=bpy.types.Text, update=auto_evaluate_if_enabled)
     workspace_value: bpy.props.PointerProperty(type=bpy.types.WorkSpace, update=auto_evaluate_if_enabled)
+    viewlayer_value: bpy.props.PointerProperty(type=bpy.types.ViewLayer, update=auto_evaluate_if_enabled)
 
     _prop_map = {
         'FNSocketBool': 'bool_value',
@@ -44,6 +45,7 @@ class FileNodeTreeInput(PropertyGroup):
         'FNSocketNodeTree': 'nodetree_value',
         'FNSocketText': 'text_value',
         'FNSocketWorkSpace': 'workspace_value',
+        'FNSocketViewLayer': 'viewlayer_value',
     }
 
     def prop_name(self):
@@ -108,6 +110,7 @@ class FileNodesTreeInputs(PropertyGroup):
                 bpy.types.Mesh: bpy.data.meshes.remove,
                 bpy.types.Camera: bpy.data.cameras.remove,
                 bpy.types.Light: bpy.data.lights.remove,
+                bpy.types.ViewLayer: lambda vl: vl.id_data.view_layers.remove(vl),
             }
             fn = remove_map.get(type(data))
             if fn:
