@@ -64,7 +64,7 @@ class FNIndexSwitch(Node, FNBaseNode):
         single = _socket_single[self.data_type]
         count = max(1, int(self.input_count))
         for i in range(count):
-            self.inputs.new(single, f"Value {i}")
+            self.inputs.new(single, f"{i}")
         self.outputs.new(single, self.data_type.title())
         if context is not None:
             auto_evaluate_if_enabled(context)
