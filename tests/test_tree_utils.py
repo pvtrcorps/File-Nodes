@@ -29,7 +29,6 @@ class _Types:
     class Mesh: pass
     class Text: pass
     class WorkSpace: pass
-    class NodeSocketFloat: pass
 
 _bpy.types = _Types()
 _bpy.utils = pytypes.SimpleNamespace(register_class=lambda c: None, unregister_class=lambda c: None)
@@ -81,7 +80,6 @@ class TreeUtilsTests(unittest.TestCase):
         cls = tree_mod.FileNodesTree
         self.assertTrue(cls.valid_socket_type('FNSocketString'))
         self.assertTrue(cls.valid_socket_type('NodeSocketVirtual'))
-        self.assertTrue(cls.valid_socket_type('NodeSocketFloat'))
         self.assertFalse(cls.valid_socket_type('NotASocket'))
 
 
