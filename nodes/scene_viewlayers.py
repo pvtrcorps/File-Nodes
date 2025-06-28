@@ -23,6 +23,12 @@ class FNSceneViewlayers(Node, FNBaseNode):
         self._cached_names = []
         self._update_sockets(scene, context)
 
+    def update(self):
+        """Update sockets when the scene input changes."""
+        sock = self.inputs.get("Scene")
+        scene = getattr(sock, "value", None) if sock else None
+        self._update_sockets(scene, bpy.context)
+
     def _update_sockets(self, scene, context=None):
         names = [vl.name for vl in getattr(scene, "view_layers", [])] if scene else []
         if names == getattr(self, "_cached_names", None):
