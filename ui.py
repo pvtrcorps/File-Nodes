@@ -30,7 +30,10 @@ class FILE_NODES_PT_global(Panel):
         if tree and iface and ctx:
             box = layout.box()
             if hasattr(box, "template_node_view") and iface:
-                box.template_node_view(tree, None, None)
+                node = tree.nodes.active or (tree.nodes[0] if tree.nodes else None)
+                sock = node.outputs[0] if node and node.outputs else None
+                if node and sock:
+                    box.template_node_view(tree, node, sock)
             for item in getattr(iface, "items_tree", []):
                 if getattr(item, "in_out", None) == 'INPUT':
                     inp = ctx.inputs.get(item.name)
