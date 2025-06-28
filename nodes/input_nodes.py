@@ -80,7 +80,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
     bl_label = "Scene Input"
 
     def init(self, context):
-        self.inputs.new('FNSocketSceneInput', "Scene")
+        self.inputs.new('FNSocketScene', "Scene")
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new('FNSocketScene', "Scene")
 
