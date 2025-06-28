@@ -177,7 +177,8 @@ class FNSocketViewLayer(NodeSocket):
         layout.label(text=text or self.name, icon='RENDERLAYERS')
     def draw_color(self, context, node):
         return _color(0.6, 0.6, 0.6)
-    value: bpy.props.PointerProperty(type=bpy.types.ViewLayer, update=auto_evaluate_if_enabled)
+    # Blender does not support PointerProperty for ViewLayer, store the name instead.
+    value: bpy.props.StringProperty(update=auto_evaluate_if_enabled)
 
 class FNSocketWorld(NodeSocket):
     bl_idname = "FNSocketWorld"
