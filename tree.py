@@ -240,9 +240,12 @@ class FileNodesTree(NodeTree):
                 return True
         except Exception:
             pass
-        if hasattr(getattr(bpy, "types", None), idname):
+        types_mod = getattr(bpy, "types", None)
+        if types_mod and hasattr(types_mod, idname):
             return True
-        return idname == "NodeSocketVirtual"
+        if idname.startswith("NodeSocket"):
+            return True
+        return False
 
     def contains_tree(self, sub_tree):
         if not sub_tree:
