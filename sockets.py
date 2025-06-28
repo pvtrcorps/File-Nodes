@@ -77,6 +77,8 @@ class FNSocketSceneInput(FNSocketScene):
 
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'SCENE_DATA')
+    def draw_color(self, context, node):
+        return _color(0.6, 0.9, 1.0)
 
 class FNSocketObject(NodeSocket):
     bl_idname = "FNSocketObject"
