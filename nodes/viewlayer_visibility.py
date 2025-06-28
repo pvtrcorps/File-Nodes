@@ -55,6 +55,14 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         self.inputs.new('FNSocketViewLayer', "View Layer")
         self.outputs.new('FNSocketViewLayer', "View Layer")
 
+    def update(self):
+        view_layer = self._get_view_layer_for_ui(bpy.context)
+        try:
+            self._sync_states(view_layer)
+        except Exception:
+            pass
+        auto_evaluate_if_enabled(bpy.context)
+
     def _get_view_layer_for_ui(self, context):
         sock = self.inputs.get("View Layer")
         name = None
@@ -99,7 +107,6 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         if not view_layer:
             layout.label(text="No View Layer")
             return
-        self._sync_states(view_layer)
         layout.template_list(
             "FN_UL_view_layer_collections",
             "",
