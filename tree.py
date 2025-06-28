@@ -209,6 +209,10 @@ class FileNodesTree(NodeTree):
         if getattr(self, "fn_inputs", None):
             self.fn_inputs.sync_inputs(self)
 
+    def update(self):
+        """Keep inputs in sync when the node tree changes."""
+        self.interface_update()
+
     # Poll: always available
     @classmethod
     def poll(cls, context):
