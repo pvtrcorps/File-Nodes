@@ -1,4 +1,5 @@
 import bpy
+import warnings
 from bpy.types import NodeCustomGroup
 from .base import FNBaseNode
 from .. import operators
@@ -63,6 +64,15 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         tree = self.node_tree
         if not tree:
             return {s.name: None for s in self.outputs}
+
+        id_tree = getattr(self, "id_data", None)
+        if hasattr(id_tree, "contains_tree"):
+            try:
+                if id_tree.contains_tree(tree) and hasattr(tree, "contains_tree") and tree.contains_tree(id_tree):
+                    warnings.warn("Group recursion detected; skipping evaluation")
+                    return {s.name: None for s in self.outputs}
+            except Exception:
+                pass
 
         ctx = getattr(tree, "fn_inputs", None)
         if ctx:
