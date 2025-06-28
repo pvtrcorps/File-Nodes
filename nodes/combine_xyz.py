@@ -8,7 +8,6 @@ from ..sockets import FNSocketFloat, FNSocketVector
 class FNCombineXYZ(Node, FNBaseNode):
     bl_idname = "FNCombineXYZ"
     bl_label = "Combine XYZ"
-    color_tag = 'OUTPUT'
 
     def init(self, context):
         self.inputs.new('FNSocketFloat', "X")

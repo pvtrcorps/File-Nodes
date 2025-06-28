@@ -27,7 +27,6 @@ _socket_single = {
 class FNIndexSwitch(Node, FNBaseNode):
     bl_idname = "FNIndexSwitch"
     bl_label = "Index Switch"
-    color_tag = 'OUTPUT'
 
     input_count: bpy.props.IntProperty(
         name="Inputs",

@@ -9,7 +9,6 @@ from ..sockets import FNSocketObject, FNSocketBool
 class FNEeveeObjectProps(Node, FNBaseNode):
     bl_idname = "FNEeveeObjectProps"
     bl_label = "Eevee Object Properties"
-    color_tag = 'OUTPUT'
 
 
     @classmethod

@@ -9,7 +9,6 @@ from ..operators import auto_evaluate_if_enabled
 class FNJoinStrings(Node, FNBaseNode):
     bl_idname = "FNJoinStrings"
     bl_label = "Join Strings"
-    color_tag = 'OUTPUT'
 
     input_count: bpy.props.IntProperty(
         name="Inputs",

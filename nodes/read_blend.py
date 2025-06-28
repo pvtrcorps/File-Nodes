@@ -18,7 +18,6 @@ class FNReadBlendNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
     bl_idname = "FNReadBlendNode"
     bl_label = "Read Blend File"
-    color_tag = 'OUTPUT'
 
     def init(self, context):
         sock = self.inputs.new('FNSocketString', "File Path")

@@ -8,7 +8,6 @@ from ..sockets import FNSocketString, FNSocketStringList
 class FNSplitString(Node, FNBaseNode):
     bl_idname = "FNSplitString"
     bl_label = "Split String"
-    color_tag = 'OUTPUT'
 
     def init(self, context):
         self.inputs.new('FNSocketString', "String")

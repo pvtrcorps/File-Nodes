@@ -8,7 +8,6 @@ from ..sockets import FNSocketFloat, FNSocketVector
 class FNSeparateXYZ(Node, FNBaseNode):
     bl_idname = "FNSeparateXYZ"
     bl_label = "Separate XYZ"
-    color_tag = 'OUTPUT'
 
     def init(self, context):
         self.inputs.new('FNSocketVector', "Vector")

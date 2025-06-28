@@ -27,7 +27,6 @@ _socket_single = {
 class FNSwitch(Node, FNBaseNode):
     bl_idname = "FNSwitch"
     bl_label = "Switch"
-    color_tag = 'OUTPUT'
 
     data_type: bpy.props.EnumProperty(
         name="Type",

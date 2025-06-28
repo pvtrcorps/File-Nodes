@@ -8,7 +8,6 @@ from ..sockets import FNSocketCollection, FNSocketString
 class FNSetCollectionName(Node, FNBaseNode):
     bl_idname = "FNSetCollectionName"
     bl_label = "Set Collection Name"
-    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

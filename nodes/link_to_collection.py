@@ -7,7 +7,6 @@ from ..sockets import FNSocketCollection, FNSocketObjectList, FNSocketCollection
 class FNLinkToCollection(Node, FNBaseNode):
     bl_idname = "FNLinkToCollection"
     bl_label = "Link to Collection"
-    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):

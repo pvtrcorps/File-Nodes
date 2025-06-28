@@ -9,7 +9,6 @@ from ..sockets import FNSocketScene, FNSocketInt
 class FNCyclesSceneProps(Node, FNBaseNode):
     bl_idname = "FNCyclesSceneProps"
     bl_label = "Cycles Scene Properties"
-    color_tag = 'OUTPUT'
 
 
     @classmethod

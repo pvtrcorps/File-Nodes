@@ -7,7 +7,6 @@ from ..sockets import FNSocketWorld, FNSocketString
 class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
     bl_idname = "FNNewWorld"
     bl_label = "New World"
-    color_tag = 'OUTPUT'
 
     @classmethod
     def poll(cls, ntree):
