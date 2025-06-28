@@ -194,6 +194,17 @@ def _evaluate_tree(tree, context):
         if node in resolved:
             return resolved[node]
 
+        if getattr(node, "bl_idname", "") == "NodeGroupInput":
+            outputs = {}
+            ctx = getattr(node.id_data, "fn_inputs", None)
+            for s in node.outputs:
+                if ctx:
+                    outputs[s.name] = ctx.get_input_value(s.name)
+                else:
+                    outputs[s.name] = None
+            resolved[node] = outputs
+            return outputs
+
         inputs = {s.name: eval_socket(s) for s in node.inputs}
         outputs = {}
         if hasattr(node, "process"):

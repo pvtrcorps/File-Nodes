@@ -127,10 +127,13 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         def eval_node(node):
             if node in resolved:
                 return resolved[node]
-            node_inputs = {s.name: eval_socket(s) for s in node.inputs}
-            node_outputs = {}
-            if hasattr(node, "process"):
-                node_outputs = node.process(context, node_inputs) or {}
+            if getattr(node, "bl_idname", "") == "NodeGroupInput":
+                node_outputs = {s.name: inputs.get(s.name) for s in node.outputs}
+            else:
+                node_inputs = {s.name: eval_socket(s) for s in node.inputs}
+                node_outputs = {}
+                if hasattr(node, "process"):
+                    node_outputs = node.process(context, node_inputs) or {}
             for s in node.outputs:
                 node_outputs.setdefault(s.name, None)
             resolved[node] = node_outputs
