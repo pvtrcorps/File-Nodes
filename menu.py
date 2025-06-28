@@ -89,6 +89,7 @@ categories = [
         NodeItem('FNFloatInputNode'),
         NodeItem('FNIntInputNode'),
         NodeItem('FNStringInputNode'),
+        NodeItem('FNVectorInputNode'),
     ]),
 ]
 

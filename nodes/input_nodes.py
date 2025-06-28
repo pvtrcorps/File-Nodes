@@ -4,7 +4,7 @@ from ..operators import auto_evaluate_if_enabled
 
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
-    FNSocketBool, FNSocketFloat, FNSocketInt, FNSocketString,
+    FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt, FNSocketString,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
@@ -73,6 +73,22 @@ class FNStringInputNode(Node, FNBaseNode):
 
     def process(self, context, inputs):
         return {"String": self.value}
+
+
+class FNVectorInputNode(Node, FNBaseNode):
+    bl_idname = "FNVectorInputNode"
+    bl_label = "Vector Input"
+
+    value: bpy.props.FloatVectorProperty(name="Value", size=3, update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketVector', "Vector")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="")
+
+    def process(self, context, inputs):
+        return {"Vector": self.value}
 
 
 class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
@@ -281,6 +297,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
 
 _classes = (
     FNBoolInputNode, FNFloatInputNode, FNIntInputNode, FNStringInputNode,
+    FNVectorInputNode,
     FNSceneInputNode, FNObjectInputNode, FNCollectionInputNode,
     FNWorldInputNode, FNCameraInputNode, FNImageInputNode, FNLightInputNode, FNMaterialInputNode,
     FNMeshInputNode, FNNodeTreeInputNode, FNTextInputNode, FNWorkSpaceInputNode,
