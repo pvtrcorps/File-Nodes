@@ -74,6 +74,7 @@ class FNIndexSwitch(Node, FNBaseNode):
         self._update_sockets(context)
 
     def init(self, context):
+        FNBaseNode.init(self, context)
         self._update_sockets(context)
 
     def draw_buttons(self, context, layout):

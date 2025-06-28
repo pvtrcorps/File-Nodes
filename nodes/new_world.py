@@ -13,6 +13,7 @@ class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
+        FNBaseNode.init(self, context)
         sock = self.inputs.new('FNSocketString', "Name")
         sock.value = "World"
         self.outputs.new('FNSocketWorld', "World")

@@ -16,6 +16,7 @@ class FNCameraProps(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
+        FNBaseNode.init(self, context)
         self.inputs.new('FNSocketCamera', "Camera")
         sock = self.inputs.new('FNSocketFloat', "Focal Length")
         sock.value = 50.0
