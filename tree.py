@@ -205,13 +205,14 @@ class FileNodesTree(NodeTree):
     fn_enabled: bpy.props.BoolProperty(name='Enabled', default=True)
     fn_inputs: bpy.props.PointerProperty(type=FileNodesTreeInputs)
 
-    def interface_update(self, context=None):
+    def interface_update(self, context):
         if getattr(self, "fn_inputs", None):
             self.fn_inputs.sync_inputs(self)
 
     def update(self):
         """Keep inputs in sync when the node tree changes."""
-        self.interface_update()
+        if getattr(self, "fn_inputs", None):
+            self.fn_inputs.sync_inputs(self)
 
     # Poll: always available
     @classmethod
