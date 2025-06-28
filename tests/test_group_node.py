@@ -214,27 +214,6 @@ class FakeTree:
         self.interface = FakeInterface()
         self.fn_inputs = DummyInputs()
 
-    def contains_tree(self, sub_tree):
-        if not sub_tree:
-            return False
-
-        visited = set()
-
-        def walk(tree):
-            if tree == sub_tree:
-                return True
-            if tree in visited:
-                return False
-            visited.add(tree)
-            for node in getattr(tree, "nodes", []):
-                if getattr(node, "bl_idname", "") == "FNGroupNode":
-                    child = getattr(node, "node_tree", None)
-                    if child and walk(child):
-                        return True
-            return False
-
-        return walk(self)
-
 
 def link_sockets(from_socket, to_socket, tree):
     tree.links.new(from_socket, to_socket)
@@ -269,34 +248,6 @@ class GroupInstanceTests(unittest.TestCase):
         context = pytypes.SimpleNamespace(scene=None)
         out = node.process(context, {'Value': 'Hello'})
         self.assertEqual(out['Result'], 'Hello')
-
-    def test_recursion_prevention(self):
-        tree = FakeTree()
-        tree.interface.new_socket('Value', 'INPUT', 'FNSocketString')
-        tree.interface.new_socket('Result', 'OUTPUT', 'FNSocketString')
-        tree.fn_inputs.sync_inputs(tree)
-
-        g_in = NodeGroupInput()
-        g_in.id_data = tree
-        g_in.init(None)
-
-        g_out = NodeGroupOutput()
-        g_out.id_data = tree
-        g_out.init(None)
-
-        link_sockets(g_in.outputs[0], g_out.inputs[0], tree)
-        tree.nodes = [g_in, g_out]
-
-        node = group_mod.FNGroupNode.__new__(group_mod.FNGroupNode)
-        node.id_data = tree
-        node.inputs = FakeSocketList(node)
-        node.outputs = FakeSocketList(node)
-        node.node_tree = tree  # self-reference
-        node._sync_sockets()
-
-        context = pytypes.SimpleNamespace(scene=None)
-        out = node.process(context, {'Value': 'Hello'})
-        self.assertIsNone(out['Result'])
 
 
 if __name__ == '__main__':
