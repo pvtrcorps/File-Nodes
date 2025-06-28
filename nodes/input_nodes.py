@@ -21,7 +21,7 @@ class FNBoolInputNode(Node, FNBaseNode):
         self.outputs.new('FNSocketBool', "Boolean")
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "value", text=" ")
+        layout.prop(self, "value", text="")
 
     def process(self, context, inputs):
         return {"Boolean": self.value}
@@ -37,7 +37,7 @@ class FNFloatInputNode(Node, FNBaseNode):
         self.outputs.new('FNSocketFloat', "Float")
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "value", text=" ")
+        layout.prop(self, "value", text="")
 
     def process(self, context, inputs):
         return {"Float": self.value}
@@ -53,7 +53,7 @@ class FNIntInputNode(Node, FNBaseNode):
         self.outputs.new('FNSocketInt', "Integer")
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "value", text=" ")
+        layout.prop(self, "value", text="")
 
     def process(self, context, inputs):
         return {"Integer": self.value}
@@ -69,7 +69,7 @@ class FNStringInputNode(Node, FNBaseNode):
         self.outputs.new('FNSocketString', "String")
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "value", text=" ")
+        layout.prop(self, "value", text="")
 
     def process(self, context, inputs):
         return {"String": self.value}
