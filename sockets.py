@@ -170,6 +170,15 @@ class FNSocketWorkSpace(NodeSocket):
         return _color(0.5, 0.7, 0.9)
     value: bpy.props.PointerProperty(type=bpy.types.WorkSpace, update=auto_evaluate_if_enabled)
 
+class FNSocketViewLayer(NodeSocket):
+    bl_idname = "FNSocketViewLayer"
+    bl_label = "View Layer"
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='RENDERLAYERS')
+    def draw_color(self, context, node):
+        return _color(0.6, 0.6, 0.6)
+    value: bpy.props.PointerProperty(type=bpy.types.ViewLayer, update=auto_evaluate_if_enabled)
+
 class FNSocketWorld(NodeSocket):
     bl_idname = "FNSocketWorld"
     bl_label = "World"
@@ -288,15 +297,26 @@ class FNSocketWorkSpaceList(NodeSocket):
     def draw_color(self, context, node):
         return _color(0.5, 0.7, 0.9)
 
+class FNSocketViewLayerList(NodeSocket):
+    bl_idname = "FNSocketViewLayerList"
+    bl_label = "View Layer List"
+    display_shape = 'SQUARE'
+    def draw(self, context, layout, node, text):
+        layout.label(text=text or self.name, icon='RENDERLAYERS')
+    def draw_color(self, context, node):
+        return _color(0.6, 0.6, 0.6)
+
 _all_sockets = (
     FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt,
     FNSocketString, FNSocketStringList,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
+    FNSocketViewLayer,
     FNSocketSceneList, FNSocketObjectList, FNSocketCollectionList, FNSocketWorldList,
     FNSocketCameraList, FNSocketImageList, FNSocketLightList, FNSocketMaterialList,
     FNSocketMeshList, FNSocketNodeTreeList, FNSocketTextList, FNSocketWorkSpaceList,
+    FNSocketViewLayerList,
 )
 
 def register():

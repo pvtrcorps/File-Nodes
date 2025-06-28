@@ -14,4 +14,5 @@ LIST_TO_SINGLE = {
     "FNSocketStringList": "FNSocketString",
     "FNSocketTextList": "FNSocketText",
     "FNSocketWorkSpaceList": "FNSocketWorkSpace",
+    "FNSocketViewLayerList": "FNSocketViewLayer",
 }
