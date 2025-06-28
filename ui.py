@@ -28,6 +28,7 @@ class FILE_NODES_PT_global(Panel):
         iface = getattr(tree, "interface", None)
         ctx = getattr(tree, "fn_inputs", None)
         if tree and iface and ctx:
+            ctx.sync_inputs(tree)
             box = layout.box()
             if hasattr(box, "template_node_view") and iface:
                 box.template_node_view(context, tree, None, None)
