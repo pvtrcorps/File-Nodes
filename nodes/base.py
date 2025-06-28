@@ -23,9 +23,10 @@ class FNCacheIDMixin:
 
 class FNBaseNode:
     '''Mixin to add a .process(context, inputs) stub and default header color.'''
-    bl_width_default = 160
+    bl_width_default = 200
     # Default header color for all nodes
     bl_color = (0.1, 0.1, 0.1)
+    color_tag = (0.1, 0.1, 0.1)
 
     def process(self, context, inputs):
         return {}
