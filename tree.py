@@ -10,6 +10,7 @@ class FileNodeTreeInput(PropertyGroup):
     bool_value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
     int_value: bpy.props.IntProperty(update=auto_evaluate_if_enabled)
     float_value: bpy.props.FloatProperty(update=auto_evaluate_if_enabled)
+    vector_value: bpy.props.FloatVectorProperty(size=3, update=auto_evaluate_if_enabled)
     string_value: bpy.props.StringProperty(update=auto_evaluate_if_enabled)
 
     scene_value: bpy.props.PointerProperty(type=bpy.types.Scene, update=auto_evaluate_if_enabled)
@@ -29,6 +30,7 @@ class FileNodeTreeInput(PropertyGroup):
         'FNSocketBool': 'bool_value',
         'FNSocketInt': 'int_value',
         'FNSocketFloat': 'float_value',
+        'FNSocketVector': 'vector_value',
         'FNSocketString': 'string_value',
         'FNSocketScene': 'scene_value',
         'FNSocketObject': 'object_value',
