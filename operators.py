@@ -1,6 +1,7 @@
 import bpy
 from bpy.types import Operator
 from . import ADDON_NAME
+from .common import LIST_TO_SINGLE
 
 _active_tree = None
 
@@ -83,27 +84,11 @@ class FN_OT_render_scenes(Operator):
         tree = node.id_data
         resolved = {}
 
-        _list_to_single = {
-            "FNSocketSceneList": "FNSocketScene",
-            "FNSocketObjectList": "FNSocketObject",
-            "FNSocketCollectionList": "FNSocketCollection",
-            "FNSocketWorldList": "FNSocketWorld",
-            "FNSocketCameraList": "FNSocketCamera",
-            "FNSocketImageList": "FNSocketImage",
-            "FNSocketLightList": "FNSocketLight",
-            "FNSocketMaterialList": "FNSocketMaterial",
-            "FNSocketMeshList": "FNSocketMesh",
-            "FNSocketNodeTreeList": "FNSocketNodeTree",
-            "FNSocketStringList": "FNSocketString",
-            "FNSocketTextList": "FNSocketText",
-            "FNSocketWorkSpaceList": "FNSocketWorkSpace",
-        }
-
         def eval_socket(sock):
             if sock.is_linked and sock.links:
                 from_sock = sock.links[0].from_socket
                 value = eval_node(from_sock.node)[from_sock.name]
-                single = _list_to_single.get(sock.bl_idname)
+                single = LIST_TO_SINGLE.get(sock.bl_idname)
                 if single and from_sock.bl_idname == single:
                     return [value] if value is not None else []
                 return value
@@ -174,22 +159,6 @@ def evaluate_tree(context):
 def _evaluate_tree(tree, context):
     resolved = {}
 
-    _list_to_single = {
-        "FNSocketSceneList": "FNSocketScene",
-        "FNSocketObjectList": "FNSocketObject",
-        "FNSocketCollectionList": "FNSocketCollection",
-        "FNSocketWorldList": "FNSocketWorld",
-        "FNSocketCameraList": "FNSocketCamera",
-        "FNSocketImageList": "FNSocketImage",
-        "FNSocketLightList": "FNSocketLight",
-        "FNSocketMaterialList": "FNSocketMaterial",
-        "FNSocketMeshList": "FNSocketMesh",
-        "FNSocketNodeTreeList": "FNSocketNodeTree",
-        "FNSocketStringList": "FNSocketString",
-        "FNSocketTextList": "FNSocketText",
-        "FNSocketWorkSpaceList": "FNSocketWorkSpace",
-    }
-
     output_types = {
         "FNOutputScenesNode",
         "FNRenderScenesNode",
@@ -199,7 +168,7 @@ def _evaluate_tree(tree, context):
 
     def eval_socket(sock):
         if sock.is_linked and sock.links:
-            single = _list_to_single.get(sock.bl_idname)
+            single = LIST_TO_SINGLE.get(sock.bl_idname)
             if getattr(sock, "is_multi_input", False):
                 values = []
                 for link in sock.links:

@@ -2,6 +2,7 @@ import bpy
 from bpy.types import NodeCustomGroup
 from .base import FNBaseNode
 from .. import operators
+from ..common import LIST_TO_SINGLE
 
 
 class FNGroupNode(NodeCustomGroup, FNBaseNode):
@@ -74,27 +75,12 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         operators._evaluate_tree(tree, context)
 
         resolved = {}
-        _list_to_single = {
-            "FNSocketSceneList": "FNSocketScene",
-            "FNSocketObjectList": "FNSocketObject",
-            "FNSocketCollectionList": "FNSocketCollection",
-            "FNSocketWorldList": "FNSocketWorld",
-            "FNSocketCameraList": "FNSocketCamera",
-            "FNSocketImageList": "FNSocketImage",
-            "FNSocketLightList": "FNSocketLight",
-            "FNSocketMaterialList": "FNSocketMaterial",
-            "FNSocketMeshList": "FNSocketMesh",
-            "FNSocketNodeTreeList": "FNSocketNodeTree",
-            "FNSocketStringList": "FNSocketString",
-            "FNSocketTextList": "FNSocketText",
-            "FNSocketWorkSpaceList": "FNSocketWorkSpace",
-        }
 
         def eval_socket(sock):
             if not sock:
                 return None
             if sock.is_linked and getattr(sock, "links", None):
-                single = _list_to_single.get(sock.bl_idname)
+                single = LIST_TO_SINGLE.get(sock.bl_idname)
                 if getattr(sock, "is_multi_input", False):
                     values = []
                     for link in sock.links:
