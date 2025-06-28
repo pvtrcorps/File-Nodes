@@ -24,7 +24,6 @@ class FNReadBlendNode(Node, FNBaseNode):
 
     def init(self, context):
         sock = self.inputs.new('FNSocketString', "File Path")
-        sock.display_shape = 'SQUARE'
         sock = self.outputs.new('FNSocketSceneList', "Scenes")
         sock.display_shape = 'SQUARE'
         sock = self.outputs.new('FNSocketObjectList', "Objects")
