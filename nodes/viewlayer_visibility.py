@@ -14,6 +14,7 @@ class FNViewLayerCollectionState(PropertyGroup):
     exclude: bpy.props.BoolProperty(name="Exclude", update=auto_evaluate_if_enabled)
     holdout: bpy.props.BoolProperty(name="Holdout", update=auto_evaluate_if_enabled)
     indirect_only: bpy.props.BoolProperty(name="Indirect Only", update=auto_evaluate_if_enabled)
+    depth: bpy.props.IntProperty()
 
 
 class FN_UL_view_layer_collections(UIList):
@@ -21,12 +22,36 @@ class FN_UL_view_layer_collections(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
-            row = layout.row(align=True)
+            split = layout.split(factor=0.7, align=True)
+            name_row = split.row(align=True)
+            for _ in range(getattr(item, "depth", 0)):
+                name_row.label(icon='BLANK1', text="")
             name = item.collection.name if item.collection else "<None>"
-            row.label(text=name)
-            row.prop(item, "exclude", text="Excl")
-            row.prop(item, "holdout", text="Hold")
-            row.prop(item, "indirect_only", text="Indirect")
+            name_row.label(text=name)
+
+            icon_row = split.row(align=True)
+            icon_row.alignment = 'RIGHT'
+            icon_row.prop(
+                item,
+                "exclude",
+                text="",
+                icon='CHECKBOX_HLT' if item.exclude else 'CHECKBOX_DEHLT',
+                emboss=False,
+            )
+            icon_row.prop(
+                item,
+                "holdout",
+                text="",
+                icon='HOLDOUT_ON' if item.holdout else 'HOLDOUT_OFF',
+                emboss=False,
+            )
+            icon_row.prop(
+                item,
+                "indirect_only",
+                text="",
+                icon='INDIRECT_ONLY_ON' if item.indirect_only else 'INDIRECT_ONLY_OFF',
+                emboss=False,
+            )
 
 
 def _find_layer_collection(layer, collection):
@@ -88,26 +113,28 @@ class FNViewLayerVisibility(Node, FNBaseNode):
             if self.layer_states[i].collection not in valid:
                 self.layer_states.remove(i)
 
-        existing = {item.collection for item in self.layer_states}
+        existing_map = {item.collection: item for item in self.layer_states}
 
-        def add_items(layer):
+        def add_items(layer, depth=0):
             coll = layer.collection
             # Skip the scene master collection as it's an embedded ID and cannot
             # be stored in an IDProperty.
             if getattr(coll, "is_embedded_data", False):
                 for ch in layer.children:
-                    add_items(ch)
+                    add_items(ch, depth + 1)
                 return
 
-            if coll not in existing:
+            item = existing_map.get(coll)
+            if not item:
                 item = self.layer_states.add()
                 item.collection = coll
-                item.exclude = layer.exclude
-                item.holdout = layer.holdout
-                item.indirect_only = layer.indirect_only
-                existing.add(coll)
+                existing_map[coll] = item
+            item.exclude = layer.exclude
+            item.holdout = layer.holdout
+            item.indirect_only = layer.indirect_only
+            item.depth = depth
             for ch in layer.children:
-                add_items(ch)
+                add_items(ch, depth + 1)
         add_items(view_layer.layer_collection)
 
     def draw_buttons(self, context, layout):
