@@ -27,7 +27,8 @@ class FN_UL_view_layer_collections(UIList):
             for _ in range(getattr(item, "depth", 0)):
                 name_row.label(icon='BLANK1', text="")
             name = item.collection.name if item.collection else "<None>"
-            name_row.label(text=name)
+            icon_name = 'OUTLINER_COLLECTION' if item.collection else 'DOT'
+            name_row.label(text=name, icon=icon_name)
 
             icon_row = split.row(align=True)
             icon_row.alignment = 'RIGHT'
