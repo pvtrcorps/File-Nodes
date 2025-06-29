@@ -157,6 +157,15 @@ class OutputScenesNode(FakeNode):
             ctx.scenes_to_keep.extend([s for s in (scenes if isinstance(scenes, list) else [scenes]) if s])
         return {}
 
+class OutlinerNode(FakeNode):
+    def __init__(self):
+        super().__init__("FNOutlinerNode")
+        inp = FakeSocket("Scene", "FNSocketScene")
+        self.inputs.append(inp)
+
+    def process(self, context, inputs):
+        return {}
+
 class FakeInputs:
     def __init__(self, bpy_module):
         self.bpy = bpy_module
@@ -220,6 +229,8 @@ operators = importlib.import_module(f'{PKG_NAME}.operators')
 
 # ---- helper to build tree ----
 def build_tree():
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
     tree = FakeNodeTree()
     new_node = NewSceneNode()
     out_node = OutputScenesNode()
@@ -229,6 +240,22 @@ def build_tree():
     out_node.inputs[0].is_linked = True
     out_node.inputs[0].links.append(link)
     # id_data
+    new_node.id_data = tree
+    out_node.id_data = tree
+    tree.nodes.extend([new_node, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree
+
+def build_outliner_tree():
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
+    tree = FakeNodeTree()
+    new_node = NewSceneNode()
+    out_node = OutlinerNode()
+    new_node.outputs[0].node = new_node
+    link = FakeLink(new_node, new_node.outputs[0])
+    out_node.inputs[0].is_linked = True
+    out_node.inputs[0].links.append(link)
     new_node.id_data = tree
     out_node.id_data = tree
     tree.nodes.extend([new_node, out_node])
@@ -253,3 +280,13 @@ def test_evaluate_tree_creates_and_cleans():
     new_scene2 = [s for s in bpy.data.scenes if s is not original][0]
     assert new_scene1 not in list(bpy.data.scenes)
     assert new_scene2 is not new_scene1
+
+def test_outliner_forces_evaluation():
+    tree = build_outliner_tree()
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    count = operators.evaluate_tree(ctx)
+    assert count == 1
+    assert len(list(bpy.data.scenes)) == 2
