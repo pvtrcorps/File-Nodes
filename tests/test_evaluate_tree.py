@@ -166,6 +166,17 @@ class OutlinerNode(FakeNode):
     def process(self, context, inputs):
         return {}
 
+class PassThroughNode(FakeNode):
+    def __init__(self, name="Pass"):
+        super().__init__("FNPass")
+        inp = FakeSocket("In", "FNSocketScene")
+        out = FakeSocket("Out", "FNSocketScene")
+        self.inputs.append(inp)
+        self.outputs.append(out)
+
+    def process(self, context, inputs):
+        return {"Out": inputs.get("In")}
+
 class FakeInputs:
     def __init__(self, bpy_module):
         self.bpy = bpy_module
@@ -262,6 +273,37 @@ def build_outliner_tree():
     bpy.data.node_groups.append(tree)
     return tree
 
+def build_cycle_tree():
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
+    tree = FakeNodeTree()
+    n1 = PassThroughNode()
+    n2 = PassThroughNode()
+    out_node = OutputScenesNode()
+
+    # create links forming a cycle n1 -> n2 -> n1
+    n1.outputs[0].node = n1
+    n2.outputs[0].node = n2
+
+    link_n2_to_n1 = FakeLink(n2, n2.outputs[0])
+    n1.inputs[0].is_linked = True
+    n1.inputs[0].links.append(link_n2_to_n1)
+
+    link_n1_to_n2 = FakeLink(n1, n1.outputs[0])
+    n2.inputs[0].is_linked = True
+    n2.inputs[0].links.append(link_n1_to_n2)
+
+    # connect n1 to output
+    link_out = FakeLink(n1, n1.outputs[0])
+    out_node.inputs[0].is_linked = True
+    out_node.inputs[0].links.append(link_out)
+
+    for n in (n1, n2, out_node):
+        n.id_data = tree
+    tree.nodes.extend([n1, n2, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree
+
 # ---- Tests ----
 def test_evaluate_tree_creates_and_cleans():
     tree = build_tree()
@@ -290,3 +332,14 @@ def test_outliner_forces_evaluation():
     count = operators.evaluate_tree(ctx)
     assert count == 1
     assert len(list(bpy.data.scenes)) == 2
+
+def test_cycle_does_not_recursively_fail():
+    tree = build_cycle_tree()
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    count = operators.evaluate_tree(ctx)
+    assert count == 1
+    # no new scenes should be created because the cycle produces None
+    assert len(list(bpy.data.scenes)) == 1
