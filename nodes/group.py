@@ -158,7 +158,7 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
 
         out_node = None
         for n in getattr(tree, "nodes", []):
-            if getattr(n, "bl_idname", "") in {"NodeGroupOutput", "FNGroupOutputNode"}:
+            if getattr(n, "bl_idname", "") == "NodeGroupOutput":
                 out_node = n
                 break
         result = {}

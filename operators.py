@@ -170,7 +170,6 @@ def _evaluate_tree(tree, context):
     output_types = {
         "FNOutputScenesNode",
         "FNRenderScenesNode",
-        "FNGroupOutputNode",
         "NodeGroupOutput",
         "FNOutlinerNode",
     }
