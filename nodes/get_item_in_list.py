@@ -72,6 +72,15 @@ class FNGetItemInList(Node, FNBaseNode):
     items: bpy.props.CollectionProperty(type=FNItemInList)
     active_index: bpy.props.IntProperty()
 
+    # Internal enum to know which output socket should be present. It is hidden
+    # so the user does not interact with it directly.
+    output_mode: bpy.props.EnumProperty(
+        items=[('SINGLE', 'Single', ''), ('LIST', 'List', '')],
+        options={'HIDDEN'},
+        name="Output Mode",
+        default='LIST',
+    )
+
     data_type: bpy.props.EnumProperty(
         name="Type",
         items=[
@@ -94,10 +103,10 @@ class FNGetItemInList(Node, FNBaseNode):
     )
 
     def update_type(self, context):
-        self.update_sockets()
+        self.update_sockets(self.output_mode == 'SINGLE')
         auto_evaluate_if_enabled(context)
 
-    def update_sockets(self):
+    def update_sockets(self, single_output):
         while self.inputs:
             self.inputs.remove(self.inputs[-1])
         while self.outputs:
@@ -106,12 +115,16 @@ class FNGetItemInList(Node, FNBaseNode):
         single = _socket_single[self.data_type]
         inp = self.inputs.new(list_sock, f"{self.data_type.title()}s")
         inp.display_shape = 'SQUARE'
-        self.outputs.new(single, self.data_type.title())
-        out = self.outputs.new(list_sock, f"{self.data_type.title()}s")
-        out.display_shape = 'SQUARE'
+        if single_output:
+            self.outputs.new(single, self.data_type.title())
+            self.output_mode = 'SINGLE'
+        else:
+            out = self.outputs.new(list_sock, f"{self.data_type.title()}s")
+            out.display_shape = 'SQUARE'
+            self.output_mode = 'LIST'
 
     def init(self, context):
-        self.update_sockets()
+        self.update_sockets(False)
 
     def _sync_items(self, lst):
         old = {item.name: item.selected for item in self.items}
@@ -124,6 +137,7 @@ class FNGetItemInList(Node, FNBaseNode):
             it.selected = old.get(name, False)
 
     def draw_buttons(self, context, layout):
+        layout.prop(self, "data_type", text="Type")
         if not self.items:
             layout.label(text="No Items")
             return
@@ -142,12 +156,22 @@ class FNGetItemInList(Node, FNBaseNode):
         if not isinstance(lst, (list, tuple)):
             lst = [lst] if lst else []
         self._sync_items(lst)
-        selected = [lst[item.index] for item in self.items if item.selected and 0 <= item.index < len(lst)]
-        single = selected[0] if len(selected) == 1 else None
-        return {
-            self.data_type.title(): single,
-            f"{self.data_type.title()}s": selected,
-        }
+        selected = [
+            lst[item.index]
+            for item in self.items
+            if item.selected and 0 <= item.index < len(lst)
+        ]
+        mode_single = len(selected) == 1
+        if (
+            mode_single and self.output_mode != 'SINGLE'
+        ) or (
+            not mode_single and self.output_mode != 'LIST'
+        ):
+            self.update_sockets(mode_single)
+            auto_evaluate_if_enabled(context)
+        if mode_single:
+            return {self.data_type.title(): selected[0]}
+        return {f"{self.data_type.title()}s": selected}
 
 
 _classes = (
