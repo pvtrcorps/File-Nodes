@@ -102,8 +102,9 @@ def _make_bpy_module():
     return bpy
 # ---- Fake node system ----
 class FakeSocket:
-    def __init__(self, name, bl_idname):
+    def __init__(self, name, bl_idname, identifier=None):
         self.name = name
+        self.identifier = identifier or name.replace(" ", "_")
         self.bl_idname = bl_idname
         self.is_linked = False
         self.links = []
@@ -183,6 +184,7 @@ class FakeInputs:
         self.scenes_to_keep = []
         self.created_ids = []
         self.eval_scene = None
+        self.values = {}
 
     def sync_inputs(self, tree):
         pass
@@ -223,6 +225,9 @@ class FakeInputs:
             elif isinstance(data, bpy.types.Light):
                 bpy.data.lights.remove(data)
         self.created_ids = remaining
+
+    def get_input_value(self, name):
+        return self.values.get(name)
 
 class FakeNodeTree:
     bl_idname = "FileNodesTreeType"
@@ -343,3 +348,35 @@ def test_cycle_does_not_recursively_fail():
     assert count == 1
     # no new scenes should be created because the cycle produces None
     assert len(list(bpy.data.scenes)) == 1
+
+
+def test_handles_socket_identifier():
+    bpy.data.node_groups.clear()
+    tree = FakeNodeTree()
+
+    inp_node = FakeNode("NodeGroupInput")
+    out_sock = FakeSocket("View Layer", "FNSocketViewLayer", identifier="View_Layer")
+    out_sock.node = inp_node
+    inp_node.outputs.append(out_sock)
+
+    consume = FakeNode("Consumer")
+    in_sock = FakeSocket("View Layer", "FNSocketViewLayer", identifier="View_Layer")
+    in_sock.is_linked = True
+    link = FakeLink(inp_node, out_sock)
+    in_sock.links.append(link)
+    consume.inputs.append(in_sock)
+
+    for n in (inp_node, consume):
+        n.id_data = tree
+
+    tree.nodes.extend([inp_node, consume])
+    tree.fn_inputs.values["View Layer"] = "Dummy"
+    bpy.data.node_groups.append(tree)
+
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    count = operators.evaluate_tree(ctx)
+    assert count == 1
+
