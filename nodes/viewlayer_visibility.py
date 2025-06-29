@@ -10,21 +10,50 @@ from ..operators import auto_evaluate_if_enabled
 
 class FNViewLayerCollectionState(PropertyGroup):
     """Stores visibility options for a collection in a view layer."""
+
     collection: bpy.props.PointerProperty(type=bpy.types.Collection)
     exclude: bpy.props.BoolProperty(name="Exclude", update=auto_evaluate_if_enabled)
     holdout: bpy.props.BoolProperty(name="Holdout", update=auto_evaluate_if_enabled)
     indirect_only: bpy.props.BoolProperty(name="Indirect Only", update=auto_evaluate_if_enabled)
     depth: bpy.props.IntProperty()
+    expanded: bpy.props.BoolProperty(name="Expanded", default=True)
+    parent_index: bpy.props.IntProperty(default=-1)
+    has_children: bpy.props.BoolProperty(default=False)
 
 
 class FN_UL_view_layer_collections(UIList):
     bl_idname = "FN_UL_view_layer_collections"
+
+    def filter_items(self, context, data, propname):
+        items = getattr(data, propname)
+        flt_flags = []
+        for idx, item in enumerate(items):
+            visible = True
+            parent_idx = getattr(item, "parent_index", -1)
+            while parent_idx != -1:
+                parent = items[parent_idx]
+                if not parent.expanded:
+                    visible = False
+                    break
+                parent_idx = parent.parent_index
+            flt_flags.append(self.bitflag_filter_item if visible else 0)
+        return flt_flags, []
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             split = layout.split(factor=0.7, align=True)
             name_row = split.row(align=True)
             for _ in range(getattr(item, "depth", 0)):
+                name_row.label(icon='BLANK1', text="")
+            if item.has_children:
+                name_row.prop(
+                    item,
+                    "expanded",
+                    text="",
+                    icon='TRIA_DOWN' if item.expanded else 'TRIA_RIGHT',
+                    emboss=False,
+                )
+            else:
                 name_row.label(icon='BLANK1', text="")
             name = item.collection.name if item.collection else "<None>"
             icon_name = 'OUTLINER_COLLECTION' if item.collection else 'DOT'
@@ -82,14 +111,15 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         self.outputs.new('FNSocketViewLayer', "View Layer")
 
     def update(self):
-        view_layer = self._get_view_layer_for_ui(bpy.context)
-        try:
-            self._sync_states(view_layer)
-        except Exception:
-            pass
+        # Only trigger evaluation when properties change. The collection
+        # states are synchronized during node execution to avoid overwriting
+        # user settings with the current scene state.
         auto_evaluate_if_enabled(bpy.context)
 
     def _get_view_layer_for_ui(self, context):
+        stored = getattr(self, "_input_view_layer", None)
+        if stored:
+            return stored
         sock = self.inputs.get("View Layer")
         name = None
         if sock and not sock.is_linked:
@@ -106,34 +136,47 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         if 0 <= self.active_index < len(self.layer_states):
             active_coll = self.layer_states[self.active_index].collection
 
-        def collect(layer, depth=0, items=None):
+        def collect(layer, depth=0, parent=-1, items=None):
             if items is None:
                 items = []
             coll = layer.collection
             if getattr(coll, "is_embedded_data", False):
                 for ch in layer.children:
-                    collect(ch, depth + 1, items)
+                    collect(ch, depth + 1, parent, items)
                 return items
-            items.append((coll, layer.exclude, layer.holdout, layer.indirect_only, depth))
+            idx = len(items)
+            items.append((coll, depth, parent, bool(layer.children)))
             for ch in layer.children:
-                collect(ch, depth + 1, items)
+                collect(ch, depth + 1, idx, items)
             return items
 
         states = collect(view_layer.layer_collection)
         if getattr(view_layer.layer_collection.collection, "is_embedded_data", False):
             states = [
-                (c, e, h, i, d - 1)
-                for c, e, h, i, d in states
+                (c, d - 1, p, has)
+                for c, d, p, has in states
             ]
 
+        old = {}
+        for item in self.layer_states:
+            old[item.collection.as_pointer()] = (
+                item.exclude,
+                item.holdout,
+                item.indirect_only,
+                item.expanded,
+            )
         self.layer_states.clear()
-        for coll, excl, hold, ind_only, depth in states:
+        for coll, depth, parent, has_children in states:
             item = self.layer_states.add()
             item.collection = coll
-            item.exclude = excl
-            item.holdout = hold
-            item.indirect_only = ind_only
+            ex, ho, ind, exp = old.get(coll.as_pointer(), (False, False, False, True))
+            item.exclude = ex
+            item.holdout = ho
+            item.indirect_only = ind
+            item.expanded = exp
             item.depth = depth
+            item.parent_index = parent
+            item.has_children = has_children
 
         if active_coll:
             for idx, item in enumerate(self.layer_states):
@@ -159,6 +202,7 @@ class FNViewLayerVisibility(Node, FNBaseNode):
     def process(self, context, inputs):
         view_layer = inputs.get("View Layer")
         if view_layer:
+            self._input_view_layer = view_layer
             self._sync_states(view_layer)
             ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
             for item in self.layer_states:
