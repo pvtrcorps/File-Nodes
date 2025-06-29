@@ -15,6 +15,8 @@ class FNViewLayerCollectionState(PropertyGroup):
     holdout: bpy.props.BoolProperty(name="Holdout", update=auto_evaluate_if_enabled)
     indirect_only: bpy.props.BoolProperty(name="Indirect Only", update=auto_evaluate_if_enabled)
     depth: bpy.props.IntProperty()
+    has_children: bpy.props.BoolProperty()
+    expanded: bpy.props.BoolProperty(default=True, update=auto_evaluate_if_enabled)
 
 
 class FN_UL_view_layer_collections(UIList):
@@ -25,6 +27,16 @@ class FN_UL_view_layer_collections(UIList):
             split = layout.split(factor=0.7, align=True)
             name_row = split.row(align=True)
             for _ in range(getattr(item, "depth", 0)):
+                name_row.label(icon='BLANK1', text="")
+            if item.has_children:
+                name_row.prop(
+                    item,
+                    "expanded",
+                    text="",
+                    icon='DISCLOSURE_TRI_DOWN' if item.expanded else 'DISCLOSURE_TRI_RIGHT',
+                    emboss=False,
+                )
+            else:
                 name_row.label(icon='BLANK1', text="")
             name = item.collection.name if item.collection else "<None>"
             icon_name = 'OUTLINER_COLLECTION' if item.collection else 'DOT'
@@ -54,6 +66,21 @@ class FN_UL_view_layer_collections(UIList):
                 emboss=False,
             )
 
+    def filter_items(self, context, data, propname):
+        items = getattr(data, propname)
+        flt_flags = []
+        collapse_depth = -1
+        for item in items:
+            if collapse_depth >= 0 and item.depth > collapse_depth:
+                flt_flags.append(self.bitflag_filter_item)
+                continue
+            if collapse_depth >= 0 and item.depth <= collapse_depth:
+                collapse_depth = -1
+            flt_flags.append(0)
+            if item.has_children and not item.expanded:
+                collapse_depth = item.depth
+        return flt_flags, []
+
 
 def _find_layer_collection(layer, collection):
     if layer.collection == collection:
@@ -81,15 +108,19 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         self.inputs.new('FNSocketViewLayer', "View Layer")
         self.outputs.new('FNSocketViewLayer', "View Layer")
 
+    _last_view_layer = None
+
     def update(self):
         view_layer = self._get_view_layer_for_ui(bpy.context)
         try:
-            self._sync_states(view_layer)
+            self._sync_states(view_layer, keep_values=True)
         except Exception:
             pass
         auto_evaluate_if_enabled(bpy.context)
 
     def _get_view_layer_for_ui(self, context):
+        if getattr(self, "_last_view_layer", None):
+            return self._last_view_layer
         sock = self.inputs.get("View Layer")
         name = None
         if sock and not sock.is_linked:
@@ -98,10 +129,16 @@ class FNViewLayerVisibility(Node, FNBaseNode):
             return context.scene.view_layers.get(name)
         return context.view_layer if hasattr(context, "view_layer") else None
 
-    def _sync_states(self, view_layer):
+    def _sync_states(self, view_layer, keep_values=True):
         if not view_layer:
             self.layer_states.clear()
             return
+
+        prev_values = {}
+        if keep_values:
+            for item in self.layer_states:
+                prev_values[item.collection] = item
+
         active_coll = None
         if 0 <= self.active_index < len(self.layer_states):
             active_coll = self.layer_states[self.active_index].collection
@@ -114,7 +151,7 @@ class FNViewLayerVisibility(Node, FNBaseNode):
                 for ch in layer.children:
                     collect(ch, depth + 1, items)
                 return items
-            items.append((coll, layer.exclude, layer.holdout, layer.indirect_only, depth))
+            items.append((coll, layer.exclude, layer.holdout, layer.indirect_only, depth, bool(layer.children)))
             for ch in layer.children:
                 collect(ch, depth + 1, items)
             return items
@@ -122,22 +159,31 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         states = collect(view_layer.layer_collection)
         if getattr(view_layer.layer_collection.collection, "is_embedded_data", False):
             states = [
-                (c, e, h, i, d - 1)
-                for c, e, h, i, d in states
+                (c, e, h, i, d - 1, hc)
+                for c, e, h, i, d, hc in states
             ]
 
         self.layer_states.clear()
-        for coll, excl, hold, ind_only, depth in states:
+        for coll, excl, hold, ind_only, depth, has_children in states:
             item = self.layer_states.add()
             item.collection = coll
-            item.exclude = excl
-            item.holdout = hold
-            item.indirect_only = ind_only
+            if keep_values and coll in prev_values:
+                prev = prev_values[coll]
+                item.exclude = prev.exclude
+                item.holdout = prev.holdout
+                item.indirect_only = prev.indirect_only
+                item.expanded = prev.expanded
+            else:
+                item.exclude = excl
+                item.holdout = hold
+                item.indirect_only = ind_only
+                item.expanded = True
             item.depth = depth
+            item.has_children = has_children
 
         if active_coll:
-            for idx, item in enumerate(self.layer_states):
-                if item.collection == active_coll:
+            for idx, itm in enumerate(self.layer_states):
+                if itm.collection == active_coll:
                     self.active_index = idx
                     break
 
@@ -159,7 +205,9 @@ class FNViewLayerVisibility(Node, FNBaseNode):
     def process(self, context, inputs):
         view_layer = inputs.get("View Layer")
         if view_layer:
-            self._sync_states(view_layer)
+            if view_layer != getattr(self, "_last_view_layer", None):
+                self._sync_states(view_layer, keep_values=True)
+            self._last_view_layer = view_layer
             ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
             for item in self.layer_states:
                 coll = item.collection
