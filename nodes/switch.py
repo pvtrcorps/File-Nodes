@@ -63,10 +63,11 @@ class FNSwitch(Node, FNBaseNode):
         while self.outputs:
             self.outputs.remove(self.outputs[-1])
         single = _socket_single[self.data_type]
+        name = self.data_type.replace('_', ' ').title()
         self.inputs.new('FNSocketBool', "Switch")
         self.inputs.new(single, "False")
         self.inputs.new(single, "True")
-        self.outputs.new(single, self.data_type.title())
+        self.outputs.new(single, name)
 
     def init(self, context):
         self._update_sockets()
@@ -79,7 +80,8 @@ class FNSwitch(Node, FNBaseNode):
         val_false = inputs.get("False")
         val_true = inputs.get("True")
         result = val_true if flag else val_false
-        return {self.data_type.title(): result}
+        name = self.data_type.replace('_', ' ').title()
+        return {name: result}
 
 
 def register():

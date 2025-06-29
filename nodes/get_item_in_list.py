@@ -113,13 +113,14 @@ class FNGetItemInList(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         list_sock = _socket_list[self.data_type]
         single = _socket_single[self.data_type]
-        inp = self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        name = self.data_type.replace('_', ' ').title()
+        inp = self.inputs.new(list_sock, f"{name}s")
         inp.display_shape = 'SQUARE'
         if single_output:
-            self.outputs.new(single, self.data_type.title())
+            self.outputs.new(single, name)
             self.output_mode = 'SINGLE'
         else:
-            out = self.outputs.new(list_sock, f"{self.data_type.title()}s")
+            out = self.outputs.new(list_sock, f"{name}s")
             out.display_shape = 'SQUARE'
             self.output_mode = 'LIST'
 
@@ -152,7 +153,8 @@ class FNGetItemInList(Node, FNBaseNode):
         )
 
     def process(self, context, inputs):
-        lst = inputs.get(f"{self.data_type.title()}s") or []
+        name = self.data_type.replace('_', ' ').title()
+        lst = inputs.get(f"{name}s") or []
         if not isinstance(lst, (list, tuple)):
             lst = [lst] if lst else []
         self._sync_items(lst)
@@ -170,8 +172,8 @@ class FNGetItemInList(Node, FNBaseNode):
             self.update_sockets(mode_single)
             auto_evaluate_if_enabled(context)
         if mode_single:
-            return {self.data_type.title(): selected[0]}
-        return {f"{self.data_type.title()}s": selected}
+            return {name: selected[0]}
+        return {f"{name}s": selected}
 
 
 _classes = (

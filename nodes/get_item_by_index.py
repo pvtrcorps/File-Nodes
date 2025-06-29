@@ -83,9 +83,10 @@ class FNGetItemByIndex(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         list_sock = _socket_list[self.data_type]
         single = _socket_single[self.data_type]
-        sock = self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        name = self.data_type.replace('_', ' ').title()
+        sock = self.inputs.new(list_sock, f"{name}s")
         sock.display_shape = 'SQUARE'
-        self.outputs.new(single, self.data_type.title())
+        self.outputs.new(single, name)
 
     def init(self, context):
         self.update_sockets()
@@ -95,12 +96,13 @@ class FNGetItemByIndex(Node, FNBaseNode):
         layout.prop(self, "index", text="Index")
 
     def process(self, context, inputs):
-        lst = inputs.get(f"{self.data_type.title()}s", [])
+        name = self.data_type.replace('_', ' ').title()
+        lst = inputs.get(f"{name}s", [])
         item = None
         idx = self.index
         if isinstance(lst, (list, tuple)) and 0 <= idx < len(lst):
             item = lst[idx]
-        return {self.data_type.title(): item}
+        return {name: item}
 
 def register():
     bpy.utils.register_class(FNGetItemByIndex)

@@ -90,10 +90,11 @@ class FNCreateList(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         single = _socket_single[self.data_type]
         lst = _socket_list[self.data_type]
+        name = self.data_type.replace('_', ' ').title()
         count = max(1, int(self.input_count))
         for i in range(count):
-            self.inputs.new(single, f"{self.data_type.title()} {i}")
-        out = self.outputs.new(lst, f"{self.data_type.title()}s")
+            self.inputs.new(single, f"{name} {i}")
+        out = self.outputs.new(lst, f"{name}s")
         out.display_shape = 'SQUARE'
         if context is not None:
             auto_evaluate_if_enabled(context)
@@ -106,11 +107,12 @@ class FNCreateList(Node, FNBaseNode):
         layout.prop(self, "input_count", text="Inputs")
 
     def process(self, context, inputs):
-        output_name = f"{self.data_type.title()}s"
+        name = self.data_type.replace('_', ' ').title()
+        output_name = f"{name}s"
         items = []
         count = max(1, int(self.input_count))
         for i in range(count):
-            value = inputs.get(f"{self.data_type.title()} {i}")
+            value = inputs.get(f"{name} {i}")
             if isinstance(value, (list, tuple)):
                 items.extend(v for v in value if v is not None)
             elif value is not None:

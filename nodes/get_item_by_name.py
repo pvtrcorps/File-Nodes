@@ -82,10 +82,11 @@ class FNGetItemByName(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         list_sock = _socket_list[self.data_type]
         single = _socket_single[self.data_type]
-        sock = self.inputs.new(list_sock, f"{self.data_type.title()}s")
+        name = self.data_type.replace('_', ' ').title()
+        sock = self.inputs.new(list_sock, f"{name}s")
         sock.display_shape = 'SQUARE'
         self.inputs.new('FNSocketString', "Name")
-        self.outputs.new(single, self.data_type.title())
+        self.outputs.new(single, name)
 
     def init(self, context):
         self.update_sockets()
@@ -94,14 +95,15 @@ class FNGetItemByName(Node, FNBaseNode):
         layout.prop(self, "data_type", text="Type")
 
     def process(self, context, inputs):
-        lst = inputs.get(f"{self.data_type.title()}s", [])
+        name = self.data_type.replace('_', ' ').title()
+        lst = inputs.get(f"{name}s", [])
         name = inputs.get("Name") or ""
         target = None
         for item in lst:
             if item and item.name == name:
                 target = item
                 break
-        return {self.data_type.title(): target}
+        return {name: target}
 
 def register():
     bpy.utils.register_class(FNGetItemByName)
