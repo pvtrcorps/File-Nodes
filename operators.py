@@ -125,7 +125,7 @@ def auto_evaluate_if_enabled(self=None, context=None):
         context = self
     context = context or bpy.context
     prefs = context.preferences.addons.get(ADDON_NAME)
-    if prefs and prefs.preferences.auto_evaluate:
+    if prefs and prefs.preferences.auto_evaluate and _active_tree is None:
         evaluate_tree(context)
 
 
