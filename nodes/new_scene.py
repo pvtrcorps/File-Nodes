@@ -25,16 +25,16 @@ class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs):
         name = inputs.get("Name") or "Scene"
-        cached = self.cache_get(name)
         ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-        if cached is None and ctx:
+        cached = self.cache_get(name)
+        if cached is not None:
+            return {"Scene": cached}
+        if ctx:
             storage = getattr(ctx, "_original_values", {})
             for sc in storage.get("created_ids", []):
                 if isinstance(sc, bpy.types.Scene) and sc.name == name:
-                    cached = sc
-                    break
-        if cached is not None:
-            return {"Scene": cached}
+                    self.cache_store(name, sc)
+                    return {"Scene": sc}
         scene = bpy.data.scenes.new(name)
         self.cache_store(name, scene)
         if ctx:
