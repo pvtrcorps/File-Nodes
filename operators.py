@@ -164,6 +164,7 @@ def _evaluate_tree(tree, context):
         "FNRenderScenesNode",
         "FNGroupOutputNode",
         "NodeGroupOutput",
+        "FNOutlinerNode",
     }
 
     def eval_socket(sock):
