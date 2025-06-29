@@ -60,7 +60,10 @@ class FNSetSceneViewlayers(Node, FNBaseNode):
 
         for vl in list(scene.view_layers)[len(filtered):]:
             if vl.name not in names:
-                scene.view_layers.remove(vl)
+                try:
+                    scene.view_layers.remove(vl)
+                except RuntimeError as err:
+                    _warn(str(err))
 
         return {"Scene": scene}
 
