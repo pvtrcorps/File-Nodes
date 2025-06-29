@@ -309,6 +309,25 @@ def build_cycle_tree():
     bpy.data.node_groups.append(tree)
     return tree
 
+def build_group_output_tree(single=True):
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
+    tree = FakeNodeTree()
+    new_node = NewSceneNode()
+    out_node = FakeNode("NodeGroupOutput")
+    sock_type = "FNSocketScene" if single else "FNSocketSceneList"
+    in_sock = FakeSocket("Scene", sock_type)
+    in_sock.is_linked = True
+    link = FakeLink(new_node, new_node.outputs[0])
+    in_sock.links.append(link)
+    out_node.inputs.append(in_sock)
+    new_node.outputs[0].node = new_node
+    for n in (new_node, out_node):
+        n.id_data = tree
+    tree.nodes.extend([new_node, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree, new_node
+
 # ---- Tests ----
 def test_evaluate_tree_creates_and_cleans():
     tree = build_tree()
@@ -379,4 +398,38 @@ def test_handles_socket_identifier():
 
     count = operators.evaluate_tree(ctx)
     assert count == 1
+
+
+def test_keep_scenes_from_group_output_single():
+    tree, new_node = build_group_output_tree(single=True)
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    new_node.inputs[0].value = 'First'
+    operators.evaluate_tree(ctx)
+    first_scene = [s for s in bpy.data.scenes if s.name == 'First'][0]
+
+    new_node.inputs[0].value = 'Second'
+    operators.evaluate_tree(ctx)
+    names = {s.name for s in bpy.data.scenes}
+    assert {'Orig', 'First', 'Second'} == names
+    assert first_scene in list(bpy.data.scenes)
+
+
+def test_keep_scenes_from_group_output_list():
+    tree, new_node = build_group_output_tree(single=False)
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    new_node.inputs[0].value = 'First'
+    operators.evaluate_tree(ctx)
+    first_scene = [s for s in bpy.data.scenes if s.name == 'First'][0]
+
+    new_node.inputs[0].value = 'Second'
+    operators.evaluate_tree(ctx)
+    names = {s.name for s in bpy.data.scenes}
+    assert {'Orig', 'First', 'Second'} == names
+    assert first_scene in list(bpy.data.scenes)
 

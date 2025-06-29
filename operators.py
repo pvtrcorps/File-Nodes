@@ -150,8 +150,8 @@ def evaluate_tree(context):
 
         ctx = getattr(tree, "fn_inputs", None)
         if ctx:
-            ctx.scenes_to_keep = []
             ctx.reset_to_originals()
+            ctx.scenes_to_keep = []
             ctx.sync_inputs(tree)
             ctx.prepare_eval_scene(context.scene)
 
@@ -258,6 +258,23 @@ def _evaluate_tree(tree, context):
     for node in tree.nodes:
         if node.bl_idname in output_types:
             traverse(node)
+
+    ctx = getattr(tree, "fn_inputs", None)
+    if ctx:
+        for node in tree.nodes:
+            if getattr(node, "bl_idname", "") == "NodeGroupOutput":
+                for sock in getattr(node, "inputs", []):
+                    stype = getattr(sock, "bl_idname", "")
+                    if stype not in {"FNSocketScene", "FNSocketSceneList"}:
+                        continue
+                    value = eval_socket(sock)
+                    if stype in LIST_TO_SINGLE:
+                        scenes = value or []
+                    else:
+                        scenes = [value] if value is not None else []
+                    for sc in scenes:
+                        if sc:
+                            ctx.scenes_to_keep.append(sc)
 
 
 ### Registration ###
