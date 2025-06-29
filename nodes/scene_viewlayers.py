@@ -18,7 +18,8 @@ class FNSceneViewlayers(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
-        self.outputs.new('FNSocketViewLayerList', "Viewlayers")
+        out = self.outputs.new('FNSocketViewLayerList', "Viewlayers")
+        out.display_shape = 'SQUARE'
 
     def update(self):
         pass
