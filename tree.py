@@ -115,7 +115,10 @@ class FileNodesTreeInputs(PropertyGroup):
             }
             fn = remove_map.get(type(data))
             if fn:
-                fn(data)
+                try:
+                    fn(data, do_unlink=True)
+                except TypeError:
+                    fn(data)
         except Exception:
             pass
 
