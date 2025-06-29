@@ -67,10 +67,11 @@ class FNIndexSwitch(Node, FNBaseNode):
             self.outputs.remove(self.outputs[-1])
         self.inputs.new('FNSocketInt', "Index")
         single = _socket_single[self.data_type]
+        name = self.data_type.replace('_', ' ').title()
         count = max(1, int(self.input_count))
         for i in range(count):
             self.inputs.new(single, f"Value {i}")
-        self.outputs.new(single, self.data_type.title())
+        self.outputs.new(single, name)
         if context is not None:
             auto_evaluate_if_enabled(context)
 
@@ -89,7 +90,8 @@ class FNIndexSwitch(Node, FNBaseNode):
         idx = inputs.get("Index") or 0
         values = [inputs.get(f"Value {i}") for i in range(max(1, int(self.input_count)))]
         result = values[idx] if isinstance(idx, int) and 0 <= idx < len(values) else None
-        return {self.data_type.title(): result}
+        name = self.data_type.replace('_', ' ').title()
+        return {name: result}
 
 
 def register():
