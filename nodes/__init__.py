@@ -5,7 +5,7 @@ import bpy, importlib
 # Node modules used by the File Nodes addon. `input_nodes` now contains
 # FNWorldInputNode for providing World datablocks.
 from . import (
-    read_blend, create_list, get_item_by_name, get_item_by_index,
+    read_blend, create_list, get_item_by_name, get_item_by_index, get_item_in_list,
     link_to_scene, link_to_collection, set_world, group,
     input_nodes, import_alembic, output_nodes,
     join_strings, split_string, combine_xyz, separate_xyz,
@@ -20,7 +20,7 @@ from . import (
 )
 
 _modules = [
-    read_blend, create_list, get_item_by_name, get_item_by_index,
+    read_blend, create_list, get_item_by_name, get_item_by_index, get_item_in_list,
     link_to_scene, link_to_collection, set_world, group,
     input_nodes, import_alembic, output_nodes,
     join_strings, split_string, combine_xyz, separate_xyz,
