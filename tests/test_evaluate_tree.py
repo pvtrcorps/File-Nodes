@@ -138,12 +138,21 @@ class NewSceneNode(FakeNode):
 
     def process(self, context, inputs):
         name = inputs.get("Name") or "Scene"
-        scene = bpy.data.scenes.new(name)
         ctx = getattr(self.id_data, "fn_inputs", None)
+        cached = None
         if ctx:
-            ctx.remember_created_scene(scene)
-            ctx.remember_created_id(scene)
-        return {"Scene": scene}
+            for sc in ctx.created_ids:
+                if isinstance(sc, bpy.types.Scene) and sc.name == name:
+                    cached = sc
+                    break
+        if cached is None:
+            cached = bpy.data.scenes.get(name)
+        if cached is None:
+            cached = bpy.data.scenes.new(name)
+        if ctx:
+            ctx.remember_created_scene(cached)
+            ctx.remember_created_id(cached)
+        return {"Scene": cached}
 
 
 class CachedNewSceneNode(NewSceneNode):
@@ -390,8 +399,7 @@ def test_evaluate_tree_creates_and_cleans():
     assert count2 == 1
     assert len(list(bpy.data.scenes)) == 2
     new_scene2 = [s for s in bpy.data.scenes if s is not original][0]
-    assert new_scene1 not in list(bpy.data.scenes)
-    assert new_scene2 is not new_scene1
+    assert new_scene2 is new_scene1
 
 def test_outliner_forces_evaluation():
     tree = build_outliner_tree()
@@ -494,4 +502,19 @@ def test_keep_scenes_from_group_output_list():
     names = {s.name for s in bpy.data.scenes}
     assert {'Orig', 'First', 'Second'} == names
     assert first_scene in list(bpy.data.scenes)
+
+
+def test_group_output_reuses_same_scene_name():
+    tree, _ = build_group_output_tree(single=True)
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    operators.evaluate_tree(ctx)
+    first_scene = [s for s in bpy.data.scenes if s is not original][0]
+
+    operators.evaluate_tree(ctx)
+    assert len(list(bpy.data.scenes)) == 2
+    second_scene = [s for s in bpy.data.scenes if s is not original][0]
+    assert second_scene is first_scene
 
