@@ -120,6 +120,11 @@ class FNViewLayerVisibility(Node, FNBaseNode):
             return items
 
         states = collect(view_layer.layer_collection)
+        if getattr(view_layer.layer_collection.collection, "is_embedded_data", False):
+            states = [
+                (c, e, h, i, d - 1)
+                for c, e, h, i, d in states
+            ]
 
         self.layer_states.clear()
         for coll, excl, hold, ind_only, depth in states:
