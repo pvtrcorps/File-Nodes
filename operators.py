@@ -158,6 +158,7 @@ def evaluate_tree(context):
 
 def _evaluate_tree(tree, context):
     resolved = {}
+    evaluating = set()
 
     output_types = {
         "FNOutputScenesNode",
@@ -194,6 +195,11 @@ def _evaluate_tree(tree, context):
     def eval_node(node):
         if node in resolved:
             return resolved[node]
+        if node in evaluating:
+            # Break cycles by returning already stored outputs
+            return resolved.setdefault(node, {s.name: None for s in node.outputs})
+
+        evaluating.add(node)
 
         if getattr(node, "bl_idname", "") == "NodeGroupInput":
             outputs = {}
@@ -204,6 +210,7 @@ def _evaluate_tree(tree, context):
                 else:
                     outputs[s.name] = None
             resolved[node] = outputs
+            evaluating.discard(node)
             return outputs
 
         inputs = {s.name: eval_socket(s) for s in node.inputs}
@@ -213,6 +220,7 @@ def _evaluate_tree(tree, context):
         for s in node.outputs:
             outputs.setdefault(s.name, None)
         resolved[node] = outputs
+        evaluating.discard(node)
         return outputs
 
     visited = set()
