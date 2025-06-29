@@ -107,7 +107,11 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
                     values = []
                     for link in sock.links:
                         from_sock = link.from_socket
-                        val = eval_node(from_sock.node)[from_sock.name]
+                        outputs = eval_node(from_sock.node)
+                        val = outputs.get(from_sock.name)
+                        if val is None:
+                            ident = getattr(from_sock, "identifier", from_sock.name)
+                            val = outputs.get(ident)
                         if single and from_sock.bl_idname == single:
                             if val is not None:
                                 values.append(val)
@@ -116,7 +120,11 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
                     return values
                 else:
                     link = sock.links[0]
-                    val = eval_node(link.from_node)[link.from_socket.name]
+                    outputs = eval_node(link.from_node)
+                    val = outputs.get(link.from_socket.name)
+                    if val is None:
+                        ident = getattr(link.from_socket, "identifier", link.from_socket.name)
+                        val = outputs.get(ident)
                     if single and link.from_socket.bl_idname == single:
                         return [val] if val is not None else []
                     return val
@@ -128,14 +136,23 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
             if node in resolved:
                 return resolved[node]
             if getattr(node, "bl_idname", "") == "NodeGroupInput":
-                node_outputs = {s.name: inputs.get(s.name) for s in node.outputs}
+                node_outputs = {}
+                for s in node.outputs:
+                    key = getattr(s, "identifier", s.name)
+                    val = inputs.get(s.name)
+                    node_outputs[key] = val
+                    if key != s.name:
+                        node_outputs.setdefault(s.name, val)
             else:
                 node_inputs = {s.name: eval_socket(s) for s in node.inputs}
                 node_outputs = {}
                 if hasattr(node, "process"):
                     node_outputs = node.process(context, node_inputs) or {}
             for s in node.outputs:
-                node_outputs.setdefault(s.name, None)
+                key = getattr(s, "identifier", s.name)
+                node_outputs.setdefault(key, None)
+                if key != s.name:
+                    node_outputs.setdefault(s.name, node_outputs[key])
             resolved[node] = node_outputs
             return node_outputs
 
@@ -149,7 +166,15 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         if out_node and iface:
             for item in iface.items_tree:
                 if getattr(item, "in_out", None) == "OUTPUT":
-                    sock = next((s for s in out_node.inputs if s.name == item.name), None)
+                    sock = next(
+                        (
+                            s
+                            for s in out_node.inputs
+                            if s.name == item.name
+                            or getattr(s, "identifier", s.name) == getattr(item, "identifier", item.name)
+                        ),
+                        None,
+                    )
                     result[item.name] = eval_socket(sock)
         for s in self.outputs:
             result.setdefault(s.name, None)

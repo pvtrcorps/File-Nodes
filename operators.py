@@ -87,7 +87,11 @@ class FN_OT_render_scenes(Operator):
         def eval_socket(sock):
             if sock.is_linked and sock.links:
                 from_sock = sock.links[0].from_socket
-                value = eval_node(from_sock.node)[from_sock.name]
+                outputs = eval_node(from_sock.node)
+                value = outputs.get(from_sock.name)
+                if value is None:
+                    ident = getattr(from_sock, "identifier", from_sock.name)
+                    value = outputs.get(ident)
                 single = LIST_TO_SINGLE.get(sock.bl_idname)
                 if single and from_sock.bl_idname == single:
                     return [value] if value is not None else []
@@ -104,7 +108,10 @@ class FN_OT_render_scenes(Operator):
             if hasattr(n, "process"):
                 outputs = n.process(context, inputs) or {}
             for s in n.outputs:
-                outputs.setdefault(s.name, None)
+                key = getattr(s, "identifier", s.name)
+                outputs.setdefault(key, None)
+                if key != s.name:
+                    outputs.setdefault(s.name, outputs[key])
             resolved[n] = outputs
             return outputs
 
@@ -175,7 +182,11 @@ def _evaluate_tree(tree, context):
                 values = []
                 for link in sock.links:
                     from_sock = link.from_socket
-                    value = eval_node(from_sock.node)[from_sock.name]
+                    outputs = eval_node(from_sock.node)
+                    value = outputs.get(from_sock.name)
+                    if value is None:
+                        ident = getattr(from_sock, "identifier", from_sock.name)
+                        value = outputs.get(ident)
                     if single and from_sock.bl_idname == single:
                         if value is not None:
                             values.append(value)
@@ -184,7 +195,11 @@ def _evaluate_tree(tree, context):
                 return values
             else:
                 from_sock = sock.links[0].from_socket
-                value = eval_node(from_sock.node)[from_sock.name]
+                outputs = eval_node(from_sock.node)
+                value = outputs.get(from_sock.name)
+                if value is None:
+                    ident = getattr(from_sock, "identifier", from_sock.name)
+                    value = outputs.get(ident)
                 if single and from_sock.bl_idname == single:
                     return [value] if value is not None else []
                 return value
@@ -205,10 +220,11 @@ def _evaluate_tree(tree, context):
             outputs = {}
             ctx = getattr(node.id_data, "fn_inputs", None)
             for s in node.outputs:
-                if ctx:
-                    outputs[s.name] = ctx.get_input_value(s.name)
-                else:
-                    outputs[s.name] = None
+                key = getattr(s, "identifier", s.name)
+                value = ctx.get_input_value(s.name) if ctx else None
+                outputs[key] = value
+                if key != s.name:
+                    outputs.setdefault(s.name, value)
             resolved[node] = outputs
             evaluating.discard(node)
             return outputs
@@ -218,7 +234,10 @@ def _evaluate_tree(tree, context):
         if hasattr(node, "process"):
             outputs = node.process(context, inputs) or {}
         for s in node.outputs:
-            outputs.setdefault(s.name, None)
+            key = getattr(s, "identifier", s.name)
+            outputs.setdefault(key, None)
+            if key != s.name:
+                outputs.setdefault(s.name, outputs[key])
         resolved[node] = outputs
         evaluating.discard(node)
         return outputs
