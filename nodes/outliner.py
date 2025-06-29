@@ -82,7 +82,8 @@ class FNOutlinerNode(Node, FNBaseNode):
         if items is None:
             items = []
         idx = len(items)
-        items.append((coll.name, 'OUTLINER_COLLECTION', depth, parent, bool(coll.children) or (self.show_objects and coll.objects)))
+        has_children = bool(coll.children) or (self.show_objects and bool(coll.objects))
+        items.append((coll.name, 'OUTLINER_COLLECTION', depth, parent, has_children))
         for child in coll.children:
             self._collect(child, depth + 1, idx, items)
         if self.show_objects:
