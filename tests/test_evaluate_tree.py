@@ -145,6 +145,33 @@ class NewSceneNode(FakeNode):
             ctx.remember_created_id(scene)
         return {"Scene": scene}
 
+
+class CachedNewSceneNode(NewSceneNode):
+    """NewSceneNode variant that reuses scenes from previous evaluation."""
+
+    def __init__(self):
+        super().__init__()
+        self._cache = {}
+
+    def process(self, context, inputs):
+        name = inputs.get("Name") or "Scene"
+        cached = self._cache.get(name)
+        ctx = getattr(self.id_data, "fn_inputs", None)
+        if cached is None and ctx:
+            for sc in ctx.created_ids:
+                if isinstance(sc, bpy.types.Scene) and sc.name == name:
+                    cached = sc
+                    break
+        if cached is not None:
+            self._cache[name] = cached
+            return {"Scene": cached}
+        scene = bpy.data.scenes.new(name)
+        self._cache[name] = scene
+        if ctx:
+            ctx.remember_created_scene(scene)
+            ctx.remember_created_id(scene)
+        return {"Scene": scene}
+
 class OutputScenesNode(FakeNode):
     def __init__(self):
         super().__init__("FNOutputScenesNode")
@@ -328,6 +355,25 @@ def build_group_output_tree(single=True):
     bpy.data.node_groups.append(tree)
     return tree, new_node
 
+def build_group_output_tree_cached(single=True):
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
+    tree = FakeNodeTree()
+    new_node = CachedNewSceneNode()
+    out_node = FakeNode("NodeGroupOutput")
+    sock_type = "FNSocketScene" if single else "FNSocketSceneList"
+    in_sock = FakeSocket("Scene", sock_type)
+    in_sock.is_linked = True
+    link = FakeLink(new_node, new_node.outputs[0])
+    in_sock.links.append(link)
+    out_node.inputs.append(in_sock)
+    new_node.outputs[0].node = new_node
+    for n in (new_node, out_node):
+        n.id_data = tree
+    tree.nodes.extend([new_node, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree, new_node
+
 # ---- Tests ----
 def test_evaluate_tree_creates_and_cleans():
     tree = build_tree()
@@ -367,6 +413,22 @@ def test_cycle_does_not_recursively_fail():
     assert count == 1
     # no new scenes should be created because the cycle produces None
     assert len(list(bpy.data.scenes)) == 1
+
+
+def test_reuse_scene_with_group_output():
+    tree, new_node = build_group_output_tree_cached(single=True)
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    new_node.inputs[0].value = 'Persist'
+    operators.evaluate_tree(ctx)
+    first_scene = [s for s in bpy.data.scenes if s is not original][0]
+
+    operators.evaluate_tree(ctx)
+    assert len(list(bpy.data.scenes)) == 2
+    second_scene = [s for s in bpy.data.scenes if s is not original][0]
+    assert first_scene is second_scene
 
 
 def test_handles_socket_identifier():
