@@ -260,6 +260,8 @@ def _evaluate_tree(tree, context):
 
     ctx = getattr(tree, "fn_inputs", None)
     if ctx:
+        if getattr(ctx, "scenes_to_keep", None) is None:
+            ctx.scenes_to_keep = []
         for node in tree.nodes:
             if getattr(node, "bl_idname", "") == "NodeGroupOutput":
                 for sock in getattr(node, "inputs", []):
