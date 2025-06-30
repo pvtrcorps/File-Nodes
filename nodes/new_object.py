@@ -58,22 +58,13 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs):
         data = inputs.get("Data")
-        created_data = None
         name = inputs.get("Name") or "Object"
         key = (self.obj_type, name)
         cached = self.cache_get(key)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             obj = cached
         else:
             obj = None
-
-        if obj is None and ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for o in storage.get("created_ids", []):
-                if isinstance(o, bpy.types.Object) and o.name == name:
-                    obj = o
-                    break
 
         if obj is None:
             existing = bpy.data.objects.get(name)
@@ -83,13 +74,10 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
         if data is None:
             if self.obj_type == 'MESH':
                 data = bpy.data.meshes.new(f"{name}Mesh")
-                created_data = data
             elif self.obj_type == 'LIGHT':
                 data = bpy.data.lights.new(f"{name}Light", type='POINT')
-                created_data = data
             elif self.obj_type == 'CAMERA':
                 data = bpy.data.cameras.new(f"{name}Camera")
-                created_data = data
 
         if obj is not None:
             try:
@@ -98,10 +86,6 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
                 pass
         else:
             obj = bpy.data.objects.new(name, data)
-            if ctx:
-                ctx.remember_created_id(obj)
-        if created_data and ctx:
-            ctx.remember_created_id(created_data)
         self.cache_store(key, obj)
         return {"Object": obj}
 

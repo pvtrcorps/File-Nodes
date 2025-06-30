@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketBool
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNCollectionProps(Node, FNBaseNode):
         coll = inputs.get("Collection")
         if coll:
             hide_vp = inputs.get("Hide Viewport")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(coll, "hide_viewport")
+            ensure_mutable(coll)
             try:
                 coll.hide_viewport = hide_vp
             except Exception:

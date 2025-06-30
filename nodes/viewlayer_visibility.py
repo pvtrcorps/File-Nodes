@@ -5,6 +5,7 @@ from bpy.types import Node, PropertyGroup, UIList
 
 from .base import FNBaseNode
 from ..sockets import FNSocketViewLayer
+from ..cow_engine import ensure_mutable
 from ..operators import auto_evaluate_if_enabled
 
 
@@ -212,10 +213,7 @@ class FNViewLayerVisibility(Node, FNBaseNode):
                 layer = _find_layer_collection(view_layer.layer_collection, coll)
                 if not layer:
                     continue
-                if ctx:
-                    ctx.store_original(layer, "exclude")
-                    ctx.store_original(layer, "holdout")
-                    ctx.store_original(layer, "indirect_only")
+                ensure_mutable(layer)
                 try:
                     layer.exclude = item.exclude
                 except Exception:

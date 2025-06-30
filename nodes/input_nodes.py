@@ -119,32 +119,17 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
         if cached is not None:
             return {"Scene": cached}
 
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-        if ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for sc in storage.get("created_ids", []):
-                if isinstance(sc, bpy.types.Scene) and sc.name == name:
-                    cached = sc
-                    break
-
         if cached is None:
             cached = bpy.data.scenes.get(name)
 
         if cached is not None:
             self.cache_store(key, cached)
-            if ctx:
-                ctx.remember_created_scene(cached)
-                ctx.remember_created_id(cached)
             return {"Scene": cached}
 
         dup = scene.copy()
         dup.name = name
         dup.use_extra_user = True
         self.cache_store(key, dup)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-        if ctx:
-            ctx.remember_created_scene(dup)
-            ctx.remember_created_id(dup)
         return {"Scene": dup}
 
 

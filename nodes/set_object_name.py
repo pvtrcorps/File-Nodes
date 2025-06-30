@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketString
+from ..cow_engine import ensure_mutable
 
 
 
@@ -26,9 +27,7 @@ class FNSetObjectName(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             name = inputs.get("Name") or ""
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(obj, "name")
+            ensure_mutable(obj)
             try:
                 obj.name = name
             except Exception:

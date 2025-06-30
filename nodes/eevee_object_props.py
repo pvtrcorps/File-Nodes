@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketBool
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNEeveeObjectProps(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             shadow = inputs.get("Visible Shadow")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(obj, "visible_shadow")
+            ensure_mutable(obj)
             try:
                 obj.visible_shadow = shadow
             except Exception:

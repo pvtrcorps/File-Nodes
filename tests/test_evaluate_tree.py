@@ -138,20 +138,9 @@ class NewSceneNode(FakeNode):
 
     def process(self, context, inputs):
         name = inputs.get("Name") or "Scene"
-        ctx = getattr(self.id_data, "fn_inputs", None)
-        cached = None
-        if ctx:
-            for sc in ctx.created_ids:
-                if isinstance(sc, bpy.types.Scene) and sc.name == name:
-                    cached = sc
-                    break
-        if cached is None:
-            cached = bpy.data.scenes.get(name)
+        cached = bpy.data.scenes.get(name)
         if cached is None:
             cached = bpy.data.scenes.new(name)
-        if ctx:
-            ctx.remember_created_scene(cached)
-            ctx.remember_created_id(cached)
         return {"Scene": cached}
 
 
@@ -165,20 +154,11 @@ class CachedNewSceneNode(NewSceneNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Scene"
         cached = self._cache.get(name)
-        ctx = getattr(self.id_data, "fn_inputs", None)
-        if cached is None and ctx:
-            for sc in ctx.created_ids:
-                if isinstance(sc, bpy.types.Scene) and sc.name == name:
-                    cached = sc
-                    break
         if cached is not None:
             self._cache[name] = cached
             return {"Scene": cached}
         scene = bpy.data.scenes.new(name)
         self._cache[name] = scene
-        if ctx:
-            ctx.remember_created_scene(scene)
-            ctx.remember_created_id(scene)
         return {"Scene": scene}
 
 class OutputScenesNode(FakeNode):
@@ -217,9 +197,8 @@ class PassThroughNode(FakeNode):
 class FakeInputs:
     def __init__(self, bpy_module):
         self.bpy = bpy_module
-        self.scenes_to_keep = []
-        self.created_ids = []
         self.eval_scene = None
+        self.scenes_to_keep = []
         self.values = {}
 
     def sync_inputs(self, tree):
@@ -230,37 +209,6 @@ class FakeInputs:
 
     def clear_eval_data(self):
         self.eval_scene = None
-
-    def remember_created_scene(self, scene):
-        self.created_ids.append(scene)
-
-    def remember_created_id(self, data):
-        self.created_ids.append(data)
-
-    def reset_to_originals(self):
-        keep = {id(s) for s in self.scenes_to_keep if s}
-        remaining = []
-        for data in list(self.created_ids):
-            if id(data) in keep:
-                remaining.append(data)
-                continue
-            if isinstance(data, bpy.types.Scene):
-                bpy.data.scenes.remove(data)
-            elif isinstance(data, bpy.types.Object):
-                bpy.data.objects.remove(data)
-            elif isinstance(data, bpy.types.Collection):
-                bpy.data.collections.remove(data)
-            elif isinstance(data, bpy.types.World):
-                bpy.data.worlds.remove(data)
-            elif isinstance(data, bpy.types.Material):
-                bpy.data.materials.remove(data)
-            elif isinstance(data, bpy.types.Mesh):
-                bpy.data.meshes.remove(data)
-            elif isinstance(data, bpy.types.Camera):
-                bpy.data.cameras.remove(data)
-            elif isinstance(data, bpy.types.Light):
-                bpy.data.lights.remove(data)
-        self.created_ids = remaining
 
     def get_input_value(self, name):
         return self.values.get(name)

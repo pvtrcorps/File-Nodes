@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketBool
+from ..cow_engine import ensure_mutable
 
 
 
@@ -31,10 +32,7 @@ class FNObjectProps(Node, FNBaseNode):
         if obj:
             hide_vp = inputs.get("Hide Viewport")
             hide_re = inputs.get("Hide Render")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(obj, "hide_viewport")
-                ctx.store_original(obj, "hide_render")
+            ensure_mutable(obj)
             try:
                 obj.hide_viewport = hide_vp
                 obj.hide_render = hide_re

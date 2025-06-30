@@ -31,32 +31,19 @@ class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "ViewLayer"
         key = (scene.as_pointer(), name)
         cached = self.cache_get(key)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"ViewLayer": cached}
 
-        if ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for vl in storage.get("created_ids", []):
-                if isinstance(vl, bpy.types.ViewLayer) and vl.name == name and vl.id_data == scene:
-                    cached = vl
-                    break
-
-        if cached is None:
-            existing = scene.view_layers.get(name)
-            if existing is not None:
-                cached = existing
+        existing = scene.view_layers.get(name)
+        if existing is not None:
+            cached = existing
 
         if cached is not None:
             self.cache_store(key, cached)
-            if ctx:
-                ctx.remember_created_id(cached)
             return {"ViewLayer": cached}
 
         view_layer = scene.view_layers.new(name)
         self.cache_store(key, view_layer)
-        if ctx:
-            ctx.remember_created_id(view_layer)
         return {"ViewLayer": view_layer}
 
 

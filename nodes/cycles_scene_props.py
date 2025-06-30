@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNCyclesSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "cycles"):
             samples = inputs.get("Samples")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene.cycles, "samples")
+            ensure_mutable(scene)
             try:
                 scene.cycles.samples = samples
             except Exception:

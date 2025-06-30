@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketMesh, FNSocketBool
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNMeshProps(Node, FNBaseNode):
         mesh = inputs.get("Mesh")
         if mesh:
             auto = inputs.get("Auto Smooth")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(mesh, "use_auto_smooth")
+            ensure_mutable(mesh)
             try:
                 mesh.use_auto_smooth = auto
             except Exception:
