@@ -194,6 +194,24 @@ class PassThroughNode(FakeNode):
     def process(self, context, inputs):
         return {"Out": inputs.get("In")}
 
+
+class SetSceneNameNode(FakeNode):
+    def __init__(self):
+        super().__init__("FNSetSceneName")
+        self.inputs.append(FakeSocket("Scene", "FNSocketScene"))
+        name_sock = FakeSocket("Name", "FNSocketString")
+        name_sock.value = ""
+        self.inputs.append(name_sock)
+        self.outputs.append(FakeSocket("Scene", "FNSocketScene"))
+
+    def process(self, context, inputs):
+        scene = inputs.get("Scene")
+        if scene:
+            name = inputs.get("Name") or ""
+            scene = cow_mod.ensure_mutable(scene)
+            scene.name = name
+        return {"Scene": scene}
+
 class FakeInputs:
     def __init__(self, bpy_module):
         self.bpy = bpy_module
@@ -226,6 +244,7 @@ class FakeNodeTree:
 bpy = _make_bpy_module()
 sys.modules['bpy'] = bpy
 operators = importlib.import_module(f'{PKG_NAME}.operators')
+cow_mod = importlib.import_module(f'{PKG_NAME}.cow_engine')
 
 # ---- helper to build tree ----
 def build_tree():
@@ -330,6 +349,37 @@ def build_group_output_tree_cached(single=True):
     tree.nodes.extend([new_node, out_node])
     bpy.data.node_groups.append(tree)
     return tree, new_node
+
+def build_split_rename_tree():
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
+    tree = FakeNodeTree()
+    new_node = NewSceneNode()
+    set_a = SetSceneNameNode()
+    set_b = SetSceneNameNode()
+    out_node = OutputScenesNode()
+
+    new_node.outputs[0].node = new_node
+    link_a = FakeLink(new_node, new_node.outputs[0])
+    link_b = FakeLink(new_node, new_node.outputs[0])
+    set_a.inputs[0].is_linked = True
+    set_a.inputs[0].links.append(link_a)
+    set_b.inputs[0].is_linked = True
+    set_b.inputs[0].links.append(link_b)
+
+    set_a.outputs[0].node = set_a
+    set_b.outputs[0].node = set_b
+    out_node.inputs[0].is_linked = True
+    out_node.inputs[0].is_multi_input = True
+    out_node.inputs[0].links.append(FakeLink(set_a, set_a.outputs[0]))
+    out_node.inputs[0].links.append(FakeLink(set_b, set_b.outputs[0]))
+
+    for n in (new_node, set_a, set_b, out_node):
+        n.id_data = tree
+
+    tree.nodes.extend([new_node, set_a, set_b, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree, set_a, set_b
 
 # ---- Tests ----
 def test_evaluate_tree_creates_and_cleans():
@@ -465,4 +515,18 @@ def test_group_output_reuses_same_scene_name():
     assert len(list(bpy.data.scenes)) == 2
     second_scene = [s for s in bpy.data.scenes if s is not original][0]
     assert second_scene is first_scene
+
+
+def test_split_scene_renames_are_independent():
+    tree, set_a, set_b = build_split_rename_tree()
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    set_a.inputs[1].value = 'A'
+    set_b.inputs[1].value = 'B'
+
+    operators.evaluate_tree(ctx)
+    names = {sc.name for sc in tree.fn_inputs.scenes_to_keep}
+    assert {'A', 'B'} == names
 
