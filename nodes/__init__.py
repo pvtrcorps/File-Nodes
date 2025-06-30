@@ -14,6 +14,7 @@ from . import (
     cycles_object_props, eevee_object_props, collection_props,
     world_props, camera_props, light_props, mesh_props, material_props,
     new_scene, new_object, new_collection, new_world, new_material, new_viewlayer,
+    new_camera, new_light, new_mesh, new_text,
     set_scene_name, set_collection_name, set_object_name,
     viewlayer_visibility, scene_viewlayers,set_scene_viewlayers,
     switch, index_switch, outliner
@@ -29,6 +30,7 @@ _modules = [
     cycles_object_props, eevee_object_props, collection_props,
     world_props, camera_props, light_props, mesh_props, material_props,
     new_scene, new_object, new_collection, new_world, new_material, new_viewlayer,
+    new_camera, new_light, new_mesh, new_text,
     set_scene_name, set_collection_name, set_object_name,
     viewlayer_visibility, scene_viewlayers,set_scene_viewlayers,
     switch, index_switch, outliner

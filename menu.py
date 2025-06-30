@@ -72,14 +72,17 @@ categories = [
     ]),
     NodeCategory('FILE_NODES_CAMERA', 'Camera', items=[
         NodeItem('FNCameraInputNode'),
+        NodeItem('FNNewCamera'),
         NodeItem('FNCameraProps'),
     ]),
     NodeCategory('FILE_NODES_LIGHT', 'Light', items=[
         NodeItem('FNLightInputNode'),
+        NodeItem('FNNewLight'),
         NodeItem('FNLightProps'),
     ]),
     NodeCategory('FILE_NODES_MESH', 'Mesh', items=[
         NodeItem('FNMeshInputNode'),
+        NodeItem('FNNewMesh'),
         NodeItem('FNMeshProps'),
     ]),
     NodeCategory('FILE_NODES_IMAGE', 'Image', items=[
@@ -90,6 +93,7 @@ categories = [
     ]),
     NodeCategory('FILE_NODES_TEXT', 'Text', items=[
         NodeItem('FNTextInputNode'),
+        NodeItem('FNNewText'),
     ]),
     NodeCategory('FILE_NODES_WORKSPACE', 'WorkSpace', items=[
         NodeItem('FNWorkSpaceInputNode'),
