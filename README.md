@@ -9,7 +9,8 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 ## Arquitectura general
 1. **NodeTree personalizado**: contenedor del grafo.
 2. **Nodos**: clases que heredan de `bpy.types.Node`.
-3. **Sockets**: tipos propios para listas de objetos, escenas, etc.
+3. **Sockets**: tipos propios para listas de objetos, escenas y ahora un socket de
+   *ejecución* para exponer acciones como "Render Scenes" a través del `Group Input`.
 4. **Árboles globales**: los `FileNodesTree` residen en `bpy.data.node_groups` y se evalúan de forma conjunta.
 
 ## Modelo de ejecución

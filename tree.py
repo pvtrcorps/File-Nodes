@@ -8,6 +8,7 @@ class FileNodeTreeInput(PropertyGroup):
     socket_type: bpy.props.StringProperty()
 
     bool_value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
+    exec_value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
     int_value: bpy.props.IntProperty(update=auto_evaluate_if_enabled)
     float_value: bpy.props.FloatProperty(update=auto_evaluate_if_enabled)
     vector_value: bpy.props.FloatVectorProperty(size=3, update=auto_evaluate_if_enabled)
@@ -31,6 +32,7 @@ class FileNodeTreeInput(PropertyGroup):
 
     _prop_map = {
         'FNSocketBool': 'bool_value',
+        'FNSocketExec': 'exec_value',
         'FNSocketInt': 'int_value',
         'FNSocketFloat': 'float_value',
         'FNSocketVector': 'vector_value',
