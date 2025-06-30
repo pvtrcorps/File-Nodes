@@ -2,6 +2,7 @@ import bpy
 from bpy.types import Operator
 from . import ADDON_NAME
 from .common import LIST_TO_SINGLE
+from . import cow_engine
 
 _active_tree = None
 
@@ -197,7 +198,7 @@ def evaluate_tree(context):
             ctx.prepare_eval_scene(context.scene)
 
         _active_tree = tree
-        _evaluate_tree(tree, context)
+        cow_engine.evaluate_tree(tree, context)
         _active_tree = None
         count += 1
 
@@ -205,118 +206,8 @@ def evaluate_tree(context):
 
 
 def _evaluate_tree(tree, context):
-    resolved = {}
-    evaluating = set()
-
-    output_types = {
-        "FNOutputScenesNode",
-        "FNRenderScenesNode",
-        "NodeGroupOutput",
-        "FNOutlinerNode",
-    }
-
-    def eval_socket(sock):
-        if sock.is_linked and sock.links:
-            single = LIST_TO_SINGLE.get(sock.bl_idname)
-            if getattr(sock, "is_multi_input", False):
-                values = []
-                for link in sock.links:
-                    from_sock = link.from_socket
-                    outputs = eval_node(from_sock.node)
-                    value = outputs.get(from_sock.name)
-                    if value is None:
-                        ident = getattr(from_sock, "identifier", from_sock.name)
-                        value = outputs.get(ident)
-                    if single and from_sock.bl_idname == single:
-                        if value is not None:
-                            values.append(value)
-                    else:
-                        values.append(value)
-                return values
-            else:
-                from_sock = sock.links[0].from_socket
-                outputs = eval_node(from_sock.node)
-                value = outputs.get(from_sock.name)
-                if value is None:
-                    ident = getattr(from_sock, "identifier", from_sock.name)
-                    value = outputs.get(ident)
-                if single and from_sock.bl_idname == single:
-                    return [value] if value is not None else []
-                return value
-        if hasattr(sock, "value"):
-            return sock.value
-        return None
-
-    def eval_node(node):
-        if node in resolved:
-            return resolved[node]
-        if node in evaluating:
-            # Break cycles by returning already stored outputs
-            return resolved.setdefault(node, {s.name: None for s in node.outputs})
-
-        evaluating.add(node)
-
-        if getattr(node, "bl_idname", "") == "NodeGroupInput":
-            outputs = {}
-            ctx = getattr(node.id_data, "fn_inputs", None)
-            for s in node.outputs:
-                key = getattr(s, "identifier", s.name)
-                value = ctx.get_input_value(s.name) if ctx else None
-                outputs[key] = value
-                if key != s.name:
-                    outputs.setdefault(s.name, value)
-            resolved[node] = outputs
-            evaluating.discard(node)
-            return outputs
-
-        inputs = {s.name: eval_socket(s) for s in node.inputs}
-        outputs = {}
-        if hasattr(node, "process"):
-            outputs = node.process(context, inputs) or {}
-        for s in node.outputs:
-            key = getattr(s, "identifier", s.name)
-            outputs.setdefault(key, None)
-            if key != s.name:
-                outputs.setdefault(s.name, outputs[key])
-        resolved[node] = outputs
-        evaluating.discard(node)
-        return outputs
-
-    visited = set()
-
-    def traverse(node):
-        if node in visited:
-            return
-        visited.add(node)
-        eval_node(node)
-        for sock in node.inputs:
-            if sock.is_linked and sock.links:
-                for link in sock.links:
-                    from_node = link.from_node
-                    traverse(from_node)
-
-    for node in tree.nodes:
-        if node.bl_idname in output_types:
-            traverse(node)
-
-    ctx = getattr(tree, "fn_inputs", None)
-    if ctx:
-        if getattr(ctx, "scenes_to_keep", None) is None:
-            ctx.scenes_to_keep = []
-        for node in tree.nodes:
-            if getattr(node, "bl_idname", "") == "NodeGroupOutput":
-                for sock in getattr(node, "inputs", []):
-                    stype = getattr(sock, "bl_idname", "")
-                    if stype not in {"FNSocketScene", "FNSocketSceneList"}:
-                        continue
-                    value = eval_socket(sock)
-                    if stype in LIST_TO_SINGLE:
-                        scenes = value or []
-                    else:
-                        scenes = [value] if value is not None else []
-                    for sc in scenes:
-                        if sc:
-                            ctx.scenes_to_keep.append(sc)
+    """Wrapper that delegates evaluation to the copy-on-write engine."""
+    cow_engine.evaluate_tree(tree, context)
 
 
 ### Registration ###
