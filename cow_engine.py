@@ -25,6 +25,8 @@ class DataProxy:
     def __setattr__(self, name, value):
         if name in {"_data", "refcount"}:
             object.__setattr__(self, name, value)
+        elif name == "data":
+            object.__setattr__(self, "_data", value)
         else:
             ensure_mutable(self)
             setattr(self._data, name, value)
