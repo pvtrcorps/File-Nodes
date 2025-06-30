@@ -112,6 +112,7 @@ class FileNodesTreeInputs(PropertyGroup):
                 bpy.types.Mesh: bpy.data.meshes.remove,
                 bpy.types.Camera: bpy.data.cameras.remove,
                 bpy.types.Light: bpy.data.lights.remove,
+                bpy.types.Text: bpy.data.texts.remove,
             }
             fn = remove_map.get(type(data))
             if fn:
