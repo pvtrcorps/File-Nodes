@@ -80,12 +80,18 @@ class FN_OT_trigger_exec(Operator):
         tree = bpy.data.node_groups.get(self.tree_name)
         if not tree:
             return {'CANCELLED'}
+        auto_eval = False
+        prefs = context.preferences.addons.get(ADDON_NAME)
+        if prefs:
+            auto_eval = prefs.preferences.auto_evaluate
         if self.group_input:
             inp = tree.fn_inputs.inputs.get(self.socket_name)
             if not inp:
                 return {'CANCELLED'}
             inp.exec_value = True
             auto_evaluate_if_enabled(context=context)
+            if not auto_eval:
+                evaluate_tree(context)
             inp.exec_value = False
         else:
             node = tree.nodes.get(self.node_name)
@@ -96,6 +102,8 @@ class FN_OT_trigger_exec(Operator):
                 return {'CANCELLED'}
             sock.value = True
             auto_evaluate_if_enabled(context=context)
+            if not auto_eval:
+                evaluate_tree(context)
             sock.value = False
         return {'FINISHED'}
 
