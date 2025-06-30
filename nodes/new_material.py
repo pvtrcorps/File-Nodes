@@ -26,11 +26,30 @@ class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Material"
         cached = self.cache_get(name)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"Material": cached}
+
+        if ctx:
+            storage = getattr(ctx, "_original_values", {})
+            for mat in storage.get("created_ids", []):
+                if isinstance(mat, bpy.types.Material) and mat.name == name:
+                    cached = mat
+                    break
+
+        if cached is None:
+            existing = bpy.data.materials.get(name)
+            if existing is not None:
+                cached = existing
+
+        if cached is not None:
+            self.cache_store(name, cached)
+            if ctx:
+                ctx.remember_created_id(cached)
+            return {"Material": cached}
+
         mat = bpy.data.materials.new(name)
         self.cache_store(name, mat)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
             ctx.remember_created_id(mat)
         return {"Material": mat}

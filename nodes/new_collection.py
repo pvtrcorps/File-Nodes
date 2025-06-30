@@ -26,11 +26,30 @@ class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Collection"
         cached = self.cache_get(name)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"Collection": cached}
+
+        if ctx:
+            storage = getattr(ctx, "_original_values", {})
+            for coll in storage.get("created_ids", []):
+                if isinstance(coll, bpy.types.Collection) and coll.name == name:
+                    cached = coll
+                    break
+
+        if cached is None:
+            existing = bpy.data.collections.get(name)
+            if existing is not None:
+                cached = existing
+
+        if cached is not None:
+            self.cache_store(name, cached)
+            if ctx:
+                ctx.remember_created_id(cached)
+            return {"Collection": cached}
+
         coll = bpy.data.collections.new(name)
         self.cache_store(name, coll)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
             ctx.remember_created_id(coll)
         return {"Collection": coll}
