@@ -214,6 +214,87 @@ class PassThroughNode(FakeNode):
     def process(self, context, inputs):
         return {"Out": inputs.get("In")}
 
+
+class NewCollectionNode(FakeNode):
+    def __init__(self):
+        super().__init__("FNNewCollection")
+        name_sock = FakeSocket("Name", "FNSocketString")
+        name_sock.value = "Collection"
+        out_sock = FakeSocket("Collection", "FNSocketCollection")
+        self.inputs.append(name_sock)
+        self.outputs.append(out_sock)
+
+    def process(self, context, inputs):
+        name = inputs.get("Name") or "Collection"
+        ctx = getattr(self.id_data, "fn_inputs", None)
+        cached = None
+        if ctx:
+            for c in ctx.created_ids:
+                if isinstance(c, bpy.types.Collection) and c.name == name:
+                    cached = c
+                    break
+        if cached is None:
+            cached = bpy.data.collections.get(name)
+        if cached is None:
+            cached = bpy.data.collections.new(name)
+        if ctx:
+            ctx.remember_created_id(cached)
+        return {"Collection": cached}
+
+
+class NewMaterialNode(FakeNode):
+    def __init__(self):
+        super().__init__("FNNewMaterial")
+        name_sock = FakeSocket("Name", "FNSocketString")
+        name_sock.value = "Material"
+        out_sock = FakeSocket("Material", "FNSocketMaterial")
+        self.inputs.append(name_sock)
+        self.outputs.append(out_sock)
+
+    def process(self, context, inputs):
+        name = inputs.get("Name") or "Material"
+        ctx = getattr(self.id_data, "fn_inputs", None)
+        cached = None
+        if ctx:
+            for m in ctx.created_ids:
+                if isinstance(m, bpy.types.Material) and m.name == name:
+                    cached = m
+                    break
+        if cached is None:
+            cached = bpy.data.materials.get(name)
+        if cached is None:
+            cached = bpy.data.materials.new(name)
+        if ctx:
+            ctx.remember_created_id(cached)
+        return {"Material": cached}
+
+
+class NewWorldNode(FakeNode):
+    def __init__(self):
+        super().__init__("FNNewWorld")
+        name_sock = FakeSocket("Name", "FNSocketString")
+        name_sock.value = "World"
+        out_sock = FakeSocket("World", "FNSocketWorld")
+        self.inputs.append(name_sock)
+        self.outputs.append(out_sock)
+
+    def process(self, context, inputs):
+        name = inputs.get("Name") or "World"
+        ctx = getattr(self.id_data, "fn_inputs", None)
+        cached = None
+        if ctx:
+            for w in ctx.created_ids:
+                if isinstance(w, bpy.types.World) and w.name == name:
+                    cached = w
+                    break
+        if cached is None:
+            cached = bpy.data.worlds.get(name)
+        if cached is None:
+            cached = bpy.data.worlds.new(name)
+        if ctx:
+            ctx.remember_created_id(cached)
+        return {"World": cached}
+
 class FakeInputs:
     def __init__(self, bpy_module):
         self.bpy = bpy_module
@@ -383,6 +464,23 @@ def build_group_output_tree_cached(single=True):
     bpy.data.node_groups.append(tree)
     return tree, new_node
 
+def build_datablock_tree(node):
+    bpy.data.node_groups.clear()
+    tree = FakeNodeTree()
+    out_node = FakeNode("NodeGroupOutput")
+    sock_type = node.outputs[0].bl_idname
+    in_sock = FakeSocket("Value", sock_type)
+    in_sock.is_linked = True
+    link = FakeLink(node, node.outputs[0])
+    in_sock.links.append(link)
+    out_node.inputs.append(in_sock)
+    node.outputs[0].node = node
+    for n in (node, out_node):
+        n.id_data = tree
+    tree.nodes.extend([node, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree, node
+
 # ---- Tests ----
 def test_evaluate_tree_creates_and_cleans():
     tree = build_tree()
@@ -517,4 +615,40 @@ def test_group_output_reuses_same_scene_name():
     assert len(list(bpy.data.scenes)) == 2
     second_scene = [s for s in bpy.data.scenes if s is not original][0]
     assert second_scene is first_scene
+
+
+def test_new_collection_uses_existing():
+    existing = bpy.data.collections.new('Collection')
+    tree, _ = build_datablock_tree(NewCollectionNode())
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    operators.evaluate_tree(ctx)
+    assert len(list(bpy.data.collections)) == 1
+    assert bpy.data.collections.get('Collection') is existing
+
+
+def test_new_material_uses_existing():
+    existing = bpy.data.materials.new('Material')
+    tree, _ = build_datablock_tree(NewMaterialNode())
+    original = bpy.data.scenes.new('OrigMat')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    operators.evaluate_tree(ctx)
+    assert len(list(bpy.data.materials)) == 1
+    assert bpy.data.materials.get('Material') is existing
+
+
+def test_new_world_uses_existing():
+    existing = bpy.data.worlds.new('World')
+    tree, _ = build_datablock_tree(NewWorldNode())
+    original = bpy.data.scenes.new('OrigW')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    operators.evaluate_tree(ctx)
+    assert len(list(bpy.data.worlds)) == 1
+    assert bpy.data.worlds.get('World') is existing
 
