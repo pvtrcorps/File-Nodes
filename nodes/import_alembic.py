@@ -59,7 +59,7 @@ class FNImportAlembic(Node, FNBaseNode):
         for obj in scene.objects:
             if obj not in before:
                 objects.append(obj)
-        ensure_mutable(scene)
+        scene = ensure_mutable(scene)
         _abc_cache[abs_path] = objects
         self._cached_filepath = abs_path
         return {"Objects": objects}

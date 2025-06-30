@@ -29,7 +29,7 @@ class FNLightProps(Node, FNBaseNode):
         light = inputs.get("Light")
         if light:
             energy = inputs.get("Energy")
-            ensure_mutable(light)
+            light = ensure_mutable(light)
             try:
                 light.energy = energy
             except Exception:

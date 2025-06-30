@@ -32,7 +32,7 @@ class FNLinkToScene(Node, FNBaseNode):
         collections = inputs.get("Collections", []) or []
         if scene:
             root = scene.collection
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             for obj in objects:
                 if not obj:
                     continue

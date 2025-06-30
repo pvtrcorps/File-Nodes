@@ -29,7 +29,7 @@ class FNEeveeSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "eevee"):
             samples = inputs.get("Samples")
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 scene.eevee.taa_render_samples = samples
             except Exception:

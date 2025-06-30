@@ -27,7 +27,7 @@ class FNSetCollectionName(Node, FNBaseNode):
         coll = inputs.get("Collection")
         if coll:
             name = inputs.get("Name") or ""
-            ensure_mutable(coll)
+            coll = ensure_mutable(coll)
             try:
                 coll.name = name
             except Exception:

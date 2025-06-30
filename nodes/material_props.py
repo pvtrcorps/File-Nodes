@@ -29,7 +29,7 @@ class FNMaterialProps(Node, FNBaseNode):
         mat = inputs.get("Material")
         if mat:
             use_nodes = inputs.get("Use Nodes")
-            ensure_mutable(mat)
+            mat = ensure_mutable(mat)
             try:
                 mat.use_nodes = use_nodes
             except Exception:

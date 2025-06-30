@@ -29,7 +29,7 @@ class FNLinkToCollection(Node, FNBaseNode):
         objects = inputs.get("Objects", []) or []
         collections = inputs.get("Collections", []) or []
         if collection:
-            ensure_mutable(collection)
+            collection = ensure_mutable(collection)
             for obj in objects:
                 if not obj:
                     continue

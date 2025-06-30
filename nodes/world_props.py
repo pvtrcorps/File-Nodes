@@ -29,7 +29,7 @@ class FNWorldProps(Node, FNBaseNode):
         world = inputs.get("World")
         if world:
             use_nodes = inputs.get("Use Nodes")
-            ensure_mutable(world)
+            world = ensure_mutable(world)
             try:
                 world.use_nodes = use_nodes
             except Exception:

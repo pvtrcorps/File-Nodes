@@ -29,7 +29,7 @@ class FNCyclesObjectProps(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             holdout = inputs.get("Holdout")
-            ensure_mutable(obj)
+            obj = ensure_mutable(obj)
             try:
                 obj.is_holdout = holdout
             except Exception:

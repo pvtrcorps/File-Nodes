@@ -29,7 +29,7 @@ class FNCollectionProps(Node, FNBaseNode):
         coll = inputs.get("Collection")
         if coll:
             hide_vp = inputs.get("Hide Viewport")
-            ensure_mutable(coll)
+            coll = ensure_mutable(coll)
             try:
                 coll.hide_viewport = hide_vp
             except Exception:

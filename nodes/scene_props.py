@@ -32,7 +32,7 @@ class FNSceneProps(Node, FNBaseNode):
         if scene:
             start = inputs.get("Start")
             end = inputs.get("End")
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 scene.frame_start = start
                 scene.frame_end = end

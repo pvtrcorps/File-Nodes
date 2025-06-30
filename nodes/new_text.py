@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketText, FNSocketString
+from ..cow_engine import DataProxy
 
 
 class FNNewText(Node, FNCacheIDMixin, FNBaseNode):
@@ -27,7 +28,7 @@ class FNNewText(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "Text"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"Text": cached}
+            return {"Text": DataProxy(cached)}
 
         existing = bpy.data.texts.get(name)
         if existing is not None:
@@ -35,11 +36,11 @@ class FNNewText(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"Text": cached}
+            return {"Text": DataProxy(cached)}
 
         text = bpy.data.texts.new(name)
         self.cache_store(name, text)
-        return {"Text": text}
+        return {"Text": DataProxy(text)}
 
 
 def register():

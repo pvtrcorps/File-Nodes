@@ -27,7 +27,7 @@ class FNSetObjectName(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             name = inputs.get("Name") or ""
-            ensure_mutable(obj)
+            obj = ensure_mutable(obj)
             try:
                 obj.name = name
             except Exception:

@@ -24,7 +24,7 @@ class FNSetWorld(Node, FNBaseNode):
         scene = inputs.get("Scene")
         world = inputs.get("World")
         if scene and world:
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             scene.world = world
         return {"Scene": scene}
 

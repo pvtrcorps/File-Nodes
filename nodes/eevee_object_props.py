@@ -29,7 +29,7 @@ class FNEeveeObjectProps(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             shadow = inputs.get("Visible Shadow")
-            ensure_mutable(obj)
+            obj = ensure_mutable(obj)
             try:
                 obj.visible_shadow = shadow
             except Exception:

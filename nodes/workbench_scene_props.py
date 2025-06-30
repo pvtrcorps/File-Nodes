@@ -29,7 +29,7 @@ class FNWorkbenchSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "display"):
             samples = inputs.get("AA Samples")
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 if hasattr(scene.display, 'render_aa'):
                     scene.display.render_aa = samples

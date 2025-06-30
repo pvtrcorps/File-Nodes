@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketMaterial, FNSocketString
+from ..cow_engine import DataProxy
 
 
 class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
@@ -27,7 +28,7 @@ class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "Material"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"Material": cached}
+            return {"Material": DataProxy(cached)}
 
         existing = bpy.data.materials.get(name)
         if existing is not None:
@@ -35,11 +36,11 @@ class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"Material": cached}
+            return {"Material": DataProxy(cached)}
 
         mat = bpy.data.materials.new(name)
         self.cache_store(name, mat)
-        return {"Material": mat}
+        return {"Material": DataProxy(mat)}
 
 
 def register():
