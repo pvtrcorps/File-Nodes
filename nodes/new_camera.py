@@ -26,32 +26,19 @@ class FNNewCamera(Node, FNCacheIDMixin, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Camera"
         cached = self.cache_get(name)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"Camera": cached}
 
-        if ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for cam in storage.get("created_ids", []):
-                if isinstance(cam, bpy.types.Camera) and cam.name == name:
-                    cached = cam
-                    break
-
-        if cached is None:
-            existing = bpy.data.cameras.get(name)
-            if existing is not None:
-                cached = existing
+        existing = bpy.data.cameras.get(name)
+        if existing is not None:
+            cached = existing
 
         if cached is not None:
             self.cache_store(name, cached)
-            if ctx:
-                ctx.remember_created_id(cached)
             return {"Camera": cached}
 
         cam = bpy.data.cameras.new(name)
         self.cache_store(name, cam)
-        if ctx:
-            ctx.remember_created_id(cam)
         return {"Camera": cam}
 
 

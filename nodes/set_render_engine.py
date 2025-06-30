@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketString
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNSetRenderEngine(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene:
             engine = inputs.get("Engine")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene.render, "engine")
+            ensure_mutable(scene)
             try:
                 scene.render.engine = engine
             except Exception:

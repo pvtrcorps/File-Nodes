@@ -42,32 +42,19 @@ class FNNewLight(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "Light"
         key = (name, self.light_type)
         cached = self.cache_get(key)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"Light": cached}
 
-        if ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for lt in storage.get("created_ids", []):
-                if isinstance(lt, bpy.types.Light) and lt.name == name:
-                    cached = lt
-                    break
-
-        if cached is None:
-            existing = bpy.data.lights.get(name)
-            if existing is not None:
-                cached = existing
+        existing = bpy.data.lights.get(name)
+        if existing is not None:
+            cached = existing
 
         if cached is not None:
             self.cache_store(key, cached)
-            if ctx:
-                ctx.remember_created_id(cached)
             return {"Light": cached}
 
         light = bpy.data.lights.new(name, type=self.light_type)
         self.cache_store(key, light)
-        if ctx:
-            ctx.remember_created_id(light)
         return {"Light": light}
 
 

@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketWorld
+from ..cow_engine import ensure_mutable
 
 
 class FNSetWorld(Node, FNBaseNode):
@@ -23,9 +24,7 @@ class FNSetWorld(Node, FNBaseNode):
         scene = inputs.get("Scene")
         world = inputs.get("World")
         if scene and world:
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene, "world")
+            ensure_mutable(scene)
             scene.world = world
         return {"Scene": scene}
 

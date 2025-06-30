@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketString
+from ..cow_engine import ensure_mutable
 
 
 
@@ -26,9 +27,7 @@ class FNSetSceneName(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene:
             name = inputs.get("Name") or ""
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene, "name")
+            ensure_mutable(scene)
             try:
                 scene.name = name
             except Exception:

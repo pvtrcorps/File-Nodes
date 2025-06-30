@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
+from ..cow_engine import ensure_mutable
 
 
 
@@ -31,10 +32,7 @@ class FNSceneProps(Node, FNBaseNode):
         if scene:
             start = inputs.get("Start")
             end = inputs.get("End")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene, "frame_start")
-                ctx.store_original(scene, "frame_end")
+            ensure_mutable(scene)
             try:
                 scene.frame_start = start
                 scene.frame_end = end

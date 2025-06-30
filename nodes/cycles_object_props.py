@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketObject, FNSocketBool
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNCyclesObjectProps(Node, FNBaseNode):
         obj = inputs.get("Object")
         if obj:
             holdout = inputs.get("Holdout")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(obj, "is_holdout")
+            ensure_mutable(obj)
             try:
                 obj.is_holdout = holdout
             except Exception:

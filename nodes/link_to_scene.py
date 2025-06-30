@@ -6,6 +6,7 @@ from .base import FNBaseNode
 from ..sockets import (
     FNSocketScene, FNSocketObjectList, FNSocketCollectionList
 )
+from ..cow_engine import ensure_mutable
 
 
 class FNLinkToScene(Node, FNBaseNode):
@@ -31,7 +32,7 @@ class FNLinkToScene(Node, FNBaseNode):
         collections = inputs.get("Collections", []) or []
         if scene:
             root = scene.collection
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+            ensure_mutable(scene)
             for obj in objects:
                 if not obj:
                     continue
@@ -41,8 +42,6 @@ class FNLinkToScene(Node, FNBaseNode):
                     continue  # Object was removed
                 if not root.objects.get(name):
                     root.objects.link(obj)
-                    if ctx:
-                        ctx.remember_object_link(root, obj)
             for coll in collections:
                 if not coll:
                     continue
@@ -52,8 +51,6 @@ class FNLinkToScene(Node, FNBaseNode):
                     continue  # Collection was removed
                 if not root.children.get(name):
                     root.children.link(coll)
-                    if ctx:
-                        ctx.remember_collection_link(root, coll)
         return {"Scene": scene}
 
 def register():

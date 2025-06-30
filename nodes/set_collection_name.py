@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketString
+from ..cow_engine import ensure_mutable
 
 
 
@@ -26,9 +27,7 @@ class FNSetCollectionName(Node, FNBaseNode):
         coll = inputs.get("Collection")
         if coll:
             name = inputs.get("Name") or ""
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(coll, "name")
+            ensure_mutable(coll)
             try:
                 coll.name = name
             except Exception:

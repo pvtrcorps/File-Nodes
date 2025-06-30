@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
+from ..cow_engine import ensure_mutable
 
 
 
@@ -28,9 +29,7 @@ class FNEeveeSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "eevee"):
             samples = inputs.get("Samples")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene.eevee, "taa_render_samples")
+            ensure_mutable(scene)
             try:
                 scene.eevee.taa_render_samples = samples
             except Exception:

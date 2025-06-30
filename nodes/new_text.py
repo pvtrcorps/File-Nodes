@@ -26,32 +26,19 @@ class FNNewText(Node, FNCacheIDMixin, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Text"
         cached = self.cache_get(name)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"Text": cached}
 
-        if ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for txt in storage.get("created_ids", []):
-                if isinstance(txt, bpy.types.Text) and txt.name == name:
-                    cached = txt
-                    break
-
-        if cached is None:
-            existing = bpy.data.texts.get(name)
-            if existing is not None:
-                cached = existing
+        existing = bpy.data.texts.get(name)
+        if existing is not None:
+            cached = existing
 
         if cached is not None:
             self.cache_store(name, cached)
-            if ctx:
-                ctx.remember_created_id(cached)
             return {"Text": cached}
 
         text = bpy.data.texts.new(name)
         self.cache_store(name, text)
-        if ctx:
-            ctx.remember_created_id(text)
         return {"Text": text}
 
 

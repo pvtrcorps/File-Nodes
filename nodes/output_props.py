@@ -5,6 +5,7 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
+from ..cow_engine import ensure_mutable
 
 
 
@@ -31,10 +32,7 @@ class FNOutputProps(Node, FNBaseNode):
         if scene:
             res_x = inputs.get("Resolution X")
             res_y = inputs.get("Resolution Y")
-            ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
-            if ctx:
-                ctx.store_original(scene.render, "resolution_x")
-                ctx.store_original(scene.render, "resolution_y")
+            ensure_mutable(scene)
             try:
                 scene.render.resolution_x = res_x
                 scene.render.resolution_y = res_y

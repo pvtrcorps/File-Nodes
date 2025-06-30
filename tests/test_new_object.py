@@ -103,8 +103,7 @@ FNNewObject = new_object.FNNewObject
 import types as _types
 
 def test_existing_object_updates_data():
-    created = []
-    ctx = _types.SimpleNamespace(_original_values={}, remember_created_id=lambda x: created.append(x))
+    ctx = _types.SimpleNamespace()
     node = FNNewObject()
     node.obj_type = 'MESH'
     node.id_data = _types.SimpleNamespace(fn_inputs=ctx)

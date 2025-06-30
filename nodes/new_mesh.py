@@ -26,32 +26,19 @@ class FNNewMesh(Node, FNCacheIDMixin, FNBaseNode):
     def process(self, context, inputs):
         name = inputs.get("Name") or "Mesh"
         cached = self.cache_get(name)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
             return {"Mesh": cached}
 
-        if ctx:
-            storage = getattr(ctx, "_original_values", {})
-            for me in storage.get("created_ids", []):
-                if isinstance(me, bpy.types.Mesh) and me.name == name:
-                    cached = me
-                    break
-
-        if cached is None:
-            existing = bpy.data.meshes.get(name)
-            if existing is not None:
-                cached = existing
+        existing = bpy.data.meshes.get(name)
+        if existing is not None:
+            cached = existing
 
         if cached is not None:
             self.cache_store(name, cached)
-            if ctx:
-                ctx.remember_created_id(cached)
             return {"Mesh": cached}
 
         mesh = bpy.data.meshes.new(name)
         self.cache_store(name, mesh)
-        if ctx:
-            ctx.remember_created_id(mesh)
         return {"Mesh": mesh}
 
 
