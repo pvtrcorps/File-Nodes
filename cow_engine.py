@@ -43,6 +43,10 @@ class DataProxy:
             except Exception:
                 return d
 
+    def clone(self):
+        """Return a new proxy with a duplicate of the data."""
+        return DataProxy(self.copy(), refcount=self.refcount)
+
 
 def ensure_mutable(proxy):
     """Ensure the proxy contains a unique copy before modification."""
@@ -67,8 +71,17 @@ def _wrap(value, count):
     return value
 
 
+def _clone(value):
+    if isinstance(value, list):
+        return [_clone(v) for v in value]
+    if isinstance(value, DataProxy):
+        return value.clone()
+    return value
+
+
 def _unwrap(value):
     if isinstance(value, DataProxy):
+        ensure_mutable(value)
         return value.data
     if isinstance(value, list):
         return [_unwrap(v) for v in value]
@@ -116,6 +129,9 @@ def evaluate_tree(tree, context):
                     if value is None:
                         ident = getattr(from_sock, "identifier", from_sock.name)
                         value = outputs.get(ident)
+                    value = _clone(value)
+                    if isinstance(value, DataProxy):
+                        ensure_mutable(value)
                     if single and from_sock.bl_idname == single:
                         if value is not None:
                             values.append(value)
@@ -130,11 +146,17 @@ def evaluate_tree(tree, context):
                 if value is None:
                     ident = getattr(from_sock, "identifier", from_sock.name)
                     value = outputs.get(ident)
+                value = _clone(value)
+                if isinstance(value, DataProxy):
+                    ensure_mutable(value)
                 if single and from_sock.bl_idname == single:
                     return [value] if value is not None else []
                 return value
         if hasattr(sock, "value"):
-            return sock.value
+            val = _clone(sock.value)
+            if isinstance(val, DataProxy):
+                ensure_mutable(val)
+            return val
         return None
 
     def eval_node(node):
