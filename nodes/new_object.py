@@ -57,31 +57,49 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
         self._invalidate_cache()
 
     def process(self, context, inputs):
-        data = None
-        created_data = None
-        if self.obj_type == 'MESH':
-            data = inputs.get("Data")
-            if not data:
-                data = bpy.data.meshes.new(f"{inputs.get('Name') or 'Object'}Mesh")
-                created_data = data
-        elif self.obj_type == 'LIGHT':
-            data = inputs.get("Data")
-            if not data:
-                data = bpy.data.lights.new(f"{inputs.get('Name') or 'Object'}Light", type='POINT')
-                created_data = data
-        elif self.obj_type == 'CAMERA':
-            data = inputs.get("Data")
-            if not data:
-                data = bpy.data.cameras.new(f"{inputs.get('Name') or 'Object'}Camera")
-                created_data = data
         name = inputs.get("Name") or "Object"
-        key = (self.obj_type, name, data)
+        data_in = inputs.get("Data")
+        key = (self.obj_type, name, data_in)
         cached = self.cache_get(key)
         if cached is not None:
             return {"Object": cached}
+
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            storage = getattr(ctx, "_original_values", {})
+            for ob in storage.get("created_ids", []):
+                if isinstance(ob, bpy.types.Object) and ob.name == name:
+                    cached = ob
+                    break
+
+        if cached is None:
+            existing = bpy.data.objects.get(name)
+            if existing is not None:
+                cached = existing
+
+        if cached is not None:
+            self.cache_store(key, cached)
+            if ctx:
+                ctx.remember_created_id(cached)
+            return {"Object": cached}
+
+        data = data_in
+        created_data = None
+        if self.obj_type == 'MESH':
+            if not data:
+                data = bpy.data.meshes.new(f"{name}Mesh")
+                created_data = data
+        elif self.obj_type == 'LIGHT':
+            if not data:
+                data = bpy.data.lights.new(f"{name}Light", type='POINT')
+                created_data = data
+        elif self.obj_type == 'CAMERA':
+            if not data:
+                data = bpy.data.cameras.new(f"{name}Camera")
+                created_data = data
+
         obj = bpy.data.objects.new(name, data)
         self.cache_store(key, obj)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
             ctx.remember_created_id(obj)
             if created_data:

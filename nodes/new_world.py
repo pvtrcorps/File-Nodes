@@ -28,9 +28,28 @@ class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
         cached = self.cache_get(name)
         if cached is not None:
             return {"World": cached}
+
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
+        if ctx:
+            storage = getattr(ctx, "_original_values", {})
+            for w in storage.get("created_ids", []):
+                if isinstance(w, bpy.types.World) and w.name == name:
+                    cached = w
+                    break
+
+        if cached is None:
+            existing = bpy.data.worlds.get(name)
+            if existing is not None:
+                cached = existing
+
+        if cached is not None:
+            self.cache_store(name, cached)
+            if ctx:
+                ctx.remember_created_id(cached)
+            return {"World": cached}
+
         world = bpy.data.worlds.new(name)
         self.cache_store(name, world)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
             ctx.remember_created_id(world)
         return {"World": world}
