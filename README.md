@@ -5,6 +5,7 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
 ## Objetivos del MVP
 - Crear un nuevo `NodeTree` personalizado.
 - Implementar nodos básicos para leer y manipular datablocks.
+- Incorporar sockets de ejecución para exponer acciones como "Render Scenes" en los grupos.
 
 ## Arquitectura general
 1. **NodeTree personalizado**: contenedor del grafo.
