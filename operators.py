@@ -190,6 +190,7 @@ def evaluate_tree(context):
         if not getattr(tree, "fn_enabled", True):
             continue
 
+
         ctx = getattr(tree, "fn_inputs", None)
         if ctx:
             ctx.sync_inputs(tree)
@@ -198,6 +199,15 @@ def evaluate_tree(context):
         _active_tree = tree
         cow_engine.evaluate_tree(tree, context)
         _active_tree = None
+
+        if ctx:
+            keep = set(ctx.scenes_to_keep or [])
+            if ctx.eval_scene:
+                keep.add(ctx.eval_scene)
+            for sc in list(bpy.data.scenes):
+                if sc not in keep and getattr(sc, "use_extra_user", False):
+                    bpy.data.scenes.remove(sc)
+
         count += 1
 
     return count

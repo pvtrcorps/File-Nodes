@@ -77,7 +77,10 @@ def _clone(value):
     if isinstance(value, list):
         return [_clone(v) for v in value]
     if isinstance(value, DataProxy):
-        return value.clone()
+        if value.refcount > 1:
+            value.refcount -= 1
+            return DataProxy(value.copy(), refcount=1)
+        return value
     return value
 
 
