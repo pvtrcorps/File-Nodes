@@ -138,7 +138,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
 
         dup = scene.copy()
         dup.name = name
-        dup.use_fake_user = True
+        dup.use_extra_user = True
         self.cache_store(key, dup)
         ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
