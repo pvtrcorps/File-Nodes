@@ -381,6 +381,46 @@ def build_split_rename_tree():
     bpy.data.node_groups.append(tree)
     return tree, set_a, set_b
 
+def build_rename_chain_tree():
+    bpy.data.node_groups.clear()
+    bpy.data.scenes.clear()
+    tree = FakeNodeTree()
+
+    new_node = NewSceneNode()
+    set_a = SetSceneNameNode()
+    set_b = SetSceneNameNode()
+    set_c = SetSceneNameNode()
+    out_node = FakeNode("NodeGroupOutput")
+
+    # chain connections
+    new_node.outputs[0].node = new_node
+    link_a = FakeLink(new_node, new_node.outputs[0])
+    set_a.inputs[0].is_linked = True
+    set_a.inputs[0].links.append(link_a)
+
+    set_a.outputs[0].node = set_a
+    link_b = FakeLink(set_a, set_a.outputs[0])
+    set_b.inputs[0].is_linked = True
+    set_b.inputs[0].links.append(link_b)
+
+    set_b.outputs[0].node = set_b
+    link_c = FakeLink(set_b, set_b.outputs[0])
+    set_c.inputs[0].is_linked = True
+    set_c.inputs[0].links.append(link_c)
+
+    set_c.outputs[0].node = set_c
+    in_sock = FakeSocket("Scene", "FNSocketScene")
+    in_sock.is_linked = True
+    in_sock.links.append(FakeLink(set_c, set_c.outputs[0]))
+    out_node.inputs.append(in_sock)
+
+    for n in (new_node, set_a, set_b, set_c, out_node):
+        n.id_data = tree
+
+    tree.nodes.extend([new_node, set_a, set_b, set_c, out_node])
+    bpy.data.node_groups.append(tree)
+    return tree, set_a, set_b, set_c
+
 # ---- Tests ----
 def test_evaluate_tree_creates_and_cleans():
     tree = build_tree()
@@ -529,4 +569,21 @@ def test_split_scene_renames_are_independent():
     operators.evaluate_tree(ctx)
     names = {sc.name for sc in tree.fn_inputs.scenes_to_keep}
     assert {'A', 'B'} == names
+
+
+def test_cleanup_intermediate_scene_names():
+    tree, set_a, set_b, set_c = build_rename_chain_tree()
+    original = bpy.data.scenes.new('Orig')
+    bpy.context.scene = original
+    ctx = types.SimpleNamespace(scene=original)
+
+    set_a.inputs[1].value = 'A'
+    set_b.inputs[1].value = 'B'
+    set_c.inputs[1].value = 'C'
+
+    for _ in range(3):
+        operators.evaluate_tree(ctx)
+
+    names = {sc.name for sc in bpy.data.scenes}
+    assert names == {'Orig', 'C'}
 
