@@ -4,7 +4,7 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketSceneList, FNSocketExec
+from ..sockets import FNSocketSceneList
 
 
 
@@ -18,8 +18,6 @@ class FNRenderScenesNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        exec_sock = self.inputs.new('FNSocketExec', "Execute")
-        exec_sock.operator = 'file_nodes.render_scenes'
         sock = self.inputs.new('FNSocketSceneList', "Scenes")
         sock.display_shape = 'SQUARE'
 

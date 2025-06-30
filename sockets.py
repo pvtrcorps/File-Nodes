@@ -25,26 +25,6 @@ class FNSocketBool(NodeSocket):
         return _color(1.0, 0.4118, 0.8627)
     value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
 
-# Execution socket used to trigger operators. When unlinked and configured
-# with an operator idname, it draws a button so the action can be exposed in
-# group inputs.
-class FNSocketExec(NodeSocket):
-    bl_idname = "FNSocketExec"
-    bl_label = "Execution"
-
-    operator: bpy.props.StringProperty(name="Operator", default="")
-    show_selector: bpy.props.BoolProperty(default=True)
-
-    def draw(self, context, layout, node, text):
-        if self.is_output and not self.is_linked and self.operator and self.show_selector:
-            layout.operator(self.operator, text=text or self.name, icon='PLAY')
-        else:
-            layout.label(text=text or self.name)
-
-    def draw_color(self, context, node):
-        return _color(1.0, 0.5, 0.0)
-    value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
-
 class FNSocketFloat(NodeSocket):
     bl_idname = "FNSocketFloat"
     bl_label = "Float"
@@ -341,8 +321,7 @@ class FNSocketViewLayerList(NodeSocket):
         return _color(0.6, 0.6, 0.6)
 
 _all_sockets = (
-    FNSocketBool, FNSocketExec,
-    FNSocketFloat, FNSocketVector, FNSocketInt,
+    FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt,
     FNSocketString, FNSocketStringList,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
