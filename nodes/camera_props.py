@@ -29,7 +29,7 @@ class FNCameraProps(Node, FNBaseNode):
         cam = inputs.get("Camera")
         if cam:
             lens = inputs.get("Focal Length")
-            ensure_mutable(cam)
+            cam = ensure_mutable(cam)
             try:
                 cam.lens = lens
             except Exception:

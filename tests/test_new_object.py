@@ -94,6 +94,13 @@ for cls in ["FNSocketObject", "FNSocketMesh", "FNSocketLight", "FNSocketCamera",
     setattr(sockets_mod, cls, type(cls, (), {}))
 sys.modules["addon.sockets"] = sockets_mod
 
+# cow_engine stub
+spec_cow = importlib.util.spec_from_file_location("addon.cow_engine", os.path.join(ROOT, "cow_engine.py"))
+cow_mod = importlib.util.module_from_spec(spec_cow)
+cow_mod.bpy = bpy
+spec_cow.loader.exec_module(cow_mod)
+sys.modules["addon.cow_engine"] = cow_mod
+
 # ---- load new_object module ----
 spec = importlib.util.spec_from_file_location("addon.nodes.new_object", os.path.join(ROOT, "nodes", "new_object.py"))
 new_object = importlib.util.module_from_spec(spec)
@@ -113,10 +120,11 @@ def test_existing_object_updates_data():
 
     mesh_b = bpy.data.meshes.new('MeshB')
     out = node.process(None, {'Name': 'Obj', 'Data': mesh_b})
-    assert out['Object'] is obj
+    assert isinstance(out['Object'], cow_mod.DataProxy)
+    assert out['Object'].data is obj
     assert obj.data is mesh_b
 
     mesh_c = bpy.data.meshes.new('MeshC')
     out2 = node.process(None, {'Name': 'Obj', 'Data': mesh_c})
-    assert out2['Object'] is obj
+    assert out2['Object'].data is obj
     assert obj.data is mesh_c

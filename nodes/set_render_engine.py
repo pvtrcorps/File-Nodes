@@ -29,7 +29,7 @@ class FNSetRenderEngine(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene:
             engine = inputs.get("Engine")
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 scene.render.engine = engine
             except Exception:

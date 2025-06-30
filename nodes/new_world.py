@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketWorld, FNSocketString
+from ..cow_engine import DataProxy
 
 
 class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
@@ -27,7 +28,7 @@ class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "World"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"World": cached}
+            return {"World": DataProxy(cached)}
 
         existing = bpy.data.worlds.get(name)
         if existing is not None:
@@ -35,11 +36,11 @@ class FNNewWorld(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"World": cached}
+            return {"World": DataProxy(cached)}
 
         world = bpy.data.worlds.new(name)
         self.cache_store(name, world)
-        return {"World": world}
+        return {"World": DataProxy(world)}
 
 
 def register():

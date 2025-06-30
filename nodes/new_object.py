@@ -6,6 +6,7 @@ from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
     FNSocketObject, FNSocketMesh, FNSocketLight, FNSocketCamera, FNSocketString
 )
+from ..cow_engine import DataProxy
 from ..operators import auto_evaluate_if_enabled
 
 _object_data_socket = {
@@ -87,7 +88,7 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
         else:
             obj = bpy.data.objects.new(name, data)
         self.cache_store(key, obj)
-        return {"Object": obj}
+        return {"Object": DataProxy(obj)}
 
 
 def register():

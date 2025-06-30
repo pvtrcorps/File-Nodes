@@ -32,7 +32,7 @@ class FNObjectProps(Node, FNBaseNode):
         if obj:
             hide_vp = inputs.get("Hide Viewport")
             hide_re = inputs.get("Hide Render")
-            ensure_mutable(obj)
+            obj = ensure_mutable(obj)
             try:
                 obj.hide_viewport = hide_vp
                 obj.hide_render = hide_re

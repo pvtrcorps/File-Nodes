@@ -29,7 +29,7 @@ class FNCyclesSceneProps(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "cycles"):
             samples = inputs.get("Samples")
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 scene.cycles.samples = samples
             except Exception:

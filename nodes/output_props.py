@@ -32,7 +32,7 @@ class FNOutputProps(Node, FNBaseNode):
         if scene:
             res_x = inputs.get("Resolution X")
             res_y = inputs.get("Resolution Y")
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 scene.render.resolution_x = res_x
                 scene.render.resolution_y = res_y

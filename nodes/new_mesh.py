@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketMesh, FNSocketString
+from ..cow_engine import DataProxy
 
 
 class FNNewMesh(Node, FNCacheIDMixin, FNBaseNode):
@@ -27,7 +28,7 @@ class FNNewMesh(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "Mesh"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"Mesh": cached}
+            return {"Mesh": DataProxy(cached)}
 
         existing = bpy.data.meshes.get(name)
         if existing is not None:
@@ -35,11 +36,11 @@ class FNNewMesh(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"Mesh": cached}
+            return {"Mesh": DataProxy(cached)}
 
         mesh = bpy.data.meshes.new(name)
         self.cache_store(name, mesh)
-        return {"Mesh": mesh}
+        return {"Mesh": DataProxy(mesh)}
 
 
 def register():

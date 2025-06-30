@@ -27,7 +27,7 @@ class FNSetSceneName(Node, FNBaseNode):
         scene = inputs.get("Scene")
         if scene:
             name = inputs.get("Name") or ""
-            ensure_mutable(scene)
+            scene = ensure_mutable(scene)
             try:
                 scene.name = name
             except Exception:

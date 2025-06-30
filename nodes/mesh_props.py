@@ -29,7 +29,7 @@ class FNMeshProps(Node, FNBaseNode):
         mesh = inputs.get("Mesh")
         if mesh:
             auto = inputs.get("Auto Smooth")
-            ensure_mutable(mesh)
+            mesh = ensure_mutable(mesh)
             try:
                 mesh.use_auto_smooth = auto
             except Exception:

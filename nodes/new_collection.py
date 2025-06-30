@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketCollection, FNSocketString
+from ..cow_engine import DataProxy
 
 
 class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
@@ -27,7 +28,7 @@ class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
         name = inputs.get("Name") or "Collection"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"Collection": cached}
+            return {"Collection": DataProxy(cached)}
 
         existing = bpy.data.collections.get(name)
         if existing is not None:
@@ -35,11 +36,11 @@ class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"Collection": cached}
+            return {"Collection": DataProxy(cached)}
 
         coll = bpy.data.collections.new(name)
         self.cache_store(name, coll)
-        return {"Collection": coll}
+        return {"Collection": DataProxy(coll)}
 
 
 def register():

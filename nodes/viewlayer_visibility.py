@@ -213,7 +213,7 @@ class FNViewLayerVisibility(Node, FNBaseNode):
                 layer = _find_layer_collection(view_layer.layer_collection, coll)
                 if not layer:
                     continue
-                ensure_mutable(layer)
+                layer = ensure_mutable(layer)
                 try:
                     layer.exclude = item.exclude
                 except Exception:
