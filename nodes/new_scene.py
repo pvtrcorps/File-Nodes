@@ -50,6 +50,7 @@ class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
             return {"Scene": cached}
 
         scene = bpy.data.scenes.new(name)
+        scene.use_fake_user = True
         self.cache_store(name, scene)
         if ctx:
             ctx.remember_created_scene(scene)
