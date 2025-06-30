@@ -76,12 +76,31 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
                 created_data = data
         name = inputs.get("Name") or "Object"
         key = (self.obj_type, name, data)
+        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         cached = self.cache_get(key)
         if cached is not None:
             return {"Object": cached}
+
+        if ctx:
+            storage = getattr(ctx, "_original_values", {})
+            for o in storage.get("created_ids", []):
+                if isinstance(o, bpy.types.Object) and o.name == name:
+                    cached = o
+                    break
+
+        if cached is None:
+            existing = bpy.data.objects.get(name)
+            if existing is not None:
+                cached = existing
+
+        if cached is not None:
+            self.cache_store(key, cached)
+            if ctx:
+                ctx.remember_created_id(cached)
+            return {"Object": cached}
+
         obj = bpy.data.objects.new(name, data)
         self.cache_store(key, obj)
-        ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:
             ctx.remember_created_id(obj)
             if created_data:
