@@ -29,7 +29,14 @@ class FNSocketExec(NodeSocket):
     bl_idname = "FNSocketExec"
     bl_label = "Execution"
     def draw(self, context, layout, node, text):
-        _draw_value_socket(self, layout, text, 'PLAY')
+        if self.is_output:
+            layout.label(text=text or self.name, icon='PLAY')
+        else:
+            op = layout.operator('file_nodes.trigger_exec', text=text or self.name, icon='PLAY')
+            op.tree_name = node.id_data.name
+            op.node_name = node.name
+            op.socket_name = self.name
+            op.group_input = False
     def draw_color(self, context, node):
         return _color(1.0, 0.5, 0.0)
     value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)

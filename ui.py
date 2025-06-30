@@ -35,7 +35,13 @@ class FILE_NODES_PT_global(Panel):
                     if inp:
                         prop = inp.prop_name()
                         if prop:
-                            box.prop(inp, prop, text=item.name)
+                            if item.socket_type == 'FNSocketExec':
+                                op = box.operator('file_nodes.trigger_exec', text=item.name, icon='PLAY')
+                                op.tree_name = tree.name
+                                op.socket_name = item.name
+                                op.group_input = True
+                            else:
+                                box.prop(inp, prop, text=item.name)
 
 
 def _tree_prop_update(self, context):
