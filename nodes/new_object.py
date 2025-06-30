@@ -60,29 +60,25 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
         data = inputs.get("Data")
         created_data = None
         name = inputs.get("Name") or "Object"
-        key = (self.obj_type, name, data)
+        key = (self.obj_type, name)
         cached = self.cache_get(key)
         ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if cached is not None:
-            return {"Object": cached}
+            obj = cached
+        else:
+            obj = None
 
-        if ctx:
+        if obj is None and ctx:
             storage = getattr(ctx, "_original_values", {})
-            for obj in storage.get("created_ids", []):
-                if isinstance(obj, bpy.types.Object) and obj.name == name:
-                    cached = obj
+            for o in storage.get("created_ids", []):
+                if isinstance(o, bpy.types.Object) and o.name == name:
+                    obj = o
                     break
 
-        if cached is None:
+        if obj is None:
             existing = bpy.data.objects.get(name)
             if existing is not None:
-                cached = existing
-
-        if cached is not None:
-            self.cache_store(key, cached)
-            if ctx:
-                ctx.remember_created_id(cached)
-            return {"Object": cached}
+                obj = existing
 
         if data is None:
             if self.obj_type == 'MESH':
@@ -95,12 +91,18 @@ class FNNewObject(Node, FNCacheIDMixin, FNBaseNode):
                 data = bpy.data.cameras.new(f"{name}Camera")
                 created_data = data
 
-        obj = bpy.data.objects.new(name, data)
+        if obj is not None:
+            try:
+                obj.data = data
+            except Exception:
+                pass
+        else:
+            obj = bpy.data.objects.new(name, data)
+            if ctx:
+                ctx.remember_created_id(obj)
+        if created_data and ctx:
+            ctx.remember_created_id(created_data)
         self.cache_store(key, obj)
-        if ctx:
-            ctx.remember_created_id(obj)
-            if created_data:
-                ctx.remember_created_id(created_data)
         return {"Object": obj}
 
 
