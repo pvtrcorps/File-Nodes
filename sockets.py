@@ -25,6 +25,15 @@ class FNSocketBool(NodeSocket):
         return _color(1.0, 0.4118, 0.8627)
     value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
 
+class FNSocketExec(NodeSocket):
+    bl_idname = "FNSocketExec"
+    bl_label = "Execution"
+    def draw(self, context, layout, node, text):
+        _draw_value_socket(self, layout, text, 'PLAY')
+    def draw_color(self, context, node):
+        return _color(1.0, 0.5, 0.0)
+    value: bpy.props.BoolProperty(update=auto_evaluate_if_enabled)
+
 class FNSocketFloat(NodeSocket):
     bl_idname = "FNSocketFloat"
     bl_label = "Float"
@@ -321,7 +330,7 @@ class FNSocketViewLayerList(NodeSocket):
         return _color(0.6, 0.6, 0.6)
 
 _all_sockets = (
-    FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt,
+    FNSocketBool, FNSocketExec, FNSocketFloat, FNSocketVector, FNSocketInt,
     FNSocketString, FNSocketStringList,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
