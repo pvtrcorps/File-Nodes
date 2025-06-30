@@ -67,6 +67,39 @@ class FN_OT_ungroup_nodes(Operator):
         return {"FINISHED"}
 
 
+class FN_OT_trigger_exec(Operator):
+    bl_idname = "file_nodes.trigger_exec"
+    bl_label = "Execute Socket"
+
+    tree_name: bpy.props.StringProperty()
+    node_name: bpy.props.StringProperty()
+    socket_name: bpy.props.StringProperty()
+    group_input: bpy.props.BoolProperty(default=False)
+
+    def execute(self, context):
+        tree = bpy.data.node_groups.get(self.tree_name)
+        if not tree:
+            return {'CANCELLED'}
+        if self.group_input:
+            inp = tree.fn_inputs.inputs.get(self.socket_name)
+            if not inp:
+                return {'CANCELLED'}
+            inp.exec_value = True
+            auto_evaluate_if_enabled(context=context)
+            inp.exec_value = False
+        else:
+            node = tree.nodes.get(self.node_name)
+            if not node:
+                return {'CANCELLED'}
+            sock = node.inputs.get(self.socket_name)
+            if not sock:
+                return {'CANCELLED'}
+            sock.value = True
+            auto_evaluate_if_enabled(context=context)
+            sock.value = False
+        return {'FINISHED'}
+
+
 class FN_OT_render_scenes(Operator):
     bl_idname = "file_nodes.render_scenes"
     bl_label = "Render Scenes"
@@ -283,6 +316,7 @@ def register():
     bpy.utils.register_class(FN_OT_evaluate_all)
     bpy.utils.register_class(FN_OT_group_nodes)
     bpy.utils.register_class(FN_OT_ungroup_nodes)
+    bpy.utils.register_class(FN_OT_trigger_exec)
     bpy.utils.register_class(FN_OT_render_scenes)
     bpy.utils.register_class(FN_OT_new_tree)
     bpy.utils.register_class(FN_OT_remove_tree)
@@ -292,6 +326,7 @@ def unregister():
     bpy.utils.unregister_class(FN_OT_remove_tree)
     bpy.utils.unregister_class(FN_OT_new_tree)
     bpy.utils.unregister_class(FN_OT_render_scenes)
+    bpy.utils.unregister_class(FN_OT_trigger_exec)
     bpy.utils.unregister_class(FN_OT_ungroup_nodes)
     bpy.utils.unregister_class(FN_OT_group_nodes)
     bpy.utils.unregister_class(FN_OT_evaluate_all)
