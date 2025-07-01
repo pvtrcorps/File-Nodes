@@ -24,7 +24,7 @@ class FNSceneViewlayers(Node, FNBaseNode):
     def update(self):
         pass
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if scene:
             return {"Viewlayers": list(scene.view_layers)}

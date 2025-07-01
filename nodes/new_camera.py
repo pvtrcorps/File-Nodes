@@ -4,7 +4,6 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketCamera, FNSocketString
-from ..cow_engine import DataProxy
 
 
 class FNNewCamera(Node, FNCacheIDMixin, FNBaseNode):
@@ -24,11 +23,11 @@ class FNNewCamera(Node, FNCacheIDMixin, FNBaseNode):
     def free(self):
         self._invalidate_cache()
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Camera"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"Camera": DataProxy(cached)}
+            return {"Camera": cached}
 
         existing = bpy.data.cameras.get(name)
         if existing is not None:
@@ -36,11 +35,11 @@ class FNNewCamera(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"Camera": DataProxy(cached)}
+            return {"Camera": cached}
 
         cam = bpy.data.cameras.new(name)
         self.cache_store(name, cam)
-        return {"Camera": DataProxy(cam)}
+        return {"Camera": cam}
 
 
 def register():

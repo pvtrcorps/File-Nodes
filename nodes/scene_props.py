@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
-from ..cow_engine import ensure_mutable
 
 
 
@@ -27,12 +26,11 @@ class FNSceneProps(Node, FNBaseNode):
         sock.value = 250
         self.outputs.new('FNSocketScene', "Scene")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if scene:
             start = inputs.get("Start")
             end = inputs.get("End")
-            scene = ensure_mutable(scene)
             try:
                 scene.frame_start = start
                 scene.frame_end = end

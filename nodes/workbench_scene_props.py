@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketInt
-from ..cow_engine import ensure_mutable
 
 
 
@@ -25,11 +24,10 @@ class FNWorkbenchSceneProps(Node, FNBaseNode):
         sock.value = 16
         self.outputs.new('FNSocketScene', "Scene")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if scene and hasattr(scene, "display"):
             samples = inputs.get("AA Samples")
-            scene = ensure_mutable(scene)
             try:
                 if hasattr(scene.display, 'render_aa'):
                     scene.display.render_aa = samples

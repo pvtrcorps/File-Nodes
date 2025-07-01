@@ -6,7 +6,7 @@ from .base import FNBaseNode
 from ..sockets import (
     FNSocketScene, FNSocketObjectList, FNSocketCollectionList
 )
-from ..cow_engine import ensure_mutable
+
 
 
 class FNLinkToScene(Node, FNBaseNode):
@@ -26,13 +26,13 @@ class FNLinkToScene(Node, FNBaseNode):
         sock.display_shape = 'SQUARE'
         self.outputs.new('FNSocketScene', "Scene")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         objects = inputs.get("Objects", []) or []
         collections = inputs.get("Collections", []) or []
         if scene:
             root = scene.collection
-            scene = ensure_mutable(scene)
+            
             for obj in objects:
                 if not obj:
                     continue

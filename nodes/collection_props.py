@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketBool
-from ..cow_engine import ensure_mutable
 
 
 
@@ -25,11 +24,10 @@ class FNCollectionProps(Node, FNBaseNode):
         sock.value = False
         self.outputs.new('FNSocketCollection', "Collection")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         coll = inputs.get("Collection")
         if coll:
             hide_vp = inputs.get("Hide Viewport")
-            coll = ensure_mutable(coll)
             try:
                 coll.hide_viewport = hide_vp
             except Exception:

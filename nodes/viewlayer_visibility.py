@@ -5,7 +5,6 @@ from bpy.types import Node, PropertyGroup, UIList
 
 from .base import FNBaseNode
 from ..sockets import FNSocketViewLayer
-from ..cow_engine import ensure_mutable
 from ..operators import auto_evaluate_if_enabled
 
 
@@ -200,7 +199,7 @@ class FNViewLayerVisibility(Node, FNBaseNode):
             rows=3,
         )
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         view_layer = inputs.get("View Layer")
         if view_layer:
             self._input_view_layer = view_layer
@@ -213,7 +212,7 @@ class FNViewLayerVisibility(Node, FNBaseNode):
                 layer = _find_layer_collection(view_layer.layer_collection, coll)
                 if not layer:
                     continue
-                layer = ensure_mutable(layer)
+                
                 try:
                     layer.exclude = item.exclude
                 except Exception:
@@ -244,4 +243,3 @@ def register():
 def unregister():
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)
-

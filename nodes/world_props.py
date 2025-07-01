@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketWorld, FNSocketBool
-from ..cow_engine import ensure_mutable
 
 
 
@@ -25,11 +24,10 @@ class FNWorldProps(Node, FNBaseNode):
         sock.value = True
         self.outputs.new('FNSocketWorld', "World")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         world = inputs.get("World")
         if world:
             use_nodes = inputs.get("Use Nodes")
-            world = ensure_mutable(world)
             try:
                 world.use_nodes = use_nodes
             except Exception:

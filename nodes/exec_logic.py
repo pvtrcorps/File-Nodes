@@ -44,7 +44,7 @@ class FNExecLogic(Node, FNBaseNode):
         layout.prop(self, "op", text="Operation")
         layout.prop(self, "input_count", text="Inputs")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         values = [inputs.get(f"Exec {i}") for i in range(max(1, int(self.input_count)))]
         values = [bool(v) for v in values]
         result = all(values) if self.op == 'AND' else any(values)

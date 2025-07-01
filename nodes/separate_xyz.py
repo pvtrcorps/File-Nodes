@@ -18,7 +18,7 @@ class FNSeparateXYZ(Node, FNBaseNode):
         self.outputs.new('FNSocketFloat', "Y")
         self.outputs.new('FNSocketFloat', "Z")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         vec = inputs.get("Vector")
         if isinstance(vec, (list, tuple)) and len(vec) >= 3:
             x, y, z = vec[:3]

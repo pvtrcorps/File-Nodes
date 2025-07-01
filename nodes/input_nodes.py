@@ -26,7 +26,7 @@ class FNBoolInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Boolean": self.value}
 
 
@@ -43,7 +43,7 @@ class FNFloatInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Float": self.value}
 
 
@@ -60,7 +60,7 @@ class FNIntInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Integer": self.value}
 
 
@@ -77,7 +77,7 @@ class FNStringInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"String": self.value}
 
 
@@ -94,7 +94,7 @@ class FNVectorInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Vector": self.value}
 
 
@@ -109,7 +109,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new('FNSocketScene', "Scene")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if not scene:
             return {"Scene": None}
@@ -146,7 +146,7 @@ class FNObjectInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Object")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Object": self.value}
 
 
@@ -163,7 +163,7 @@ class FNCollectionInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Collection")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Collection": self.value}
 
 
@@ -180,7 +180,7 @@ class FNWorldInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="World")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"World": self.value}
 
 
@@ -197,7 +197,7 @@ class FNCameraInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Camera")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Camera": self.value}
 
 
@@ -214,7 +214,7 @@ class FNImageInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Image")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Image": self.value}
 
 
@@ -231,7 +231,7 @@ class FNLightInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Light")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Light": self.value}
 
 
@@ -248,7 +248,7 @@ class FNMaterialInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Material")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Material": self.value}
 
 
@@ -265,7 +265,7 @@ class FNMeshInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Mesh")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Mesh": self.value}
 
 
@@ -282,7 +282,7 @@ class FNNodeTreeInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Node Tree")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Node Tree": self.value}
 
 
@@ -299,7 +299,7 @@ class FNTextInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="Text")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"Text": self.value}
 
 
@@ -316,7 +316,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "value", text="WorkSpace")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         return {"WorkSpace": self.value}
 
 
@@ -337,4 +337,3 @@ def register():
 def unregister():
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)
-

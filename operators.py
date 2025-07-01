@@ -12,8 +12,9 @@ class FN_OT_evaluate_all(Operator):
     bl_label = "Evaluate File Nodes"
 
     def execute(self, context):
-        count = evaluate_tree(context)
-        self.report({"INFO"}, f"Evaluated {count} File Node trees")
+        count, kept_scenes = evaluate_tree(context)
+        scene_names = ", ".join([s.name for s in kept_scenes]) if kept_scenes else "None"
+        self.report({"INFO"}, f"Evaluated {count} File Node trees. Kept scenes: {scene_names}")
         return {"FINISHED"}
 
 
@@ -121,50 +122,15 @@ class FN_OT_render_scenes(Operator):
         ):
             return {"CANCELLED"}
 
+        # Set the exec value to true to trigger the render in the process method
+        node.inputs.get("Exec").value = True
+
+        # Run a full evaluation
         evaluate_tree(context)
 
-        tree = node.id_data
-        resolved = {}
+        # Reset the exec value
+        node.inputs.get("Exec").value = False
 
-        def eval_socket(sock):
-            if sock.is_linked and sock.links:
-                from_sock = sock.links[0].from_socket
-                outputs = eval_node(from_sock.node)
-                value = outputs.get(from_sock.name)
-                if value is None:
-                    ident = getattr(from_sock, "identifier", from_sock.name)
-                    value = outputs.get(ident)
-                single = LIST_TO_SINGLE.get(sock.bl_idname)
-                if single and from_sock.bl_idname == single:
-                    return [value] if value is not None else []
-                return value
-            if hasattr(sock, "value"):
-                return sock.value
-            return None
-
-        def eval_node(n):
-            if n in resolved:
-                return resolved[n]
-            inputs = {s.name: eval_socket(s) for s in n.inputs}
-            outputs = {}
-            if hasattr(n, "process"):
-                outputs = n.process(context, inputs) or {}
-            for s in n.outputs:
-                key = getattr(s, "identifier", s.name)
-                outputs.setdefault(key, None)
-                if key != s.name:
-                    outputs.setdefault(s.name, outputs[key])
-            resolved[n] = outputs
-            return outputs
-
-        scenes = eval_socket(node.inputs.get("Scenes")) or []
-        for sc in scenes:
-            if not sc:
-                continue
-            try:
-                bpy.ops.render.render("INVOKE_DEFAULT", scene=sc.name)
-            except Exception:
-                pass
         return {"FINISHED"}
 
 
@@ -183,6 +149,9 @@ def evaluate_tree(context):
     """Evaluate all File Nodes trees in the current blend file."""
     global _active_tree
     count = 0
+    from .data_manager import DataManager # Import DataManager here
+    manager = DataManager() # Instantiate DataManager
+    all_kept_scenes = [] # New list to collect all kept scenes
 
     for tree in bpy.data.node_groups:
         if getattr(tree, "bl_idname", "") != "FileNodesTreeType":
@@ -197,11 +166,17 @@ def evaluate_tree(context):
             ctx.prepare_eval_scene(context.scene)
 
         _active_tree = tree
-        cow_engine.evaluate_tree(tree, context)
+        cow_engine.evaluate_tree(tree, context, manager)
         _active_tree = None
 
         if ctx:
-            keep = set(ctx.scenes_to_keep or [])
+            # Add scenes from this tree's ctx to the overall list
+            if ctx.scenes_to_keep:
+                for scene_ref in ctx.scenes_to_keep:
+                    if scene_ref.scene:
+                        all_kept_scenes.append(scene_ref.scene)
+
+            keep = set(sr.scene for sr in ctx.scenes_to_keep if sr.scene)
             if ctx.eval_scene:
                 keep.add(ctx.eval_scene)
             for sc in list(bpy.data.scenes):
@@ -210,12 +185,10 @@ def evaluate_tree(context):
 
         count += 1
 
-    return count
+    return count, all_kept_scenes
 
 
-def _evaluate_tree(tree, context):
-    """Wrapper that delegates evaluation to the copy-on-write engine."""
-    cow_engine.evaluate_tree(tree, context)
+
 
 
 ### Registration ###

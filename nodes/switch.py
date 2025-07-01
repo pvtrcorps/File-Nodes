@@ -75,7 +75,7 @@ class FNSwitch(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "data_type", text="Type")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         flag = inputs.get("Switch")
         val_false = inputs.get("False")
         val_true = inputs.get("True")

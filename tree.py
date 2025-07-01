@@ -1,4 +1,3 @@
-
 import bpy
 from bpy.types import NodeTree, PropertyGroup
 from .operators import auto_evaluate_if_enabled
@@ -56,20 +55,26 @@ class FileNodeTreeInput(PropertyGroup):
         return self._prop_map.get(self.socket_type, None)
 
 
+class FNSceneReference(PropertyGroup):
+    scene: bpy.props.PointerProperty(type=bpy.types.Scene)
+
+
 class FileNodesTreeInputs(PropertyGroup):
     eval_scene = None
-    scenes_to_keep = None
+    # Change scenes_to_keep to a CollectionProperty
+    scenes_to_keep: bpy.props.CollectionProperty(type=FNSceneReference)
 
     inputs: bpy.props.CollectionProperty(type=FileNodeTreeInput)
 
     def clear_eval_data(self):
         if getattr(self, "eval_scene", None):
             self.eval_scene = None
+        # Clear the collection instead of setting to None
+        self.scenes_to_keep.clear()
 
     def prepare_eval_scene(self, scene):
         self.clear_eval_data()
         self.eval_scene = scene
-        self.scenes_to_keep = []
 
 
     def sync_inputs(self, tree):
@@ -121,6 +126,7 @@ class FileNodesTree(NodeTree):
 
 classes = (
     FileNodeTreeInput,
+    FNSceneReference,
     FileNodesTreeInputs,
     FileNodesTree,
 )

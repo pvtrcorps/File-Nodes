@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketCamera, FNSocketFloat
-from ..cow_engine import ensure_mutable
 
 
 
@@ -25,11 +24,10 @@ class FNCameraProps(Node, FNBaseNode):
         sock.value = 50.0
         self.outputs.new('FNSocketCamera', "Camera")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         cam = inputs.get("Camera")
         if cam:
             lens = inputs.get("Focal Length")
-            cam = ensure_mutable(cam)
             try:
                 cam.lens = lens
             except Exception:

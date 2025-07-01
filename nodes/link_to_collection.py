@@ -4,7 +4,6 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketObjectList, FNSocketCollectionList
-from ..cow_engine import ensure_mutable
 
 
 class FNLinkToCollection(Node, FNBaseNode):
@@ -24,12 +23,11 @@ class FNLinkToCollection(Node, FNBaseNode):
         sock.display_shape = 'SQUARE'
         self.outputs.new('FNSocketCollection', "Collection")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         collection = inputs.get("Collection")
         objects = inputs.get("Objects", []) or []
         collections = inputs.get("Collections", []) or []
         if collection:
-            collection = ensure_mutable(collection)
             for obj in objects:
                 if not obj:
                     continue

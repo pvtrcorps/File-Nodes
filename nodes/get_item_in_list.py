@@ -152,7 +152,7 @@ class FNGetItemInList(Node, FNBaseNode):
             rows=4,
         )
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = self.data_type.replace('_', ' ').title()
         lst = inputs.get(f"{name}s") or []
         if not isinstance(lst, (list, tuple)):

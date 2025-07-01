@@ -95,7 +95,7 @@ class FNGetItemByIndex(Node, FNBaseNode):
         layout.prop(self, "data_type", text="Type")
         layout.prop(self, "index", text="Index")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = self.data_type.replace('_', ' ').title()
         lst = inputs.get(f"{name}s", [])
         item = None

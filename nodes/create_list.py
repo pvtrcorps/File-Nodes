@@ -106,7 +106,7 @@ class FNCreateList(Node, FNBaseNode):
         layout.prop(self, "data_type", text="Type")
         layout.prop(self, "input_count", text="Inputs")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = self.data_type.replace('_', ' ').title()
         output_name = f"{name}s"
         items = []

@@ -58,7 +58,7 @@ class FNReadBlendNode(Node, FNBaseNode):
             _blend_cache.pop(path, None)
             self._cached_filepath = None
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         def _warn(msg):
             ntree = getattr(self, "node_tree", None)
             if ntree and hasattr(ntree, "report"):

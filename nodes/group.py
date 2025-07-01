@@ -2,9 +2,10 @@
 
 import bpy
 from bpy.types import NodeCustomGroup
-from .base import FNBaseNode
 from .. import operators
 from ..common import LIST_TO_SINGLE
+from ..cow_engine import evaluate_tree as cow_evaluate_tree
+from .base import FNBaseNode
 
 
 class FNGroupNode(NodeCustomGroup, FNBaseNode):
@@ -81,7 +82,7 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
         self._socket_hash = new
         return changed
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         tree = self.node_tree
         if not tree:
             return {s.name: None for s in self.outputs}
@@ -93,91 +94,29 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
             for inp in ctx.inputs:
                 val = inputs.get(inp.name)
                 prop = getattr(inp, "prop_name", lambda: "value")()
-                setattr(inp, prop, val)
-        operators._evaluate_tree(tree, context)
+                # Register the input value with the shared manager
+                data_id = manager.register_data(val)
+                setattr(inp, prop, manager.get_data(data_id)) # Set the actual data, not the ID
 
-        resolved = {}
+        # Evaluate the internal node tree using the shared manager
+        cow_evaluate_tree(tree, context, manager)
 
-        def eval_socket(sock):
-            if not sock:
-                return None
-            if sock.is_linked and getattr(sock, "links", None):
-                single = LIST_TO_SINGLE.get(sock.bl_idname)
-                if getattr(sock, "is_multi_input", False):
-                    values = []
-                    for link in sock.links:
-                        from_sock = link.from_socket
-                        outputs = eval_node(from_sock.node)
-                        val = outputs.get(from_sock.name)
-                        if val is None:
-                            ident = getattr(from_sock, "identifier", from_sock.name)
-                            val = outputs.get(ident)
-                        if single and from_sock.bl_idname == single:
-                            if val is not None:
-                                values.append(val)
-                        else:
-                            values.append(val)
-                    return values
-                else:
-                    link = sock.links[0]
-                    outputs = eval_node(link.from_node)
-                    val = outputs.get(link.from_socket.name)
-                    if val is None:
-                        ident = getattr(link.from_socket, "identifier", link.from_socket.name)
-                        val = outputs.get(ident)
-                    if single and link.from_socket.bl_idname == single:
-                        return [val] if val is not None else []
-                    return val
-            if hasattr(sock, "value"):
-                return sock.value
-            return None
-
-        def eval_node(node):
-            if node in resolved:
-                return resolved[node]
-            if getattr(node, "bl_idname", "") == "NodeGroupInput":
-                node_outputs = {}
-                for s in node.outputs:
-                    key = getattr(s, "identifier", s.name)
-                    val = inputs.get(s.name)
-                    node_outputs[key] = val
-                    if key != s.name:
-                        node_outputs.setdefault(s.name, val)
-            else:
-                node_inputs = {s.name: eval_socket(s) for s in node.inputs}
-                node_outputs = {}
-                if hasattr(node, "process"):
-                    node_outputs = node.process(context, node_inputs) or {}
-            for s in node.outputs:
-                key = getattr(s, "identifier", s.name)
-                node_outputs.setdefault(key, None)
-                if key != s.name:
-                    node_outputs.setdefault(s.name, node_outputs[key])
-            resolved[node] = node_outputs
-            return node_outputs
-
+        # Retrieve outputs from the internal NodeGroupOutput node
         out_node = None
         for n in getattr(tree, "nodes", []):
             if getattr(n, "bl_idname", "") == "NodeGroupOutput":
                 out_node = n
                 break
+        
         result = {}
-        iface = getattr(tree, "interface", None)
-        if out_node and iface:
-            for item in iface.items_tree:
-                if getattr(item, "in_out", None) == "OUTPUT":
-                    sock = next(
-                        (
-                            s
-                            for s in out_node.inputs
-                            if s.name == item.name
-                            or getattr(s, "identifier", s.name) == getattr(item, "identifier", item.name)
-                        ),
-                        None,
-                    )
-                    result[item.name] = eval_socket(sock)
-        for s in self.outputs:
-            result.setdefault(s.name, None)
+        if out_node:
+            # The outputs of the internal NodeGroupOutput are already IDs
+            # from the shared manager. We just need to map them to the group's outputs.
+            for s in out_node.inputs: # NodeGroupOutput's inputs are the group's outputs
+                key = getattr(s, "identifier", s.name)
+                # The value is already an ID from the internal evaluation
+                result[key] = manager.register_data(manager.get_data(s.value)) # Re-register to get a new ID for the group's output
+
         return result
 
 

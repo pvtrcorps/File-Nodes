@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketScene, FNSocketViewLayerList
-from ..cow_engine import ensure_mutable
 
 
 class FNSetSceneViewlayers(Node, FNBaseNode):
@@ -24,12 +23,12 @@ class FNSetSceneViewlayers(Node, FNBaseNode):
         sock.display_shape = 'SQUARE'
         self.outputs.new('FNSocketScene', "Scene")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         layers = [vl for vl in (inputs.get("ViewLayers") or []) if vl]
         if not scene:
             return {"Scene": scene}
-        scene = ensure_mutable(scene)
+        
 
         def _warn(msg):
             report = getattr(self, "report", None)

@@ -17,7 +17,7 @@ class FNSplitString(Node, FNBaseNode):
         self.inputs.new('FNSocketString', "Separator")
         self.outputs.new('FNSocketStringList', "Strings")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         text = inputs.get("String") or ""
         sep = inputs.get("Separator")
         sep = sep if sep is not None else ""

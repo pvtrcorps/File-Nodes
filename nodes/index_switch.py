@@ -86,7 +86,7 @@ class FNIndexSwitch(Node, FNBaseNode):
         layout.prop(self, "data_type", text="Type")
         layout.prop(self, "input_count", text="Inputs")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         idx = inputs.get("Index") or 0
         values = [inputs.get(f"Value {i}") for i in range(max(1, int(self.input_count)))]
         result = values[idx] if isinstance(idx, int) and 0 <= idx < len(values) else None

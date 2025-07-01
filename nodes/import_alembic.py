@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketString, FNSocketObjectList
-from ..cow_engine import ensure_mutable
 
 
 _abc_cache = {}
@@ -34,7 +33,7 @@ class FNImportAlembic(Node, FNBaseNode):
             _abc_cache.pop(path, None)
             self._cached_filepath = None
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         filepath = inputs.get("File Path") or ""
         abs_path = bpy.path.abspath(filepath)
         if filepath != getattr(self, "_cached_filepath", None):
@@ -59,7 +58,6 @@ class FNImportAlembic(Node, FNBaseNode):
         for obj in scene.objects:
             if obj not in before:
                 objects.append(obj)
-        scene = ensure_mutable(scene)
         _abc_cache[abs_path] = objects
         self._cached_filepath = abs_path
         return {"Objects": objects}

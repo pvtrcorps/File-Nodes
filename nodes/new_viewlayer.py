@@ -4,7 +4,6 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketScene, FNSocketString, FNSocketViewLayer
-from ..cow_engine import DataProxy
 
 
 class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
@@ -25,7 +24,7 @@ class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
     def free(self):
         self._invalidate_cache()
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if not scene:
             return {"ViewLayer": None}
@@ -33,7 +32,7 @@ class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
         key = (scene.as_pointer(), name)
         cached = self.cache_get(key)
         if cached is not None:
-            return {"ViewLayer": DataProxy(cached)}
+            return {"ViewLayer": cached}
 
         existing = scene.view_layers.get(name)
         if existing is not None:
@@ -41,11 +40,11 @@ class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(key, cached)
-            return {"ViewLayer": DataProxy(cached)}
+            return {"ViewLayer": cached}
 
         view_layer = scene.view_layers.new(name)
         self.cache_store(key, view_layer)
-        return {"ViewLayer": DataProxy(view_layer)}
+        return {"ViewLayer": view_layer}
 
 
 def register():
@@ -54,4 +53,3 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(FNNewViewLayer)
-

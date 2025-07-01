@@ -30,7 +30,7 @@ class FNJoinStrings(Node, FNBaseNode):
         layout.prop(self, "separator", text="Separator")
         layout.prop(self, "input_count", text="Inputs")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         parts = []
         for i in range(max(1, int(self.input_count))):
             value = inputs.get(f"String {i}")

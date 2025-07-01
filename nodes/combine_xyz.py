@@ -18,7 +18,7 @@ class FNCombineXYZ(Node, FNBaseNode):
         self.inputs.new('FNSocketFloat', "Z")
         self.outputs.new('FNSocketVector', "Vector")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         x = inputs.get("X") or 0.0
         y = inputs.get("Y") or 0.0
         z = inputs.get("Z") or 0.0

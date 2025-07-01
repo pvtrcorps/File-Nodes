@@ -111,7 +111,7 @@ class FNOutlinerNode(Node, FNBaseNode):
             return
         layout.template_list("FN_UL_outliner", "", self, "items", self, "active_index", rows=5)
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if scene:
             self._sync_items(scene)

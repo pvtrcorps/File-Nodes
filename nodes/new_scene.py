@@ -3,8 +3,6 @@
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
-from ..sockets import FNSocketScene, FNSocketString
-from ..cow_engine import DataProxy
 
 
 class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
@@ -24,11 +22,11 @@ class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
     def free(self):
         self._invalidate_cache()
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Scene"
         cached = self.cache_get(name)
         if cached is not None:
-            return {"Scene": DataProxy(cached)}
+            return {"Scene": cached}
 
         existing = bpy.data.scenes.get(name)
         if existing is not None:
@@ -36,12 +34,12 @@ class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(name, cached)
-            return {"Scene": DataProxy(cached)}
+            return {"Scene": cached}
 
         scene = bpy.data.scenes.new(name)
         scene.use_extra_user = True
         self.cache_store(name, scene)
-        return {"Scene": DataProxy(scene)}
+        return {"Scene": scene}
 
 
 def register():

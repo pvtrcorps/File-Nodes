@@ -4,7 +4,6 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode
 from ..sockets import FNSocketCollection, FNSocketString
-from ..cow_engine import ensure_mutable
 
 
 
@@ -23,11 +22,10 @@ class FNSetCollectionName(Node, FNBaseNode):
         sock.value = ""
         self.outputs.new('FNSocketCollection', "Collection")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         coll = inputs.get("Collection")
         if coll:
             name = inputs.get("Name") or ""
-            coll = ensure_mutable(coll)
             try:
                 coll.name = name
             except Exception:

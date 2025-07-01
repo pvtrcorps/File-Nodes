@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketMaterial, FNSocketBool
-from ..cow_engine import ensure_mutable
 
 
 
@@ -25,11 +24,10 @@ class FNMaterialProps(Node, FNBaseNode):
         sock.value = True
         self.outputs.new('FNSocketMaterial', "Material")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         mat = inputs.get("Material")
         if mat:
             use_nodes = inputs.get("Use Nodes")
-            mat = ensure_mutable(mat)
             try:
                 mat.use_nodes = use_nodes
             except Exception:

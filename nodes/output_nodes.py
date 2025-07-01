@@ -25,7 +25,7 @@ class FNRenderScenesNode(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.operator('file_nodes.render_scenes', text="Render Scenes")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         if inputs.get("Exec"):
             scenes = inputs.get("Scenes") or []
             for sc in scenes:
@@ -51,7 +51,7 @@ class FNOutputScenesNode(Node, FNBaseNode):
         sock = self.inputs.new('FNSocketSceneList', "Scenes")
         sock.display_shape = 'SQUARE'
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         scenes = inputs.get("Scenes") or []
         ctx = getattr(getattr(self, "id_data", None), "fn_inputs", None)
         if ctx:

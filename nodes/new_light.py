@@ -4,7 +4,6 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketLight, FNSocketString
-from ..cow_engine import DataProxy
 
 
 class FNNewLight(Node, FNCacheIDMixin, FNBaseNode):
@@ -39,12 +38,12 @@ class FNNewLight(Node, FNCacheIDMixin, FNBaseNode):
     def free(self):
         self._invalidate_cache()
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Light"
         key = (name, self.light_type)
         cached = self.cache_get(key)
         if cached is not None:
-            return {"Light": DataProxy(cached)}
+            return {"Light": cached}
 
         existing = bpy.data.lights.get(name)
         if existing is not None:
@@ -52,11 +51,11 @@ class FNNewLight(Node, FNCacheIDMixin, FNBaseNode):
 
         if cached is not None:
             self.cache_store(key, cached)
-            return {"Light": DataProxy(cached)}
+            return {"Light": cached}
 
         light = bpy.data.lights.new(name, type=self.light_type)
         self.cache_store(key, light)
-        return {"Light": DataProxy(light)}
+        return {"Light": light}
 
 
 def register():

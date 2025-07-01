@@ -5,7 +5,6 @@ from bpy.types import Node
 
 from .base import FNBaseNode
 from ..sockets import FNSocketLight, FNSocketFloat
-from ..cow_engine import ensure_mutable
 
 
 
@@ -25,11 +24,10 @@ class FNLightProps(Node, FNBaseNode):
         sock.value = 10.0
         self.outputs.new('FNSocketLight', "Light")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         light = inputs.get("Light")
         if light:
             energy = inputs.get("Energy")
-            light = ensure_mutable(light)
             try:
                 light.energy = energy
             except Exception:

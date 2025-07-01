@@ -94,7 +94,7 @@ class FNGetItemByName(Node, FNBaseNode):
     def draw_buttons(self, context, layout):
         layout.prop(self, "data_type", text="Type")
 
-    def process(self, context, inputs):
+    def process(self, context, inputs, manager):
         name = self.data_type.replace('_', ' ').title()
         lst = inputs.get(f"{name}s", [])
         name = inputs.get("Name") or ""
