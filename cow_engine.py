@@ -68,6 +68,9 @@ def _is_datablock(value):
 def _wrap(value, count):
     if isinstance(value, list):
         return [_wrap(v, count) for v in value]
+    if isinstance(value, DataProxy):
+        value.refcount = count
+        return value
     if _is_datablock(value):
         return DataProxy(value, refcount=count)
     return value
