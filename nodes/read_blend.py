@@ -64,7 +64,7 @@ class FNReadBlendNode(Node, FNBaseNode):
             if ntree and hasattr(ntree, "report"):
                 ntree.report({'WARNING'}, msg)
             else:
-                print(msg)
+                
                 warnings.warn(msg)
 
         empty = {

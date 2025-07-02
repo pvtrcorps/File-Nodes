@@ -53,7 +53,7 @@ def _tree_prop_update(self, context):
             if hasattr(self, "report"):
                 self.report({'ERROR'}, f"File Nodes: {exc}")
             else:
-                print(f"File Nodes: {exc}")
+                pass
 
 
 def register():

@@ -22,6 +22,7 @@ categories = [
         NodeItem('FNSeparateXYZ'),
         NodeItem('FNSwitch'),
         NodeItem('FNIndexSwitch'),
+        NodeItem('FNSetCustomProperty'),
     ]),
     NodeCategory('FILE_NODES_SCENE', 'Scene', items=[
         NodeItem('FNSceneInputNode'),
@@ -104,6 +105,7 @@ categories = [
         NodeItem('FNIntInputNode'),
         NodeItem('FNStringInputNode'),
         NodeItem('FNVectorInputNode'),
+        NodeItem('FNColorInputNode'),
     ]),
 ]
 

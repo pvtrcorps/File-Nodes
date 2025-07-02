@@ -136,4 +136,4 @@ class DataManager:
         self._data_store.clear()
         self._ref_counts.clear()
         self._owned_copies.clear()
-        print("DataManager: Cleanup finished.")
+        

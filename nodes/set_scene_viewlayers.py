@@ -35,7 +35,7 @@ class FNSetSceneViewlayers(Node, FNBaseNode):
             if callable(report):
                 report({'WARNING'}, msg)
             else:
-                print(msg)
+                pass
 
         # Ensure all layers belong to the scene
         filtered = []

@@ -250,5 +250,5 @@ def evaluate_tree(tree, context, manager=None):
                                 print(f"evaluate_tree: Added scene {sc_data.name} to scenes_to_keep.")
     finally:
         # Crucial step: Clean up all the created copies
-        print("evaluate_tree: Calling manager.cleanup()")
+        
         manager.cleanup()

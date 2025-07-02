@@ -81,6 +81,90 @@ class FNStringInputNode(Node, FNBaseNode):
         return {"String": self.value}
 
 
+"""Nodes that provide constant input values for node trees."""
+
+import bpy
+from bpy.types import Node
+from ..operators import auto_evaluate_if_enabled
+
+from .base import FNBaseNode, FNCacheIDMixin
+from ..sockets import (
+    FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt, FNSocketString,
+    FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
+    FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
+    FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
+    FNSocketColor,
+)
+
+
+class FNBoolInputNode(Node, FNBaseNode):
+    """Output a boolean value."""
+    bl_idname = "FNBoolInputNode"
+    bl_label = "Boolean Input"
+
+    value: bpy.props.BoolProperty(name="Value", update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketBool', "Boolean")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="")
+
+    def process(self, context, inputs, manager):
+        return {"Boolean": self.value}
+
+
+class FNFloatInputNode(Node, FNBaseNode):
+    """Output a float value."""
+    bl_idname = "FNFloatInputNode"
+    bl_label = "Float Input"
+
+    value: bpy.props.FloatProperty(name="Value", update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketFloat', "Float")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="")
+
+    def process(self, context, inputs, manager):
+        return {"Float": self.value}
+
+
+class FNIntInputNode(Node, FNBaseNode):
+    """Output an integer value."""
+    bl_idname = "FNIntInputNode"
+    bl_label = "Integer Input"
+
+    value: bpy.props.IntProperty(name="Value", update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketInt', "Integer")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="")
+
+    def process(self, context, inputs, manager):
+        return {"Integer": self.value}
+
+
+class FNStringInputNode(Node, FNBaseNode):
+    """Output a string value."""
+    bl_idname = "FNStringInputNode"
+    bl_label = "String Input"
+
+    value: bpy.props.StringProperty(name="Value", update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketString', "String")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="")
+
+    def process(self, context, inputs, manager):
+        return {"String": self.value}
+
+
 class FNVectorInputNode(Node, FNBaseNode):
     """Output a 3D vector."""
     bl_idname = "FNVectorInputNode"
@@ -96,6 +180,23 @@ class FNVectorInputNode(Node, FNBaseNode):
 
     def process(self, context, inputs, manager):
         return {"Vector": self.value}
+
+
+class FNColorInputNode(Node, FNBaseNode):
+    """Output a color value (RGBA)."""
+    bl_idname = "FNColorInputNode"
+    bl_label = "Color Input"
+
+    value: bpy.props.FloatVectorProperty(name="Value", size=4, subtype='COLOR', default=(1.0, 1.0, 1.0, 1.0), update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketColor', "Color")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "value", text="")
+
+    def process(self, context, inputs, manager):
+        return {"Color": self.value}
 
 
 class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
@@ -322,7 +423,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
 
 _classes = (
     FNBoolInputNode, FNFloatInputNode, FNIntInputNode, FNStringInputNode,
-    FNVectorInputNode,
+    FNVectorInputNode, FNColorInputNode,
     FNSceneInputNode, FNObjectInputNode, FNCollectionInputNode,
     FNWorldInputNode, FNCameraInputNode, FNImageInputNode, FNLightInputNode, FNMaterialInputNode,
     FNMeshInputNode, FNNodeTreeInputNode, FNTextInputNode, FNWorkSpaceInputNode,

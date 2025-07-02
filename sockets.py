@@ -77,6 +77,15 @@ class FNSocketString(NodeSocket):
         return _color(0.3137, 0.6667, 1.0)
     value: bpy.props.StringProperty(update=auto_evaluate_if_enabled)
 
+class FNSocketColor(NodeSocket):
+    bl_idname = "FNSocketColor"
+    bl_label = "Color"
+    def draw(self, context, layout, node, text):
+        _draw_value_socket(self, layout, text)
+    def draw_color(self, context, node):
+        return _color(0.8, 0.8, 0.2) # Example color for the socket
+    value: bpy.props.FloatVectorProperty(size=4, subtype='COLOR', update=auto_evaluate_if_enabled)
+
 class FNSocketStringList(NodeSocket):
     bl_idname = "FNSocketStringList"
     bl_label = "String List"
@@ -338,7 +347,7 @@ class FNSocketViewLayerList(NodeSocket):
 
 _all_sockets = (
     FNSocketBool, FNSocketExec, FNSocketFloat, FNSocketVector, FNSocketInt,
-    FNSocketString, FNSocketStringList,
+    FNSocketString, FNSocketColor, FNSocketStringList,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
