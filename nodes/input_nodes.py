@@ -6,7 +6,7 @@ from ..operators import auto_evaluate_if_enabled
 
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
-    FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt, FNSocketString,
+    FNSocketBool, FNSocketExec, FNSocketFloat, FNSocketVector, FNSocketInt, FNSocketString,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
@@ -28,6 +28,25 @@ class FNBoolInputNode(Node, FNBaseNode):
 
     def process(self, context, inputs, manager):
         return {"Boolean": self.value}
+
+
+class FNExecInputNode(Node, FNBaseNode):
+    """Output an execution trigger."""
+    bl_idname = "FNExecInputNode"
+    bl_label = "Execute Input"
+
+    value: bpy.props.BoolProperty(name="Value", update=auto_evaluate_if_enabled)
+
+    def init(self, context):
+        self.outputs.new('FNSocketExec', 'Exec')
+
+    def draw_buttons(self, context, layout):
+        row = layout.row(align=True)
+        row.prop(self, 'value', text='')
+        row.operator('file_nodes.execute_input', text='Execute')
+
+    def process(self, context, inputs, manager):
+        return {'Exec': self.value}
 
 
 class FNFloatInputNode(Node, FNBaseNode):
@@ -89,7 +108,7 @@ from ..operators import auto_evaluate_if_enabled
 
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import (
-    FNSocketBool, FNSocketFloat, FNSocketVector, FNSocketInt, FNSocketString,
+    FNSocketBool, FNSocketExec, FNSocketFloat, FNSocketVector, FNSocketInt, FNSocketString,
     FNSocketScene, FNSocketObject, FNSocketCollection, FNSocketWorld,
     FNSocketCamera, FNSocketImage, FNSocketLight, FNSocketMaterial,
     FNSocketMesh, FNSocketNodeTree, FNSocketText, FNSocketWorkSpace,
@@ -422,7 +441,7 @@ class FNWorkSpaceInputNode(Node, FNBaseNode):
 
 
 _classes = (
-    FNBoolInputNode, FNFloatInputNode, FNIntInputNode, FNStringInputNode,
+    FNBoolInputNode, FNExecInputNode, FNFloatInputNode, FNIntInputNode, FNStringInputNode,
     FNVectorInputNode, FNColorInputNode,
     FNSceneInputNode, FNObjectInputNode, FNCollectionInputNode,
     FNWorldInputNode, FNCameraInputNode, FNImageInputNode, FNLightInputNode, FNMaterialInputNode,

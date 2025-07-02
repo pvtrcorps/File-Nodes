@@ -23,6 +23,7 @@ categories = [
         NodeItem('FNSwitch'),
         NodeItem('FNIndexSwitch'),
         NodeItem('FNSetCustomProperty'),
+        NodeItem('FNExecLogic'),
     ]),
     NodeCategory('FILE_NODES_SCENE', 'Scene', items=[
         NodeItem('FNSceneInputNode'),
@@ -101,6 +102,7 @@ categories = [
     ]),
     NodeCategory('FILE_NODES_VALUES', 'Values', items=[
         NodeItem('FNBoolInputNode'),
+        NodeItem('FNExecInputNode'),
         NodeItem('FNFloatInputNode'),
         NodeItem('FNIntInputNode'),
         NodeItem('FNStringInputNode'),

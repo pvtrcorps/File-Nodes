@@ -134,6 +134,25 @@ class FN_OT_render_scenes(Operator):
         return {"FINISHED"}
 
 
+class FN_OT_execute_input(Operator):
+    bl_idname = "file_nodes.execute_input"
+    bl_label = "Execute"
+
+    def execute(self, context):
+        node = context.active_node
+        if (
+            not isinstance(node, bpy.types.Node)
+            or node.bl_idname != "FNExecInputNode"
+        ):
+            return {"CANCELLED"}
+
+        node.outputs.get("Exec").value = True
+        evaluate_tree(context)
+        node.outputs.get("Exec").value = False
+
+        return {"FINISHED"}
+
+
 def auto_evaluate_if_enabled(self=None, context=None):
     """Evaluate all file node trees if the preference is enabled."""
     if context is None and isinstance(self, bpy.types.Context):
@@ -198,6 +217,7 @@ def register():
     bpy.utils.register_class(FN_OT_ungroup_nodes)
     bpy.utils.register_class(FN_OT_trigger_exec)
     bpy.utils.register_class(FN_OT_render_scenes)
+    bpy.utils.register_class(FN_OT_execute_input)
     bpy.utils.register_class(FN_OT_new_tree)
     bpy.utils.register_class(FN_OT_remove_tree)
 
@@ -206,6 +226,7 @@ def unregister():
     bpy.utils.unregister_class(FN_OT_remove_tree)
     bpy.utils.unregister_class(FN_OT_new_tree)
     bpy.utils.unregister_class(FN_OT_render_scenes)
+    bpy.utils.unregister_class(FN_OT_execute_input)
     bpy.utils.unregister_class(FN_OT_trigger_exec)
     bpy.utils.unregister_class(FN_OT_ungroup_nodes)
     bpy.utils.unregister_class(FN_OT_group_nodes)
