@@ -4,7 +4,7 @@ import bpy
 from bpy.types import Node
 
 from .base import FNBaseNode
-from ..sockets import FNSocketScene, FNSocketInt
+from ..sockets import FNSocketScene, FNSocketInt, FNSocketObject
 
 
 
@@ -20,6 +20,7 @@ class FNSceneProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
+        self.inputs.new('FNSocketObject', "Camera")
         sock = self.inputs.new('FNSocketInt', "Start")
         sock.value = 1
         sock = self.inputs.new('FNSocketInt', "End")
@@ -29,6 +30,12 @@ class FNSceneProps(Node, FNBaseNode):
     def process(self, context, inputs, manager):
         scene = inputs.get("Scene")
         if scene:
+            cam_obj = inputs.get("Camera")
+            if cam_obj:
+                try:
+                    scene.camera = cam_obj
+                except Exception:
+                    pass
             start = inputs.get("Start")
             end = inputs.get("End")
             try:
