@@ -3,6 +3,8 @@
 import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
+from ..sockets import FNSocketScene, FNSocketString
+from .. import uuid_manager
 
 
 class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
@@ -24,21 +26,33 @@ class FNNewScene(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Scene"
-        cached = self.cache_get(name)
-        if cached is not None:
-            return {"Scene": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}"
+        
+        scene = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            scene = uuid_manager.find_datablock_by_uuid(existing_uuid, bpy.data.scenes)
 
-        existing = bpy.data.scenes.get(name)
-        if existing is not None:
-            cached = existing
+        if scene is None:
+            scene = bpy.data.scenes.get(name)
+            if scene and uuid_manager.get_uuid(scene) is None:
+                pass
+            else:
+                scene = None
 
-        if cached is not None:
-            self.cache_store(name, cached)
-            return {"Scene": cached}
+        if scene is None:
+            scene = bpy.data.scenes.new(name)
+            scene.use_extra_user = True
+            scene_uuid = uuid_manager.get_or_create_uuid(scene)
+            node_tree.set_datablock_uuid(node_key, scene_uuid)
+        else:
+            if scene.name != name:
+                scene.name = name
+            scene_uuid = uuid_manager.get_or_create_uuid(scene)
+            node_tree.set_datablock_uuid(node_key, scene_uuid)
 
-        scene = bpy.data.scenes.new(name)
-        scene.use_extra_user = True
-        self.cache_store(name, scene)
         return {"Scene": scene}
 
 

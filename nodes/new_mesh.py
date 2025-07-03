@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketMesh, FNSocketString
+from .. import uuid_manager
 
 
 class FNNewMesh(Node, FNCacheIDMixin, FNBaseNode):
@@ -25,20 +26,32 @@ class FNNewMesh(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Mesh"
-        cached = self.cache_get(name)
-        if cached is not None:
-            return {"Mesh": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}"
+        
+        mesh = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            mesh = uuid_manager.find_datablock_by_uuid(existing_uuid, bpy.data.meshes)
 
-        existing = bpy.data.meshes.get(name)
-        if existing is not None:
-            cached = existing
+        if mesh is None:
+            mesh = bpy.data.meshes.get(name)
+            if mesh and uuid_manager.get_uuid(mesh) is None:
+                pass
+            else:
+                mesh = None
 
-        if cached is not None:
-            self.cache_store(name, cached)
-            return {"Mesh": cached}
+        if mesh is None:
+            mesh = bpy.data.meshes.new(name)
+            mesh_uuid = uuid_manager.get_or_create_uuid(mesh)
+            node_tree.set_datablock_uuid(node_key, mesh_uuid)
+        else:
+            if mesh.name != name:
+                mesh.name = name
+            mesh_uuid = uuid_manager.get_or_create_uuid(mesh)
+            node_tree.set_datablock_uuid(node_key, mesh_uuid)
 
-        mesh = bpy.data.meshes.new(name)
-        self.cache_store(name, mesh)
         return {"Mesh": mesh}
 
 

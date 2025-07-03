@@ -17,7 +17,8 @@ class FNSceneViewlayers(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        self.inputs.new('FNSocketScene', "Scene")
+        sock = self.inputs.new('FNSocketScene', "Scene")
+        sock.is_mutable = False
         out = self.outputs.new('FNSocketViewLayerList', "Viewlayers")
         out.display_shape = 'SQUARE'
 

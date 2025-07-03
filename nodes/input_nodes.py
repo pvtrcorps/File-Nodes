@@ -225,6 +225,7 @@ class FNSceneInputNode(Node, FNCacheIDMixin, FNBaseNode):
 
     def init(self, context):
         sock = self.inputs.new('FNSocketScene', "Scene")
+        sock.is_mutable = False
         sock.show_selector = True
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new('FNSocketScene', "Scene")

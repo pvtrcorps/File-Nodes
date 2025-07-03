@@ -67,6 +67,7 @@ class FNGroupNode(NodeCustomGroup, FNBaseNode):
                     self.inputs.remove(sock)
                 sock = self.inputs.new(item.socket_type, item.name)
             sock.name = item.name
+            sock.is_mutable = False
         for item in iface_outputs:
             sock = self.outputs.get(item.name)
             if sock is None or sock.bl_idname != item.socket_type:

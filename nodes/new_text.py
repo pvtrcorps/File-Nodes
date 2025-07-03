@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketText, FNSocketString
+from .. import uuid_manager
 
 
 class FNNewText(Node, FNCacheIDMixin, FNBaseNode):
@@ -25,20 +26,32 @@ class FNNewText(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Text"
-        cached = self.cache_get(name)
-        if cached is not None:
-            return {"Text": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}"
+        
+        text = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            text = uuid_manager.find_datablock_by_uuid(existing_uuid, bpy.data.texts)
 
-        existing = bpy.data.texts.get(name)
-        if existing is not None:
-            cached = existing
+        if text is None:
+            text = bpy.data.texts.get(name)
+            if text and uuid_manager.get_uuid(text) is None:
+                pass
+            else:
+                text = None
 
-        if cached is not None:
-            self.cache_store(name, cached)
-            return {"Text": cached}
+        if text is None:
+            text = bpy.data.texts.new(name)
+            text_uuid = uuid_manager.get_or_create_uuid(text)
+            node_tree.set_datablock_uuid(node_key, text_uuid)
+        else:
+            if text.name != name:
+                text.name = name
+            text_uuid = uuid_manager.get_or_create_uuid(text)
+            node_tree.set_datablock_uuid(node_key, text_uuid)
 
-        text = bpy.data.texts.new(name)
-        self.cache_store(name, text)
         return {"Text": text}
 
 

@@ -73,7 +73,8 @@ class FNOutlinerNode(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        self.inputs.new('FNSocketScene', "Scene")
+        sock = self.inputs.new('FNSocketScene', "Scene")
+        sock.is_mutable = False
 
     def update(self):
         auto_evaluate_if_enabled(bpy.context)

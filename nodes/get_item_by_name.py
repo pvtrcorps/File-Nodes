@@ -84,6 +84,7 @@ class FNGetItemByName(Node, FNBaseNode):
         single = _socket_single[self.data_type]
         name = self.data_type.replace('_', ' ').title()
         sock = self.inputs.new(list_sock, f"{name}s")
+        sock.is_mutable = False
         sock.display_shape = 'SQUARE'
         self.inputs.new('FNSocketString', "Name")
         self.outputs.new(single, name)

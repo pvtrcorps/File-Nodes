@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketScene, FNSocketString, FNSocketViewLayer
+from .. import uuid_manager
 
 
 class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
@@ -29,21 +30,36 @@ class FNNewViewLayer(Node, FNCacheIDMixin, FNBaseNode):
         if not scene:
             return {"ViewLayer": None}
         name = inputs.get("Name") or "ViewLayer"
-        key = (scene.as_pointer(), name)
-        cached = self.cache_get(key)
-        if cached is not None:
-            return {"ViewLayer": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}_{scene.name}"
+        
+        view_layer = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            # View layers are not directly in bpy.data, so we need to search within the scene
+            for vl in scene.view_layers:
+                if uuid_manager.get_uuid(vl) == existing_uuid:
+                    view_layer = vl
+                    break
 
-        existing = scene.view_layers.get(name)
-        if existing is not None:
-            cached = existing
+        if view_layer is None:
+            view_layer = scene.view_layers.get(name)
+            if view_layer and uuid_manager.get_uuid(view_layer) is None:
+                pass
+            else:
+                view_layer = None
 
-        if cached is not None:
-            self.cache_store(key, cached)
-            return {"ViewLayer": cached}
+        if view_layer is None:
+            view_layer = scene.view_layers.new(name)
+            vl_uuid = uuid_manager.get_or_create_uuid(view_layer)
+            node_tree.set_datablock_uuid(node_key, vl_uuid)
+        else:
+            if view_layer.name != name:
+                view_layer.name = name
+            vl_uuid = uuid_manager.get_or_create_uuid(view_layer)
+            node_tree.set_datablock_uuid(node_key, vl_uuid)
 
-        view_layer = scene.view_layers.new(name)
-        self.cache_store(key, view_layer)
         return {"ViewLayer": view_layer}
 
 

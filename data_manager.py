@@ -1,5 +1,6 @@
 import bpy
 import uuid
+from . import uuid_manager
 
 class DataManager:
     """
@@ -96,9 +97,25 @@ class DataManager:
         This is the explicit garbage collection step.
         """
         print("DataManager: Starting cleanup...")
+
+        # Import FileNodesTree here to avoid circular dependency
+        from .tree import FileNodesTree
+
+        # Collect all UUIDs that are currently managed by active node trees
+        active_uuids = set()
+        for node_tree in bpy.data.node_groups:
+            if isinstance(node_tree, FileNodesTree):
+                for item in node_tree.fn_state_map:
+                    active_uuids.add(item.datablock_uuid)
+
         for data_id in list(self._owned_copies): # Iterate over a copy to allow modification
             data = self._data_store.get(data_id)
             
+            # If the datablock is managed by an active node tree, do not remove it
+            if uuid_manager.get_uuid(data) in active_uuids:
+                print(f"DataManager: Not cleaning up managed datablock {data.name} with ID {data_id}.")
+                continue
+
             # IMPORTANT: Do not remove if it's a scene with use_extra_user set
             if isinstance(data, bpy.types.Scene) and getattr(data, "use_extra_user", False):
                 print(f"DataManager: Not cleaning up scene {data.name} with use_extra_user set.")

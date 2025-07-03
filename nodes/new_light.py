@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketLight, FNSocketString
+from .. import uuid_manager
 
 
 class FNNewLight(Node, FNCacheIDMixin, FNBaseNode):
@@ -40,21 +41,34 @@ class FNNewLight(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Light"
-        key = (name, self.light_type)
-        cached = self.cache_get(key)
-        if cached is not None:
-            return {"Light": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}_{self.light_type}"
+        
+        light = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            light = uuid_manager.find_datablock_by_uuid(existing_uuid, bpy.data.lights)
 
-        existing = bpy.data.lights.get(name)
-        if existing is not None:
-            cached = existing
+        if light is None:
+            light = bpy.data.lights.get(name)
+            if light and uuid_manager.get_uuid(light) is None:
+                pass
+            else:
+                light = None
 
-        if cached is not None:
-            self.cache_store(key, cached)
-            return {"Light": cached}
+        if light is None:
+            light = bpy.data.lights.new(name, type=self.light_type)
+            light_uuid = uuid_manager.get_or_create_uuid(light)
+            node_tree.set_datablock_uuid(node_key, light_uuid)
+        else:
+            if light.name != name:
+                light.name = name
+            if light.type != self.light_type:
+                light.type = self.light_type
+            light_uuid = uuid_manager.get_or_create_uuid(light)
+            node_tree.set_datablock_uuid(node_key, light_uuid)
 
-        light = bpy.data.lights.new(name, type=self.light_type)
-        self.cache_store(key, light)
         return {"Light": light}
 
 

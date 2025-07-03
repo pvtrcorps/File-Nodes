@@ -93,7 +93,8 @@ class FNCreateList(Node, FNBaseNode):
         name = self.data_type.replace('_', ' ').title()
         count = max(1, int(self.input_count))
         for i in range(count):
-            self.inputs.new(single, f"{name} {i}")
+            sock = self.inputs.new(single, f"{name} {i}")
+            sock.is_mutable = False
         out = self.outputs.new(lst, f"{name}s")
         out.display_shape = 'SQUARE'
         if context is not None:

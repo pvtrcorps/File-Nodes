@@ -20,6 +20,7 @@ class FNRenderScenesNode(Node, FNBaseNode):
     def init(self, context):
         self.inputs.new('FNSocketExec', "Exec")
         sock = self.inputs.new('FNSocketSceneList', "Scenes")
+        sock.is_mutable = False
         sock.display_shape = 'SQUARE'
 
     def draw_buttons(self, context, layout):
@@ -49,6 +50,7 @@ class FNOutputScenesNode(Node, FNBaseNode):
 
     def init(self, context):
         sock = self.inputs.new('FNSocketSceneList', "Scenes")
+        sock.is_mutable = False
         sock.display_shape = 'SQUARE'
 
     def process(self, context, inputs, manager):

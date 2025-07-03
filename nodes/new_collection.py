@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketCollection, FNSocketString
+from .. import uuid_manager
 
 
 class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
@@ -25,20 +26,32 @@ class FNNewCollection(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Collection"
-        cached = self.cache_get(name)
-        if cached is not None:
-            return {"Collection": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}"
+        
+        coll = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            coll = uuid_manager.find_datablock_by_uuid(existing_uuid, bpy.data.collections)
 
-        existing = bpy.data.collections.get(name)
-        if existing is not None:
-            cached = existing
+        if coll is None:
+            coll = bpy.data.collections.get(name)
+            if coll and uuid_manager.get_uuid(coll) is None:
+                pass
+            else:
+                coll = None
 
-        if cached is not None:
-            self.cache_store(name, cached)
-            return {"Collection": cached}
+        if coll is None:
+            coll = bpy.data.collections.new(name)
+            coll_uuid = uuid_manager.get_or_create_uuid(coll)
+            node_tree.set_datablock_uuid(node_key, coll_uuid)
+        else:
+            if coll.name != name:
+                coll.name = name
+            coll_uuid = uuid_manager.get_or_create_uuid(coll)
+            node_tree.set_datablock_uuid(node_key, coll_uuid)
 
-        coll = bpy.data.collections.new(name)
-        self.cache_store(name, coll)
         return {"Collection": coll}
 
 

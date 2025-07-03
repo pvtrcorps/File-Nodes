@@ -115,6 +115,7 @@ class FNGetItemInList(Node, FNBaseNode):
         single = _socket_single[self.data_type]
         name = self.data_type.replace('_', ' ').title()
         inp = self.inputs.new(list_sock, f"{name}s")
+        inp.is_mutable = False
         inp.display_shape = 'SQUARE'
         if single_output:
             self.outputs.new(single, name)

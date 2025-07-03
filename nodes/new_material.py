@@ -4,6 +4,7 @@ import bpy
 from bpy.types import Node
 from .base import FNBaseNode, FNCacheIDMixin
 from ..sockets import FNSocketMaterial, FNSocketString
+from .. import uuid_manager
 
 
 class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
@@ -25,20 +26,32 @@ class FNNewMaterial(Node, FNCacheIDMixin, FNBaseNode):
 
     def process(self, context, inputs, manager):
         name = inputs.get("Name") or "Material"
-        cached = self.cache_get(name)
-        if cached is not None:
-            return {"Material": cached}
+        
+        node_tree = self.id_data
+        node_key = f"{self.name}"
+        
+        mat = None
+        existing_uuid = node_tree.get_datablock_uuid(node_key)
+        if existing_uuid:
+            mat = uuid_manager.find_datablock_by_uuid(existing_uuid, bpy.data.materials)
 
-        existing = bpy.data.materials.get(name)
-        if existing is not None:
-            cached = existing
+        if mat is None:
+            mat = bpy.data.materials.get(name)
+            if mat and uuid_manager.get_uuid(mat) is None:
+                pass
+            else:
+                mat = None
 
-        if cached is not None:
-            self.cache_store(name, cached)
-            return {"Material": cached}
+        if mat is None:
+            mat = bpy.data.materials.new(name)
+            mat_uuid = uuid_manager.get_or_create_uuid(mat)
+            node_tree.set_datablock_uuid(node_key, mat_uuid)
+        else:
+            if mat.name != name:
+                mat.name = name
+            mat_uuid = uuid_manager.get_or_create_uuid(mat)
+            node_tree.set_datablock_uuid(node_key, mat_uuid)
 
-        mat = bpy.data.materials.new(name)
-        self.cache_store(name, mat)
         return {"Material": mat}
 
 

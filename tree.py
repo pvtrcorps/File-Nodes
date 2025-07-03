@@ -101,6 +101,10 @@ class FileNodesTreeInputs(PropertyGroup):
         prop = inp.prop_name()
         return getattr(inp, prop) if prop else None
 
+class FNStateMapItem(PropertyGroup):
+    name: bpy.props.StringProperty()
+    datablock_uuid: bpy.props.StringProperty()
+
 class FileNodesTree(NodeTree):
     bl_idname = "FileNodesTreeType"
     bl_label = "File Nodes"
@@ -109,6 +113,23 @@ class FileNodesTree(NodeTree):
 
     fn_enabled: bpy.props.BoolProperty(name='Enabled', default=True)
     fn_inputs: bpy.props.PointerProperty(type=FileNodesTreeInputs)
+    fn_state_map: bpy.props.CollectionProperty(type=FNStateMapItem)
+
+    def get_datablock_uuid(self, node_key):
+        item = self.fn_state_map.get(node_key)
+        return item.datablock_uuid if item else None
+
+    def set_datablock_uuid(self, node_key, datablock_uuid):
+        item = self.fn_state_map.get(node_key)
+        if item:
+            item.datablock_uuid = datablock_uuid
+        else:
+            item = self.fn_state_map.add()
+            item.name = node_key
+            item.datablock_uuid = datablock_uuid
+
+    def clear_state_map(self):
+        self.fn_state_map.clear()
 
     def interface_update(self, context):
         if getattr(self, "fn_inputs", None):
@@ -125,6 +146,7 @@ class FileNodesTree(NodeTree):
         return True
 
 classes = (
+    FNStateMapItem,
     FileNodeTreeInput,
     FNSceneReference,
     FileNodesTreeInputs,
