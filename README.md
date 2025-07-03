@@ -13,8 +13,28 @@ File Nodes es un prototipo de addon para Blender que extiende el paradigma proce
    *ejecución* para exponer acciones como "Render Scenes" a través del `Group Input`.
 4. **Árboles globales**: los `FileNodesTree` residen en `bpy.data.node_groups` y se evalúan de forma conjunta.
 
-## Modelo de ejecución
-Cada `FileNodesTree` se evalúa globalmente. File Nodes no edita ni elimina ningún Datablock existente, trabaja siempre sobre copias recién creadas en cada ejecución  para mantener la no destructividad, y eliminando y limpiando antes de la siguiente ejecución cualquier copia . Esto asegura que los mismos inputs producen siempre los mismos resultados.
+## Modelo de ejecución: Copy-on-Write Explícito
+
+File Nodes utiliza un modelo de ejecución basado en el principio de **Copy-on-Write (CoW)** para garantizar la no destructividad y la consistencia. En lugar de modificar directamente los datos de Blender, el motor de evaluación trabaja con copias, asegurando que los datos originales permanezcan intactos.
+
+La gestión de estos datos se centraliza en el `DataManager`, un componente que funciona como un sistema de recolección de basura y gestión de memoria.
+
+### El Problema del Consumidor Múltiple
+
+Un desafío clave surge cuando la salida de un nodo se conecta a las entradas de varios otros nodos. Por ejemplo, si un nodo `New Object` se conecta tanto a un `Link to Scene` como a un `Set Object Name`. La pregunta es: ¿deben ambos nodos recibir una referencia al mismo objeto, o deben recibir copias separadas?
+
+- Si ambos reciben el mismo objeto, un cambio realizado por `Set Object Name` afectaría inesperadamente al objeto que `Link to Scene` está intentando enlazar.
+- Si siempre se crea una copia para cada consumidor, se pierde la capacidad de que varios nodos operen sobre el mismo dato cuando ese es el comportamiento deseado.
+
+### La Solución: Sockets Mutables e Inmutables
+
+Para resolver esto, hemos introducido un mecanismo de control explícito a nivel de socket:
+
+- **`is_mutable = True` (Comportamiento por defecto):** Cuando un nodo necesita **modificar** los datos que recibe, su socket de entrada se considera mutable. El `DataManager`, al ver que un dato va a ser consumido por un socket mutable, se asegura de proporcionar una copia si el dato original tiene más de un consumidor. Esto consume una "referencia" al dato.
+
+- **`is_mutable = False` (Solo Lectura):** Cuando un nodo solo necesita **leer o referenciar** los datos sin modificarlos (por ejemplo, para enlazarlos a una escena o usarlos como entrada en un nodo `Switch`), su socket de entrada se marca como inmutable. En este caso, el `DataManager` simplemente pasa una referencia al dato original **sin consumirla**. Esto permite que múltiples nodos de solo lectura accedan al mismo dato sin crear copias innecesarias, y difiere la decisión de copiar al consumidor final que realmente necesite modificarlo.
+
+Este sistema garantiza un comportamiento predecible y eficiente, dando al desarrollador de nodos un control preciso sobre cómo se propagan y modifican los datos a través del árbol.
 
 ## Gestión de datablocks
 - Los datos externos se vinculan mediante *library linking* para mantener la no destructividad.

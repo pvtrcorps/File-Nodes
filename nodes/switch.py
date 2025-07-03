@@ -65,8 +65,10 @@ class FNSwitch(Node, FNBaseNode):
         single = _socket_single[self.data_type]
         name = self.data_type.replace('_', ' ').title()
         self.inputs.new('FNSocketBool', "Switch")
-        self.inputs.new(single, "False")
-        self.inputs.new(single, "True")
+        sock_false = self.inputs.new(single, "False")
+        sock_false.is_mutable = False
+        sock_true = self.inputs.new(single, "True")
+        sock_true.is_mutable = False
         self.outputs.new(single, name)
 
     def init(self, context):

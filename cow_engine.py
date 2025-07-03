@@ -92,11 +92,12 @@ def evaluate_tree(tree, context, manager=None):
                     # Request a mutable version for the next node
                     if sock.is_mutable:
                         mutable_id = manager.request_mutable_data(data_id)
+                        # Only decrement if the original data was not shared and no copy was made.
+                        if mutable_id == data_id:
+                            manager.decrement_ref_count(data_id)
                     else:
+                        # For immutable sockets, we just pass the ID through without changing the ref count.
                         mutable_id = data_id
-                    # Only decrement if no copy was made (i.e., original ID was returned)
-                    if mutable_id == data_id:
-                        manager.decrement_ref_count(data_id)
                     
                     # Handle list promotion (e.g., single item to list socket)
                     if single and from_sock.bl_idname == single:

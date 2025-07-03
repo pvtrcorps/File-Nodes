@@ -70,7 +70,8 @@ class FNIndexSwitch(Node, FNBaseNode):
         name = self.data_type.replace('_', ' ').title()
         count = max(1, int(self.input_count))
         for i in range(count):
-            self.inputs.new(single, f"Value {i}")
+            sock = self.inputs.new(single, f"Value {i}")
+            sock.is_mutable = False
         self.outputs.new(single, name)
         if context is not None:
             auto_evaluate_if_enabled(context)
