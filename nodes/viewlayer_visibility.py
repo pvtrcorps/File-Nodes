@@ -107,7 +107,8 @@ class FNViewLayerVisibility(Node, FNBaseNode):
         return ntree.bl_idname == "FileNodesTreeType"
 
     def init(self, context):
-        self.inputs.new('FNSocketViewLayer', "View Layer")
+        sock = self.inputs.new('FNSocketViewLayer', "View Layer")
+        sock.is_mutable = False
         self.outputs.new('FNSocketViewLayer', "View Layer")
 
     def update(self):

@@ -19,6 +19,7 @@ def _draw_value_socket(sock, layout, text, icon='NONE'):
 class FNSocketBool(NodeSocket):
     bl_idname = "FNSocketBool"
     bl_label = "Boolean"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
@@ -28,6 +29,7 @@ class FNSocketBool(NodeSocket):
 class FNSocketExec(NodeSocket):
     bl_idname = "FNSocketExec"
     bl_label = "Execution"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         if self.is_output:
             layout.label(text=text or self.name, icon='PLAY')
@@ -44,6 +46,7 @@ class FNSocketExec(NodeSocket):
 class FNSocketFloat(NodeSocket):
     bl_idname = "FNSocketFloat"
     bl_label = "Float"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
@@ -53,6 +56,7 @@ class FNSocketFloat(NodeSocket):
 class FNSocketVector(NodeSocket):
     bl_idname = "FNSocketVector"
     bl_label = "Vector"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
@@ -62,6 +66,7 @@ class FNSocketVector(NodeSocket):
 class FNSocketInt(NodeSocket):
     bl_idname = "FNSocketInt"
     bl_label = "Integer"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
@@ -71,6 +76,7 @@ class FNSocketInt(NodeSocket):
 class FNSocketString(NodeSocket):
     bl_idname = "FNSocketString"
     bl_label = "String"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
@@ -80,6 +86,7 @@ class FNSocketString(NodeSocket):
 class FNSocketColor(NodeSocket):
     bl_idname = "FNSocketColor"
     bl_label = "Color"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text)
     def draw_color(self, context, node):
@@ -89,6 +96,7 @@ class FNSocketColor(NodeSocket):
 class FNSocketStringList(NodeSocket):
     bl_idname = "FNSocketStringList"
     bl_label = "String List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name)
@@ -99,6 +107,7 @@ class FNSocketStringList(NodeSocket):
 class FNSocketScene(NodeSocket):
     bl_idname = "FNSocketScene"
     bl_label = "Scene"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'SCENE_DATA')
@@ -110,6 +119,7 @@ class FNSocketScene(NodeSocket):
 class FNSocketObject(NodeSocket):
     bl_idname = "FNSocketObject"
     bl_label = "Object"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'OBJECT_DATA')
@@ -120,6 +130,7 @@ class FNSocketObject(NodeSocket):
 class FNSocketCollection(NodeSocket):
     bl_idname = "FNSocketCollection"
     bl_label = "Collection"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'OUTLINER_COLLECTION')
@@ -130,6 +141,7 @@ class FNSocketCollection(NodeSocket):
 class FNSocketCamera(NodeSocket):
     bl_idname = "FNSocketCamera"
     bl_label = "Camera"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'CAMERA_DATA')
@@ -140,6 +152,7 @@ class FNSocketCamera(NodeSocket):
 class FNSocketImage(NodeSocket):
     bl_idname = "FNSocketImage"
     bl_label = "Image"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'IMAGE_DATA')
@@ -150,6 +163,7 @@ class FNSocketImage(NodeSocket):
 class FNSocketLight(NodeSocket):
     bl_idname = "FNSocketLight"
     bl_label = "Light"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'LIGHT_DATA')
@@ -160,6 +174,7 @@ class FNSocketLight(NodeSocket):
 class FNSocketMaterial(NodeSocket):
     bl_idname = "FNSocketMaterial"
     bl_label = "Material"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'MATERIAL_DATA')
@@ -170,6 +185,7 @@ class FNSocketMaterial(NodeSocket):
 class FNSocketMesh(NodeSocket):
     bl_idname = "FNSocketMesh"
     bl_label = "Mesh"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'MESH_DATA')
@@ -180,6 +196,7 @@ class FNSocketMesh(NodeSocket):
 class FNSocketNodeTree(NodeSocket):
     bl_idname = "FNSocketNodeTree"
     bl_label = "Node Tree"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'NODETREE')
@@ -190,6 +207,7 @@ class FNSocketNodeTree(NodeSocket):
 class FNSocketText(NodeSocket):
     bl_idname = "FNSocketText"
     bl_label = "Text"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'TEXT')
@@ -200,6 +218,7 @@ class FNSocketText(NodeSocket):
 class FNSocketWorkSpace(NodeSocket):
     bl_idname = "FNSocketWorkSpace"
     bl_label = "WorkSpace"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'WORKSPACE')
@@ -210,6 +229,7 @@ class FNSocketWorkSpace(NodeSocket):
 class FNSocketViewLayer(NodeSocket):
     bl_idname = "FNSocketViewLayer"
     bl_label = "View Layer"
+    is_mutable: bpy.props.BoolProperty(default=True)
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='RENDERLAYERS')
     def draw_color(self, context, node):
@@ -220,6 +240,7 @@ class FNSocketViewLayer(NodeSocket):
 class FNSocketWorld(NodeSocket):
     bl_idname = "FNSocketWorld"
     bl_label = "World"
+    is_mutable: bpy.props.BoolProperty(default=True)
     show_selector: bpy.props.BoolProperty(default=False)
     def draw(self, context, layout, node, text):
         _draw_value_socket(self, layout, text, 'WORLD')
@@ -231,6 +252,7 @@ class FNSocketWorld(NodeSocket):
 class FNSocketSceneList(NodeSocket):
     bl_idname = "FNSocketSceneList"
     bl_label = "Scene List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='SCENE_DATA')
@@ -240,6 +262,7 @@ class FNSocketSceneList(NodeSocket):
 class FNSocketObjectList(NodeSocket):
     bl_idname = "FNSocketObjectList"
     bl_label = "Object List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='OBJECT_DATA')
@@ -249,6 +272,7 @@ class FNSocketObjectList(NodeSocket):
 class FNSocketCollectionList(NodeSocket):
     bl_idname = "FNSocketCollectionList"
     bl_label = "Collection List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='OUTLINER_COLLECTION')
@@ -258,6 +282,7 @@ class FNSocketCollectionList(NodeSocket):
 class FNSocketWorldList(NodeSocket):
     bl_idname = "FNSocketWorldList"
     bl_label = "World List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='WORLD')
@@ -267,6 +292,7 @@ class FNSocketWorldList(NodeSocket):
 class FNSocketCameraList(NodeSocket):
     bl_idname = "FNSocketCameraList"
     bl_label = "Camera List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='CAMERA_DATA')
@@ -276,6 +302,7 @@ class FNSocketCameraList(NodeSocket):
 class FNSocketImageList(NodeSocket):
     bl_idname = "FNSocketImageList"
     bl_label = "Image List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='IMAGE_DATA')
@@ -285,6 +312,7 @@ class FNSocketImageList(NodeSocket):
 class FNSocketLightList(NodeSocket):
     bl_idname = "FNSocketLightList"
     bl_label = "Light List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='LIGHT_DATA')
@@ -294,6 +322,7 @@ class FNSocketLightList(NodeSocket):
 class FNSocketMaterialList(NodeSocket):
     bl_idname = "FNSocketMaterialList"
     bl_label = "Material List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='MATERIAL_DATA')
@@ -303,6 +332,7 @@ class FNSocketMaterialList(NodeSocket):
 class FNSocketMeshList(NodeSocket):
     bl_idname = "FNSocketMeshList"
     bl_label = "Mesh List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='MESH_DATA')
@@ -312,6 +342,7 @@ class FNSocketMeshList(NodeSocket):
 class FNSocketNodeTreeList(NodeSocket):
     bl_idname = "FNSocketNodeTreeList"
     bl_label = "Node Tree List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='NODETREE')
@@ -321,6 +352,7 @@ class FNSocketNodeTreeList(NodeSocket):
 class FNSocketTextList(NodeSocket):
     bl_idname = "FNSocketTextList"
     bl_label = "Text List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='TEXT')
@@ -330,6 +362,7 @@ class FNSocketTextList(NodeSocket):
 class FNSocketWorkSpaceList(NodeSocket):
     bl_idname = "FNSocketWorkSpaceList"
     bl_label = "WorkSpace List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='WORKSPACE')
@@ -339,6 +372,7 @@ class FNSocketWorkSpaceList(NodeSocket):
 class FNSocketViewLayerList(NodeSocket):
     bl_idname = "FNSocketViewLayerList"
     bl_label = "View Layer List"
+    is_mutable: bpy.props.BoolProperty(default=True)
     display_shape = 'SQUARE'
     def draw(self, context, layout, node, text):
         layout.label(text=text or self.name, icon='RENDERLAYERS')

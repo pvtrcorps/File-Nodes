@@ -16,7 +16,8 @@ class FNSetWorld(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
-        self.inputs.new('FNSocketWorld', "World")
+        sock = self.inputs.new('FNSocketWorld', "World")
+        sock.is_mutable = False
         self.outputs.new('FNSocketScene', "Scene")
 
     def process(self, context, inputs, manager):

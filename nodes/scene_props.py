@@ -20,7 +20,8 @@ class FNSceneProps(Node, FNBaseNode):
 
     def init(self, context):
         self.inputs.new('FNSocketScene', "Scene")
-        self.inputs.new('FNSocketObject', "Camera")
+        sock = self.inputs.new('FNSocketObject', "Camera")
+        sock.is_mutable = False
         sock = self.inputs.new('FNSocketInt', "Start")
         sock.value = 1
         sock = self.inputs.new('FNSocketInt', "End")

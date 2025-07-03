@@ -90,7 +90,10 @@ def evaluate_tree(tree, context, manager=None):
 
                 if data_id is not None:
                     # Request a mutable version for the next node
-                    mutable_id = manager.request_mutable_data(data_id)
+                    if sock.is_mutable:
+                        mutable_id = manager.request_mutable_data(data_id)
+                    else:
+                        mutable_id = data_id
                     # Only decrement if no copy was made (i.e., original ID was returned)
                     if mutable_id == data_id:
                         manager.decrement_ref_count(data_id)
